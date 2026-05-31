@@ -49,16 +49,16 @@
 
     .reels {
       position: absolute;
-      left: 296px;
-      top: 238px;
-      width: 1200px;
-      height: 610px;
+      left: 366px;
+      top: 205px;
+      width: 1060px;
+      height: 505px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      column-gap: 18px;
-      row-gap: 12px;
-      padding: 10px 18px;
+      column-gap: 16px;
+      row-gap: 10px;
+      padding: 8px 16px;
       background: transparent;
       border: 0;
       box-shadow: none;
@@ -137,12 +137,7 @@
       line-height: 1.2;
     }
 
-    .bet-control {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-    }
+    .bet-control { display: flex; justify-content: center; align-items: center; gap: 6px; }
 
     button {
       cursor: pointer;
@@ -168,7 +163,7 @@
     .win-box {
       position: absolute;
       left: 50%;
-      top: 860px;
+      top: 735px;
       transform: translateX(-50%);
       width: 430px;
       height: 110px;
@@ -196,6 +191,22 @@
       text-shadow: 0 0 8px black, 0 0 14px purple, 0 0 20px #b000ff;
       line-height: 110px;
     }
+
+    .win-effect-overlay {
+      position: absolute;
+      left: 50%;
+      top: 205px;
+      transform: translateX(-50%);
+      width: 980px;
+      height: 505px;
+      background: url("../assets/backgrounds/win_effect.gif") center/contain no-repeat;
+      display: none;
+      pointer-events: none;
+      z-index: 95;
+      filter: drop-shadow(0 0 28px #b000ff);
+    }
+
+    .win-effect-overlay.active { display: block; }
 
     .bonus-banner {
       position: absolute;
@@ -269,26 +280,6 @@
     .transition-overlay.bonus-outro { background: linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.25)), url("../assets/backgrounds/win_effect.gif") center/cover no-repeat; }
     .transition-title { font-size: 96px; font-weight: bold; text-shadow: 0 0 30px purple, 0 0 12px black; letter-spacing: 4px; margin-top: -185px; }
     .transition-sub { margin-top: 14px; font-size: 44px; color: #fff1a8; text-shadow: 0 0 20px #b000ff; }
-
-    .win-tier-banner {
-      position: absolute;
-      left: 50%;
-      top: 42%;
-      transform: translate(-50%, -50%) scale(0.75);
-      opacity: 0;
-      pointer-events: none;
-      font-size: 92px;
-      font-weight: 900;
-      color: gold;
-      text-shadow: 0 0 12px black, 0 0 24px purple, 0 0 42px #b000ff;
-      z-index: 210;
-      transition: all 0.28s ease;
-      letter-spacing: 4px;
-      text-align: center;
-    }
-
-    .win-tier-banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    .win-tier-banner.legendary { color: #ffffff; text-shadow: 0 0 12px gold, 0 0 30px purple, 0 0 55px #ff00ff; }
   </style>
 </head>
 
@@ -296,9 +287,9 @@
   <div class="stage">
     <div id="game" class="game">
       <div id="winBox" class="win-box"><span id="winAmountText">WIN $0.00</span></div>
+      <div id="winEffectOverlay" class="win-effect-overlay"></div>
       <div id="bonusBanner" class="bonus-banner">BONUS TRIGGERED</div>
       <div id="anticipationText" class="anticipation-text">SCATTER CHANCE</div>
-      <div id="winTierBanner" class="win-tier-banner"></div>
 
       <div id="transitionOverlay" class="transition-overlay">
         <div id="transitionTitle" class="transition-title">BONUS WON</div>
@@ -375,9 +366,9 @@
     const buyEnhancerBtn = document.getElementById("buyEnhancerBtn");
     const winBox = document.getElementById("winBox");
     const winAmountText = document.getElementById("winAmountText");
+    const winEffectOverlay = document.getElementById("winEffectOverlay");
     const bonusBanner = document.getElementById("bonusBanner");
     const anticipationText = document.getElementById("anticipationText");
-    const winTierBanner = document.getElementById("winTierBanner");
     const transitionOverlay = document.getElementById("transitionOverlay");
     const transitionTitle = document.getElementById("transitionTitle");
     const transitionSub = document.getElementById("transitionSub");
@@ -394,117 +385,30 @@
 
     const DESIGN_WIDTH = 1792;
     const DESIGN_HEIGHT = 1024;
-
     function resizeGameBox() {
       const scale = Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT);
       game.style.setProperty("--game-scale", scale);
     }
-
     window.addEventListener("resize", resizeGameBox);
     window.addEventListener("orientationchange", resizeGameBox);
     resizeGameBox();
 
-    const symbolFiles = [
-      "magic_gun_wild.png",
-      "bonus_scatter.png",
-      "witch.png",
-      "magic_bullet.png",
-      "skull.png",
-      "potion.png",
-      "card_a.png",
-      "card_k.png",
-      "card_q.png",
-      "card_j.png",
-      "card_10.png"
-    ];
-
+    const symbolFiles = ["magic_gun_wild.png", "bonus_scatter.png", "witch.png", "magic_bullet.png", "skull.png", "potion.png", "card_a.png", "card_k.png", "card_q.png", "card_j.png", "card_10.png"];
     const symbolPaths = symbolFiles.map(file => "../assets/symbols/png/" + file);
     const scatterPath = "../assets/symbols/png/bonus_scatter.png";
     const nonScatterPaths = symbolPaths.filter(src => !src.includes("bonus_scatter.png"));
+    const SYMBOL_KEYS = { "magic_gun_wild.png": "W", "bonus_scatter.png": "S", "witch.png": "H1", "magic_bullet.png": "H2", "skull.png": "H3", "potion.png": "H4", "card_a.png": "L1", "card_k.png": "L2", "card_q.png": "L3", "card_j.png": "L4", "card_10.png": "L5" };
+    const PAYTABLE = { W: {5:50,4:20,3:10}, H1:{5:50,4:20,3:10}, H2:{5:15,4:5,3:3}, H3:{5:10,4:3,3:2}, H4:{5:8,4:2,3:1}, L1:{5:5,4:1,3:0.5}, L2:{5:3,4:0.7,3:0.3}, L3:{5:3,4:0.7,3:0.3}, L4:{5:2,4:0.5,3:0.2}, L5:{5:1,4:0.3,3:0.1} };
+    const LINES = [[0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,1,2,1],[1,2,1,0,1],[0,1,1,1,2],[2,1,1,1,0],[0,1,0,1,2],[2,1,2,1,0],[1,1,0,1,1],[1,1,2,1,1],[0,2,1,0,2],[2,0,1,2,0],[0,0,2,0,0],[2,2,0,2,2],[1,0,0,0,1]];
+    const WIN_TIERS = [{key:"legendary",minMultiplier:100},{key:"epic",minMultiplier:50},{key:"mega",minMultiplier:24},{key:"big",minMultiplier:12}];
 
-    const SYMBOL_KEYS = {
-      "magic_gun_wild.png": "W",
-      "bonus_scatter.png": "S",
-      "witch.png": "H1",
-      "magic_bullet.png": "H2",
-      "skull.png": "H3",
-      "potion.png": "H4",
-      "card_a.png": "L1",
-      "card_k.png": "L2",
-      "card_q.png": "L3",
-      "card_j.png": "L4",
-      "card_10.png": "L5"
-    };
-
-    const PAYTABLE = {
-      W: { 5: 50, 4: 20, 3: 10 },
-      H1: { 5: 50, 4: 20, 3: 10 },
-      H2: { 5: 15, 4: 5, 3: 3 },
-      H3: { 5: 10, 4: 3, 3: 2 },
-      H4: { 5: 8, 4: 2, 3: 1 },
-      L1: { 5: 5, 4: 1, 3: 0.5 },
-      L2: { 5: 3, 4: 0.7, 3: 0.3 },
-      L3: { 5: 3, 4: 0.7, 3: 0.3 },
-      L4: { 5: 2, 4: 0.5, 3: 0.2 },
-      L5: { 5: 1, 4: 0.3, 3: 0.1 }
-    };
-
-    const LINES = [
-      [0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1],
-      [2, 2, 2, 2, 2],
-      [0, 1, 2, 1, 0],
-      [2, 1, 0, 1, 2],
-      [0, 0, 1, 2, 2],
-      [2, 2, 1, 0, 0],
-      [1, 0, 1, 2, 1],
-      [1, 2, 1, 0, 1],
-      [0, 1, 1, 1, 2],
-      [2, 1, 1, 1, 0],
-      [0, 1, 0, 1, 2],
-      [2, 1, 2, 1, 0],
-      [1, 1, 0, 1, 1],
-      [1, 1, 2, 1, 1],
-      [0, 2, 1, 0, 2],
-      [2, 0, 1, 2, 0],
-      [0, 0, 2, 0, 0],
-      [2, 2, 0, 2, 2],
-      [1, 0, 0, 0, 1]
-    ];
-
-    const WIN_TIERS = [
-      { key: "legendary", label: "LEGENDARY WIN", minMultiplier: 100 },
-      { key: "epic", label: "EPIC WIN", minMultiplier: 50 },
-      { key: "mega", label: "MEGA WIN", minMultiplier: 24 },
-      { key: "big", label: "BIG WIN", minMultiplier: 12 }
-    ];
-
-    let balance = 1000;
-    let bet = 1;
-    let freeSpins = 0;
-    let spinning = false;
-    let autoSpin = false;
-    let bonusEnhancerSpins = 0;
-    let bonusModeActive = false;
-    let currentPaidRoundWin = 0;
+    let balance = 1000, bet = 1, freeSpins = 0, spinning = false, autoSpin = false, bonusEnhancerSpins = 0, bonusModeActive = false, currentPaidRoundWin = 0;
     let currentWinningPositions = new Set();
-
-    const betSteps = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1, 2, 5, 10, 20, 50, 100, 200, 300];
-    const RTP_TARGET = 0.96;
-    const BASE_PAYOUT_SCALE = 0.16873;
-    const BONUS_PAYOUT_SCALE = 2.60576;
-    const BONUS_TRIGGER_CHANCE = 1 / 263;
-    const ENHANCER_TRIGGER_MULTIPLIER = 8;
-    const MAX_WIN_MULTIPLIER = 5000;
+    const betSteps = [0.01,0.02,0.05,0.10,0.20,0.50,1,2,5,10,20,50,100,200,300];
+    const BASE_PAYOUT_SCALE = 0.16873, BONUS_PAYOUT_SCALE = 2.60576, BONUS_TRIGGER_CHANCE = 1 / 263, ENHANCER_TRIGGER_MULTIPLIER = 8, MAX_WIN_MULTIPLIER = 5000;
 
     function formatMoney(v) { return Number(v).toFixed(2); }
-
-    function safePlay(audio) {
-      if (!audio) return;
-      audio.currentTime = 0;
-      audio.play().catch(() => {});
-    }
-
+    function safePlay(audio) { if (!audio) return; audio.currentTime = 0; audio.play().catch(() => {}); }
     function updateHud() {
       balanceEl.textContent = formatMoney(balance);
       betEl.textContent = formatMoney(bet);
@@ -518,143 +422,47 @@
       buyEnhancerBtn.disabled = spinning || inBonus || bonusEnhancerSpins > 0 || balance < bet * 3;
       spinBtn.textContent = freeSpins > 0 ? "FREE" : "SPIN";
     }
-
-    function getBetIndex() {
-      return betSteps.reduce((best, val, i) => Math.abs(val - bet) < Math.abs(betSteps[best] - bet) ? i : best, 0);
-    }
-
-    function increaseBet() {
-      if (spinning) return;
-      bet = betSteps[Math.min(getBetIndex() + 1, betSteps.length - 1)];
-      updateHud();
-    }
-
-    function decreaseBet() {
-      if (spinning) return;
-      bet = betSteps[Math.max(getBetIndex() - 1, 0)];
-      updateHud();
-    }
-
-    function randomNonScatter() {
-      return nonScatterPaths[Math.floor(Math.random() * nonScatterPaths.length)];
-    }
-
-    function makeSpinColumn(scatterFlickerChance = 0.018) {
-      const column = [randomNonScatter(), randomNonScatter(), randomNonScatter()];
-      if (Math.random() < scatterFlickerChance) {
-        column[Math.floor(Math.random() * 3)] = scatterPath;
-      }
-      return column;
-    }
-
-    function makeGrid(scatterChancePerColumn) {
-      const grid = new Array(15);
-      for (let col = 0; col < 5; col++) {
-        for (let row = 0; row < 3; row++) {
-          grid[row * 5 + col] = randomNonScatter();
-        }
-        if (Math.random() < scatterChancePerColumn) {
-          const row = Math.floor(Math.random() * 3);
-          grid[row * 5 + col] = scatterPath;
-        }
-      }
-      return grid;
-    }
-
-    function forceBonus(grid) {
-      const columns = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5).slice(0, 3);
-      for (const col of columns) {
-        const row = Math.floor(Math.random() * 3);
-        grid[row * 5 + col] = scatterPath;
-      }
-      return grid;
-    }
-
-    function makeNormalGrid(enhancerActive = false) {
-      const grid = makeGrid(0.006);
-      const activeChance = BONUS_TRIGGER_CHANCE * (enhancerActive ? ENHANCER_TRIGGER_MULTIPLIER : 1);
-      if (Math.random() < activeChance) forceBonus(grid);
-      return grid;
-    }
-
+    function getBetIndex() { return betSteps.reduce((best, val, i) => Math.abs(val - bet) < Math.abs(betSteps[best] - bet) ? i : best, 0); }
+    function increaseBet() { if (spinning) return; bet = betSteps[Math.min(getBetIndex() + 1, betSteps.length - 1)]; updateHud(); }
+    function decreaseBet() { if (spinning) return; bet = betSteps[Math.max(getBetIndex() - 1, 0)]; updateHud(); }
+    function randomNonScatter() { return nonScatterPaths[Math.floor(Math.random() * nonScatterPaths.length)]; }
+    function makeSpinColumn(chance = 0.018) { const c = [randomNonScatter(), randomNonScatter(), randomNonScatter()]; if (Math.random() < chance) c[Math.floor(Math.random()*3)] = scatterPath; return c; }
+    function makeGrid(scatterChancePerColumn) { const grid = new Array(15); for (let col=0; col<5; col++) { for (let row=0; row<3; row++) grid[row*5+col] = randomNonScatter(); if (Math.random() < scatterChancePerColumn) grid[Math.floor(Math.random()*3)*5+col] = scatterPath; } return grid; }
+    function forceBonus(grid) { [0,1,2,3,4].sort(() => Math.random()-0.5).slice(0,3).forEach(col => grid[Math.floor(Math.random()*3)*5+col] = scatterPath); return grid; }
+    function makeNormalGrid(enhancerActive = false) { const grid = makeGrid(0.006); if (Math.random() < BONUS_TRIGGER_CHANCE * (enhancerActive ? ENHANCER_TRIGGER_MULTIPLIER : 1)) forceBonus(grid); return grid; }
     function makeBonusGrid() { return makeGrid(0.025); }
-
-    function getSymbolKey(src) {
-      const file = src.split("/").pop();
-      return SYMBOL_KEYS[file] || "";
-    }
-
+    function getSymbolKey(src) { return SYMBOL_KEYS[src.split("/").pop()] || ""; }
     function linePositions(line) { return line.map((row, col) => row * 5 + col); }
-
     function evaluateLine(grid, line, lineIndex) {
-      const positions = linePositions(line);
-      const keys = positions.map(pos => getSymbolKey(grid[pos]));
-      const candidates = Object.keys(PAYTABLE);
+      const positions = linePositions(line), keys = positions.map(pos => getSymbolKey(grid[pos]));
       let best = null;
-
-      for (const candidate of candidates) {
+      for (const candidate of Object.keys(PAYTABLE)) {
         let count = 0;
-        for (const key of keys) {
-          if (key === "S") break;
-          if (key === candidate || key === "W") count++;
-          else break;
-        }
-        if (count >= 3) {
-          const multiplier = PAYTABLE[candidate][count] || 0;
-          if (multiplier > 0 && (!best || multiplier > best.multiplier)) {
-            best = { line: lineIndex + 1, symbol: candidate, count, multiplier, positions: positions.slice(0, count) };
-          }
-        }
+        for (const key of keys) { if (key === "S") break; if (key === candidate || key === "W") count++; else break; }
+        if (count >= 3) { const multiplier = PAYTABLE[candidate][count] || 0; if (multiplier > 0 && (!best || multiplier > best.multiplier)) best = {line: lineIndex+1, symbol:candidate, count, multiplier, positions:positions.slice(0,count)}; }
       }
       return best;
     }
-
+    function countScatters(grid) { return grid.filter(src => src.includes("bonus_scatter.png")).length; }
     function evaluateGridWin(grid, isBonus) {
       const wins = LINES.map((line, index) => evaluateLine(grid, line, index)).filter(Boolean);
       const scatterCount = countScatters(grid);
-      const scatterPay = isBonus ? 0 : ({ 3: 2, 4: 10, 5: 50 }[scatterCount] || 0);
+      const scatterPay = isBonus ? 0 : ({3:2,4:10,5:50}[scatterCount] || 0);
       const lineMultiplier = wins.reduce((sum, win) => sum + win.multiplier, 0);
-      const bonusKick = isBonus ? 1.35 : 1;
       const payoutScale = isBonus ? BONUS_PAYOUT_SCALE : BASE_PAYOUT_SCALE;
-      const totalMultiplier = Math.min((lineMultiplier + scatterPay) * payoutScale * bonusKick, MAX_WIN_MULTIPLIER);
+      const totalMultiplier = Math.min((lineMultiplier + scatterPay) * payoutScale * (isBonus ? 1.35 : 1), MAX_WIN_MULTIPLIER);
       const positions = new Set(wins.flatMap(win => win.positions));
-      if (scatterPay > 0) {
-        grid.forEach((src, index) => { if (src.includes("bonus_scatter.png")) positions.add(index); });
-      }
+      if (scatterPay > 0) grid.forEach((src, i) => { if (src.includes("bonus_scatter.png")) positions.add(i); });
       return { amount: bet * totalMultiplier, multiplier: totalMultiplier, wins, scatterPay, positions };
     }
-
     function resetPaidRoundCap() { currentPaidRoundWin = 0; }
-    function getPaidRoundCap() { return bet * MAX_WIN_MULTIPLIER; }
-
-    function applyPaidRoundCap(amount) {
-      const remaining = Math.max(0, getPaidRoundCap() - currentPaidRoundWin);
-      const cappedAmount = Math.min(amount, remaining);
-      currentPaidRoundWin += cappedAmount;
-      return cappedAmount;
-    }
-
-    function countScatters(grid) {
-      return grid.filter(src => src.includes("bonus_scatter.png")).length;
-    }
-
-    function countScattersInReels(grid, startCol, endCol) {
-      let count = 0;
-      for (let col = startCol; col <= endCol; col++) {
-        for (let row = 0; row < 3; row++) {
-          if (grid[row * 5 + col].includes("bonus_scatter.png")) count++;
-        }
-      }
-      return count;
-    }
-
+    function applyPaidRoundCap(amount) { const remaining = Math.max(0, bet * MAX_WIN_MULTIPLIER - currentPaidRoundWin); const capped = Math.min(amount, remaining); currentPaidRoundWin += capped; return capped; }
+    function countScattersInReels(grid, startCol, endCol) { let count=0; for(let col=startCol; col<=endCol; col++) for(let row=0; row<3; row++) if(grid[row*5+col].includes("bonus_scatter.png")) count++; return count; }
     function drawReels(grid = null, options = {}) {
       reels.innerHTML = "";
       const spinningColumns = options.spinningColumns || new Set();
-      for (let i = 0; i < 15; i++) {
-        const img = document.createElement("img");
-        img.className = "symbol";
-        img.src = grid ? grid[i] : randomNonScatter();
+      for (let i=0; i<15; i++) {
+        const img = document.createElement("img"); img.className = "symbol"; img.src = grid ? grid[i] : randomNonScatter();
         const key = getSymbolKey(img.src);
         if (key === "S") img.classList.add("scatter-symbol");
         if (key === "W") img.classList.add("wild-symbol");
@@ -663,251 +471,50 @@
         reels.appendChild(img);
       }
     }
-
-    function buildSpinFrame(finalGrid, stopTicks, ticks) {
-      const frame = new Array(15);
-      for (let col = 0; col < 5; col++) {
-        const locked = ticks >= stopTicks[col];
-        const spinColumn = locked ? null : makeSpinColumn(col === 4 ? 0.028 : 0.012);
-        for (let row = 0; row < 3; row++) {
-          const position = row * 5 + col;
-          frame[position] = locked ? finalGrid[position] : spinColumn[row];
-        }
-      }
-      return frame;
-    }
-
-    function animateSpin(finalGrid) {
-      return new Promise(resolve => {
-        anticipationText.classList.remove("active");
-        let ticks = 0;
-        let anticipationStarted = false;
-        const firstFour = countScattersInReels(finalGrid, 0, 3);
-        const shouldAnticipate = firstFour >= 2;
-        const stopTicks = [9, 15, 21, 28, shouldAnticipate ? 50 : 36];
-        const interval = setInterval(() => {
-          const spinningColumns = new Set([0, 1, 2, 3, 4].filter(col => ticks < stopTicks[col]));
-          const tempGrid = buildSpinFrame(finalGrid, stopTicks, ticks);
-          drawReels(tempGrid, { spinningColumns });
-          ticks++;
-          if (!anticipationStarted && shouldAnticipate && ticks >= stopTicks[3]) {
-            anticipationStarted = true;
-            anticipationText.classList.add("active");
-            safePlay(scatterLandSound);
-          }
-          if (ticks >= stopTicks[4]) {
-            clearInterval(interval);
-            currentWinningPositions = new Set();
-            drawReels(finalGrid);
-            anticipationText.classList.remove("active");
-            safePlay(spinSound);
-            resolve();
-          }
-        }, 70);
-      });
-    }
-
-    function getWinTier(win) {
-      const multiplier = win / bet;
-      return WIN_TIERS.find(t => multiplier >= t.minMultiplier) || null;
-    }
-
-    function showWinTierBanner(tier) {
-      if (!tier) return;
-      winTierBanner.textContent = tier.label;
-      winTierBanner.className = "win-tier-banner show " + tier.key;
-      setTimeout(() => winTierBanner.className = "win-tier-banner", 2600);
-    }
-
+    function buildSpinFrame(finalGrid, stopTicks, ticks) { const frame = new Array(15); for(let col=0; col<5; col++){ const locked = ticks >= stopTicks[col]; const spinColumn = locked ? null : makeSpinColumn(col === 4 ? 0.028 : 0.012); for(let row=0; row<3; row++){ const pos = row*5+col; frame[pos] = locked ? finalGrid[pos] : spinColumn[row]; } } return frame; }
+    function animateSpin(finalGrid) { return new Promise(resolve => { anticipationText.classList.remove("active"); let ticks=0, anticipationStarted=false; const shouldAnticipate = countScattersInReels(finalGrid, 0, 3) >= 2; const stopTicks=[9,15,21,28,shouldAnticipate?50:36]; const interval=setInterval(() => { const spinningColumns = new Set([0,1,2,3,4].filter(col => ticks < stopTicks[col])); drawReels(buildSpinFrame(finalGrid, stopTicks, ticks), {spinningColumns}); ticks++; if(!anticipationStarted && shouldAnticipate && ticks >= stopTicks[3]) { anticipationStarted=true; anticipationText.classList.add("active"); safePlay(scatterLandSound); } if(ticks >= stopTicks[4]) { clearInterval(interval); currentWinningPositions = new Set(); drawReels(finalGrid); anticipationText.classList.remove("active"); safePlay(spinSound); resolve(); } }, 70); }); }
+    function getWinTier(win) { const multiplier = win / bet; return WIN_TIERS.find(t => multiplier >= t.minMultiplier) || null; }
+    function showWinEffectOverlay() { winEffectOverlay.classList.add("active"); setTimeout(() => winEffectOverlay.classList.remove("active"), 2200); }
     function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-    function getWinCountDuration(totalWin) {
-      const multiplier = totalWin / bet;
-      if (multiplier >= 100) return 2000;
-      if (multiplier >= 50) return 1800;
-      if (multiplier >= 24) return 1600;
-      if (multiplier >= 12) return 1200;
-      return 0;
-    }
-
-    function animateTotalWinAmount(totalWin, duration) {
-      return new Promise(resolve => {
-        if (totalWin <= 0) {
-          lastWinEl.textContent = "0.00";
-          winAmountText.textContent = "WIN $0.00";
-          winBox.style.display = "none";
-          resolve();
-          return;
-        }
-        winBox.style.display = "flex";
-        if (!duration || duration <= 0) {
-          lastWinEl.textContent = formatMoney(totalWin);
-          winAmountText.textContent = "WIN $" + formatMoney(totalWin);
-          resolve();
-          return;
-        }
-        const startTime = performance.now();
-        function step(now) {
-          const progress = Math.min((now - startTime) / duration, 1);
-          const eased = easeOutCubic(progress);
-          const currentValue = totalWin * eased;
-          lastWinEl.textContent = formatMoney(currentValue);
-          winAmountText.textContent = "WIN $" + formatMoney(currentValue);
-          if (progress < 1) requestAnimationFrame(step);
-          else {
-            lastWinEl.textContent = formatMoney(totalWin);
-            winAmountText.textContent = "WIN $" + formatMoney(totalWin);
-            resolve();
-          }
-        }
-        requestAnimationFrame(step);
-      });
-    }
-
-    async function showTotalWinOnly(totalWin) {
-      await animateTotalWinAmount(totalWin, getWinCountDuration(totalWin));
-    }
-
-    function showTransition(title, sub, duration = 1600, mode = "") {
-      return new Promise(resolve => {
-        transitionTitle.innerHTML = title;
-        transitionSub.innerHTML = sub;
-        transitionOverlay.classList.remove("bonus-intro", "bonus-outro");
-        if (mode === "bonus-intro") transitionOverlay.classList.add("bonus-intro");
-        if (mode === "bonus-outro") transitionOverlay.classList.add("bonus-outro");
-        transitionOverlay.classList.add("active");
-        setTimeout(() => {
-          transitionOverlay.classList.remove("active", "bonus-intro", "bonus-outro");
-          resolve();
-        }, duration);
-      });
-    }
-
-    async function triggerBonus() {
-      freeSpins = 8;
-      bonusModeActive = true;
-      bonusBanner.innerHTML = "BONUS TRIGGERED<br>8 FREE SPINS";
-      bonusBanner.style.display = "block";
-      safePlay(bonusSound);
-      updateHud();
-      await showTransition("BONUS WON", "8 FREE SPINS", 1800, "bonus-intro");
-      setTimeout(spin, 500);
-    }
-
+    function getWinCountDuration(totalWin) { const m = totalWin / bet; if (m >= 100) return 2000; if (m >= 50) return 1800; if (m >= 24) return 1600; if (m >= 12) return 1200; return 0; }
+    function animateTotalWinAmount(totalWin, duration) { return new Promise(resolve => { if (totalWin <= 0) { lastWinEl.textContent="0.00"; winAmountText.textContent="WIN $0.00"; winBox.style.display="none"; resolve(); return; } winBox.style.display="flex"; if (!duration) { lastWinEl.textContent=formatMoney(totalWin); winAmountText.textContent="WIN $"+formatMoney(totalWin); resolve(); return; } const start=performance.now(); function step(now){ const progress=Math.min((now-start)/duration,1); const value=totalWin*easeOutCubic(progress); lastWinEl.textContent=formatMoney(value); winAmountText.textContent="WIN $"+formatMoney(value); if(progress<1) requestAnimationFrame(step); else { lastWinEl.textContent=formatMoney(totalWin); winAmountText.textContent="WIN $"+formatMoney(totalWin); resolve(); } } requestAnimationFrame(step); }); }
+    async function showTotalWinOnly(totalWin) { await animateTotalWinAmount(totalWin, getWinCountDuration(totalWin)); }
+    function showTransition(title, sub, duration=1600, mode="") { return new Promise(resolve => { transitionTitle.innerHTML=title; transitionSub.innerHTML=sub; transitionOverlay.classList.remove("bonus-intro", "bonus-outro"); if(mode === "bonus-intro") transitionOverlay.classList.add("bonus-intro"); if(mode === "bonus-outro") transitionOverlay.classList.add("bonus-outro"); transitionOverlay.classList.add("active"); setTimeout(() => { transitionOverlay.classList.remove("active", "bonus-intro", "bonus-outro"); resolve(); }, duration); }); }
+    async function triggerBonus() { freeSpins=8; bonusModeActive=true; bonusBanner.innerHTML="BONUS TRIGGERED<br>8 FREE SPINS"; bonusBanner.style.display="block"; safePlay(bonusSound); updateHud(); await showTransition("BONUS WON", "8 FREE SPINS", 1800, "bonus-intro"); setTimeout(spin, 500); }
     async function spin() {
       if (spinning) return;
-      if (freeSpins === 0 && balance < bet) {
-        autoSpin = false;
-        autoBtn.textContent = "AUTO";
-        autoBtn.classList.remove("auto-active");
-        alert("Not enough balance");
-        return;
-      }
-
-      spinning = true;
-      spinBtn.disabled = true;
-      const isBonusSpin = freeSpins > 0;
-      const enhancerActive = bonusEnhancerSpins > 0;
-
-      if (isBonusSpin) freeSpins -= 1;
-      else {
-        resetPaidRoundCap();
-        balance -= bet;
-        if (bonusEnhancerSpins > 0) bonusEnhancerSpins -= 1;
-      }
-
-      updateHud();
-      winBox.style.display = "none";
-      bonusBanner.style.display = "none";
-      lastWinEl.textContent = "0.00";
-      currentWinningPositions = new Set();
-      bgMusic.play().catch(() => {});
-      safePlay(spinSound);
-
+      if (freeSpins === 0 && balance < bet) { autoSpin=false; autoBtn.textContent="AUTO"; autoBtn.classList.remove("auto-active"); alert("Not enough balance"); return; }
+      spinning=true; spinBtn.disabled=true;
+      const isBonusSpin = freeSpins > 0, enhancerActive = bonusEnhancerSpins > 0;
+      if (isBonusSpin) freeSpins -= 1; else { resetPaidRoundCap(); balance -= bet; if (bonusEnhancerSpins > 0) bonusEnhancerSpins -= 1; }
+      updateHud(); winBox.style.display="none"; winEffectOverlay.classList.remove("active"); bonusBanner.style.display="none"; lastWinEl.textContent="0.00"; currentWinningPositions = new Set(); bgMusic.play().catch(() => {}); safePlay(spinSound);
       const finalGrid = isBonusSpin ? makeBonusGrid() : makeNormalGrid(enhancerActive);
       await animateSpin(finalGrid);
-
       const result = evaluateGridWin(finalGrid, isBonusSpin);
       const cappedWin = applyPaidRoundCap(result.amount);
-      currentWinningPositions = result.positions;
-      drawReels(finalGrid);
-
+      currentWinningPositions = result.positions; drawReels(finalGrid);
       if (finalGrid.some(src => src.includes("bonus_scatter.png"))) safePlay(scatterLandSound);
       balance += cappedWin;
-      await showTotalWinOnly(cappedWin);
-
       const tier = getWinTier(cappedWin);
-      if (tier) showWinTierBanner(tier);
+      if (tier) showWinEffectOverlay();
+      await showTotalWinOnly(cappedWin);
       if (cappedWin >= bet * 12) safePlay(bigWinSound);
-
       const scatters = countScatters(finalGrid);
-      if (!isBonusSpin && scatters >= 3) {
-        spinning = false;
-        spinBtn.disabled = false;
-        updateHud();
-        await triggerBonus();
-        return;
-      }
-
-      if (isBonusSpin && scatters >= 3) {
-        freeSpins += 3;
-        bonusBanner.innerHTML = "RETRIGGER<br>+3 FREE SPINS";
-        bonusBanner.style.display = "block";
-        safePlay(bonusSound);
-      }
-
-      if (isBonusSpin && freeSpins <= 0) {
-        await showTransition("BONUS COMPLETE", "TOTAL BONUS WIN", 1800, "bonus-outro");
-        bonusModeActive = false;
-        game.classList.remove("bonus-mode");
-      }
-
-      spinning = false;
-      spinBtn.disabled = false;
-      updateHud();
-
-      if (freeSpins > 0) {
-        setTimeout(spin, 650);
-        return;
-      }
+      if (!isBonusSpin && scatters >= 3) { spinning=false; spinBtn.disabled=false; updateHud(); await triggerBonus(); return; }
+      if (isBonusSpin && scatters >= 3) { freeSpins += 3; bonusBanner.innerHTML="RETRIGGER<br>+3 FREE SPINS"; bonusBanner.style.display="block"; safePlay(bonusSound); }
+      if (isBonusSpin && freeSpins <= 0) { await showTransition("BONUS COMPLETE", "TOTAL BONUS WIN", 1800, "bonus-outro"); bonusModeActive=false; game.classList.remove("bonus-mode"); }
+      spinning=false; spinBtn.disabled=false; updateHud();
+      if (freeSpins > 0) { setTimeout(spin, 650); return; }
       if (autoSpin) setTimeout(spin, 450);
     }
-
-    function toggleAuto() {
-      autoSpin = !autoSpin;
-      autoBtn.textContent = autoSpin ? "STOP" : "AUTO";
-      autoBtn.classList.toggle("auto-active", autoSpin);
-      if (autoSpin && !spinning) spin();
-    }
-
+    function toggleAuto() { autoSpin=!autoSpin; autoBtn.textContent=autoSpin?"STOP":"AUTO"; autoBtn.classList.toggle("auto-active", autoSpin); if (autoSpin && !spinning) spin(); }
     function openMenu() { featureMenu.classList.add("active"); updateHud(); }
     function closeMenu() { featureMenu.classList.remove("active"); }
-
-    function buyFreeSpins() {
-      const cost = bet * 100;
-      if (spinning || freeSpins > 0 || balance < cost) return;
-      balance -= cost;
-      freeSpins = 8;
-      bonusModeActive = true;
-      closeMenu();
-      updateHud();
-      showTransition("BONUS WON", "8 FREE SPINS", 1600, "bonus-intro").then(() => setTimeout(spin, 500));
-    }
-
-    function buyEnhancer() {
-      const cost = bet * 3;
-      if (spinning || freeSpins > 0 || bonusEnhancerSpins > 0 || balance < cost) return;
-      balance -= cost;
-      bonusEnhancerSpins = 1;
-      closeMenu();
-      bonusBanner.innerHTML = "BONUS ENHANCER ACTIVE<br>x8 NEXT BASE SPIN";
-      bonusBanner.style.display = "block";
-      updateHud();
-    }
+    function buyFreeSpins() { const cost=bet*100; if(spinning || freeSpins>0 || balance<cost) return; balance-=cost; freeSpins=8; bonusModeActive=true; closeMenu(); updateHud(); showTransition("BONUS WON", "8 FREE SPINS", 1600, "bonus-intro").then(() => setTimeout(spin, 500)); }
+    function buyEnhancer() { const cost=bet*3; if(spinning || freeSpins>0 || bonusEnhancerSpins>0 || balance<cost) return; balance-=cost; bonusEnhancerSpins=1; closeMenu(); bonusBanner.innerHTML="BONUS ENHANCER ACTIVE<br>x8 NEXT BASE SPIN"; bonusBanner.style.display="block"; updateHud(); }
 
     drawReels();
     updateHud();
-
     spinBtn.addEventListener("click", spin);
     autoBtn.addEventListener("click", toggleAuto);
     menuBtn.addEventListener("click", openMenu);
