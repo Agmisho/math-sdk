@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Magic Guns</title>
   <style>
     * { box-sizing: border-box; }
@@ -31,21 +32,13 @@
       position: absolute;
       left: 50%;
       top: 50%;
-
-      /*
-        Fixed design canvas.
-        Everything inside this box scales together:
-        background, reels, buttons, win text, menus.
-      */
       width: 1792px;
       height: 1024px;
-
       transform-origin: center center;
       transform: translate(-50%, -50%) scale(var(--game-scale, 1));
-
       background-image: url("../assets/backgrounds/magic_guns_background.png");
-      background-size: 100% 100%;
-      background-position: center;
+      background-size: 1792px 1024px;
+      background-position: center center;
       background-repeat: no-repeat;
       overflow: hidden;
     }
@@ -56,24 +49,26 @@
 
     .reels {
       position: absolute;
-      left: 16.7%;
-      top: 23.2%;
-      width: 66.6%;
-      height: 60.5%;
+      left: 296px;
+      top: 238px;
+      width: 1200px;
+      height: 610px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      column-gap: 1.2%;
-      row-gap: 1.5%;
-      padding: 0.6% 0.8%;
+      column-gap: 18px;
+      row-gap: 12px;
+      padding: 10px 18px;
       background: transparent;
       border: 0;
-      border-radius: 0;
       box-shadow: none;
-      z-index: 5;
+      z-index: 25;
+      visibility: visible;
+      opacity: 1;
     }
 
     .symbol {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -81,76 +76,60 @@
       border: 1px solid rgba(255, 215, 0, 0.28);
       border-radius: 8px;
       box-shadow: inset 0 0 8px rgba(128, 0, 255, 0.45);
-      transition: transform 0.12s ease;
+      opacity: 1;
+      visibility: visible;
+      transition: transform 0.12s ease, opacity 0.12s ease, filter 0.12s ease;
     }
 
     .symbol.spin-blur {
-      opacity: 0.75;
+      opacity: 0.72;
       filter: blur(1.2px) saturate(1.25);
-    }
-
-    .symbol.vertical-spin {
       animation: reelSpinVertical 0.18s linear infinite;
     }
 
     @keyframes reelSpinVertical {
-      0% {
-        transform: translateY(-52%) scale(0.96);
-      }
-      50% {
-        transform: translateY(0) scale(0.98);
-      }
-      100% {
-        transform: translateY(52%) scale(0.96);
-      }
+      0% { transform: translateY(-48%) scale(0.96); }
+      50% { transform: translateY(0) scale(0.98); }
+      100% { transform: translateY(48%) scale(0.96); }
     }
 
     .symbol.win-symbol {
       border-color: #fff1a8;
-      box-shadow:
-        inset 0 0 10px rgba(255, 241, 168, 0.85),
-        0 0 18px gold,
-        0 0 26px #b000ff;
-      transform: scale(1.06);
+      box-shadow: inset 0 0 10px rgba(255, 241, 168, 0.85), 0 0 18px gold, 0 0 26px #b000ff;
+      transform: scale(1.05);
       z-index: 2;
     }
 
     .symbol.scatter-symbol {
-      box-shadow:
-        inset 0 0 12px rgba(255, 221, 102, 0.9),
-        0 0 16px #ffdd66,
-        0 0 28px #b000ff;
+      box-shadow: inset 0 0 12px rgba(255, 221, 102, 0.9), 0 0 16px #ffdd66, 0 0 28px #b000ff;
     }
 
     .symbol.wild-symbol {
-      box-shadow:
-        inset 0 0 12px rgba(176, 0, 255, 0.9),
-        0 0 16px #b000ff,
-        0 0 28px gold;
+      box-shadow: inset 0 0 12px rgba(176, 0, 255, 0.9), 0 0 16px #b000ff, 0 0 28px gold;
     }
 
     .hud {
       position: absolute;
       left: 50%;
-      bottom: 1.6%;
+      bottom: 28px;
       transform: translateX(-50%);
-      width: 73%;
-      min-height: 6.3%;
-      padding: 0.5% 0.7%;
+      width: 1270px;
+      min-height: 66px;
+      padding: 10px 14px;
       background: rgba(0, 0, 0, 0.82);
       border: 2px solid gold;
       border-radius: 12px;
       box-shadow: 0 0 18px purple;
       display: grid;
       grid-template-columns: 1.1fr 1.45fr 1.1fr 1fr 0.85fr 0.85fr 0.85fr;
-      gap: 0.7%;
+      gap: 10px;
       align-items: center;
-      z-index: 30;
+      z-index: 60;
     }
 
     .box {
       color: gold;
-      font-size: clamp(9px, 0.72vw, 15px);
+      font-size: 15px;
       font-weight: bold;
       text-shadow: 0 0 8px purple;
       white-space: nowrap;
@@ -169,8 +148,8 @@
       cursor: pointer;
       border: 2px solid gold;
       border-radius: 8px;
-      padding: 5px 12px;
-      font-size: clamp(10px, 0.72vw, 15px);
+      padding: 6px 12px;
+      font-size: 15px;
       font-weight: bold;
       color: gold;
       background: radial-gradient(circle, #3a005e, #12001d);
@@ -183,153 +162,113 @@
 
     .free-spin-box { display: none; }
     .free-spin-box.active { display: block; }
-
-    .auto-active {
-      color: #fff1a8;
-      box-shadow: 0 0 16px gold;
-    }
-
-    .small {
-      font-size: clamp(8px, 0.58vw, 12px);
-      color: #f7d46a;
-    }
+    .auto-active { color: #fff1a8; box-shadow: 0 0 16px gold; }
+    .small { font-size: 12px; color: #f7d46a; }
 
     .win-box {
       position: absolute;
-      top: 72%;
       left: 50%;
+      top: 860px;
       transform: translateX(-50%);
-      min-width: 330px;
-      padding: 8px 22px;
+      width: 430px;
+      height: 110px;
+      background-image: url("../assets/ui/win_frame.png");
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      box-shadow: none;
+      z-index: 70;
+    }
+
+    .win-box #winAmountText {
+      display: block;
+      width: 100%;
       text-align: center;
       color: gold;
-      font-size: clamp(20px, 2vw, 38px);
-      font-weight: bold;
-      text-shadow: 0 0 18px purple;
-      background: rgba(0, 0, 0, 0.72);
-      border: 2px solid gold;
-      border-radius: 14px;
-      box-shadow: 0 0 18px purple;
-      display: none;
-      z-index: 40;
-    }
-
-    .win-box.detail {
-      min-width: 420px;
-      font-size: clamp(16px, 1.55vw, 30px);
-      line-height: 1.18;
-    }
-
-    .win-box .win-detail {
-      display: block;
-      margin-top: 4px;
-      color: #fff1a8;
-      font-size: 0.46em;
-      letter-spacing: 0;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px black, 0 0 14px purple, 0 0 20px #b000ff;
+      line-height: 110px;
     }
 
     .bonus-banner {
       position: absolute;
-      top: 16%;
+      top: 160px;
       left: 50%;
       transform: translateX(-50%);
       color: #ffdd66;
-      font-size: clamp(22px, 2.7vw, 48px);
+      font-size: 44px;
       font-weight: bold;
       text-shadow: 0 0 20px #b000ff;
       display: none;
-      z-index: 40;
+      z-index: 80;
       text-align: center;
     }
 
+    .anticipation-text {
+      position: absolute;
+      top: 145px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffdd66;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px black, 0 0 18px purple, 0 0 30px #b000ff;
+      display: none;
+      z-index: 80;
+      text-align: center;
+    }
+
+    .anticipation-text.active { display: block; }
+
     .feature-menu {
       position: absolute;
-      right: 2.5%;
-      bottom: 11%;
-      width: 330px;
+      right: 46px;
+      bottom: 120px;
+      width: 350px;
       background: rgba(0, 0, 0, 0.92);
       border: 2px solid gold;
       border-radius: 14px;
       box-shadow: 0 0 22px purple;
       padding: 16px;
       color: gold;
-      z-index: 80;
+      z-index: 120;
       display: none;
     }
 
     .feature-menu.active { display: block; }
-
-    .feature-menu h2 {
-      margin: 0 0 12px;
-      font-size: 20px;
-      text-align: center;
-      text-shadow: 0 0 8px purple;
-    }
-
-    .feature-row {
-      border-top: 1px solid rgba(255, 215, 0, 0.35);
-      padding: 12px 0;
-    }
-
-    .feature-title {
-      font-weight: bold;
-      font-size: 15px;
-      margin-bottom: 5px;
-    }
-
-    .feature-desc {
-      font-size: 12px;
-      color: #f7d46a;
-      margin-bottom: 8px;
-      line-height: 1.35;
-    }
-
-    .feature-menu button {
-      width: 100%;
-      margin-top: 5px;
-    }
-
-    .close-menu {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      min-width: 32px;
-      padding: 3px 8px;
-      font-size: 13px;
-      width: auto !important;
-    }
+    .feature-menu h2 { margin: 0 0 12px; font-size: 20px; text-align: center; text-shadow: 0 0 8px purple; }
+    .feature-row { border-top: 1px solid rgba(255, 215, 0, 0.35); padding: 12px 0; }
+    .feature-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+    .feature-desc { font-size: 12px; color: #f7d46a; margin-bottom: 8px; line-height: 1.35; }
+    .feature-menu button { width: 100%; margin-top: 5px; }
+    .close-menu { position: absolute; top: 8px; right: 10px; min-width: 32px; padding: 3px 8px; font-size: 13px; width: auto !important; }
 
     .transition-overlay {
       position: absolute;
       inset: 0;
-      background:
-        linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)),
-        url("../assets/backgrounds/bonus_won_background.png.png") center/cover no-repeat;
+      background: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.35)), url("../assets/backgrounds/bonus_won_background.png.png") center/cover no-repeat;
       display: none;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      z-index: 120;
+      z-index: 200;
       color: gold;
       text-align: center;
     }
 
     .transition-overlay.active { display: flex; }
-
-    .transition-title {
-      font-size: clamp(44px, 5.5vw, 95px);
-      font-weight: bold;
-      text-shadow: 0 0 30px purple, 0 0 12px black;
-      letter-spacing: 4px;
-      margin-top: -18vh;
-    }
-
-    .transition-sub {
-      margin-top: 14px;
-      font-size: clamp(22px, 2.5vw, 46px);
-      color: #fff1a8;
-      text-shadow: 0 0 20px #b000ff;
-    }
+    .transition-overlay.bonus-intro { background: linear-gradient(rgba(0,0,0,0.10), rgba(0,0,0,0.25)), url("../assets/symbols/gif/bonus_intro.gif") center/cover no-repeat; }
+    .transition-overlay.bonus-outro { background: linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.25)), url("../assets/backgrounds/win_effect.gif") center/cover no-repeat; }
+    .transition-title { font-size: 96px; font-weight: bold; text-shadow: 0 0 30px purple, 0 0 12px black; letter-spacing: 4px; margin-top: -185px; }
+    .transition-sub { margin-top: 14px; font-size: 44px; color: #fff1a8; text-shadow: 0 0 20px #b000ff; }
 
     .win-tier-banner {
       position: absolute;
@@ -338,161 +277,19 @@
       transform: translate(-50%, -50%) scale(0.75);
       opacity: 0;
       pointer-events: none;
-      font-size: clamp(42px, 6vw, 110px);
+      font-size: 92px;
       font-weight: 900;
       color: gold;
       text-shadow: 0 0 12px black, 0 0 24px purple, 0 0 42px #b000ff;
-      z-index: 150;
+      z-index: 210;
       transition: all 0.28s ease;
       letter-spacing: 4px;
       text-align: center;
     }
 
-    .win-tier-banner.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .anticipation-text {
-      position: absolute;
-      top: 14.2%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #ffdd66;
-      font-size: clamp(22px, 2.3vw, 42px);
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px black, 0 0 18px purple, 0 0 30px #b000ff;
-      display: none;
-      z-index: 55;
-      text-align: center;
-    }
-
-    .anticipation-text.active { display: block; }
-  
-/* === FINAL GAME BOX SCALING FIX === */
-html, body {
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  background: #050008 !important;
-}
-
-.stage {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  overflow: hidden !important;
-  background: #050008 !important;
-}
-
-.game {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
-
-  width: 1792px !important;
-  height: 1024px !important;
-
-  transform-origin: center center !important;
-  transform: translate(-50%, -50%) scale(var(--magic-guns-scale, 1)) !important;
-
-  background-image: url("../assets/backgrounds/magic_guns_background.png") !important;
-  background-size: 1792px 1024px !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-
-  overflow: hidden !important;
-}
-
-.game.bonus-mode {
-  background-image: url("../assets/backgrounds/magic_guns_bonus_background.png") !important;
-}
-
-/* Reels are locked into the painted gold reel window. The transparent
-   gaps let the background's gold column dividers split the reels. */
-.reels {
-  position: absolute !important;
-  left: 296px !important;
-  top: 238px !important;
-  width: 1200px !important;
-  height: 610px !important;
-  column-gap: 18px !important;
-  row-gap: 12px !important;
-  padding: 10px 18px !important;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-/* HUD locked to the same fixed game box */
-.hud {
-  position: absolute !important;
-  left: 50% !important;
-  bottom: 28px !important;
-  transform: translateX(-50%) !important;
-  width: 1270px !important;
-}
-
-/* Win box locked under reels */
-.win-box {
-  position: absolute !important;
-  left: 50% !important;
-  top: 860px !important;
-  transform: translateX(-50%) !important;
-}
-
-
-
-
-/* === HARD REEL VISIBILITY FIX === */
-.reels {
-  position: absolute !important;
-  left: 32.8% !important;
-  top: 18.6% !important;
-  width: 34.7% !important;
-  height: 50.8% !important;
-
-  display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  grid-template-rows: repeat(3, 1fr) !important;
-  gap: 0.45% !important;
-  padding: 0.35% !important;
-
-  opacity: 1 !important;
-  visibility: visible !important;
-  background: rgba(0, 0, 0, 0.08) !important;
-  border: 2px solid rgba(255, 215, 0, 0.75) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 0 18px #8b20ff !important;
-  overflow: hidden !important;
-  z-index: 25 !important;
-}
-
-.symbol {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-
-  object-fit: contain !important;
-  padding: 0 !important;
-
-  background: rgba(15, 0, 25, 0.78) !important;
-  border: 1px solid rgba(255, 215, 0, 0.38) !important;
-  border-radius: 8px !important;
-  box-shadow: inset 0 0 8px rgba(128, 0, 255, 0.45) !important;
-}
-
-</style>
+    .win-tier-banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .win-tier-banner.legendary { color: #ffffff; text-shadow: 0 0 12px gold, 0 0 30px purple, 0 0 55px #ff00ff; }
+  </style>
 </head>
 
 <body>
@@ -511,7 +308,6 @@ html, body {
       <div id="featureMenu" class="feature-menu">
         <button id="closeMenuBtn" class="close-menu">X</button>
         <h2>FEATURE MENU</h2>
-
         <div class="feature-row">
           <div class="feature-title">Game Info</div>
           <div class="feature-desc">
@@ -525,13 +321,11 @@ html, body {
             Max Win: x5000.
           </div>
         </div>
-
         <div class="feature-row">
           <div class="feature-title">Buy Free Spins</div>
           <div class="feature-desc">Instantly starts 8 free spins. Cost: 100x current bet.</div>
           <button id="buyFreeSpinsBtn">BUY FREE SPINS</button>
         </div>
-
         <div class="feature-row">
           <div class="feature-title">Bonus Trigger Enhancer</div>
           <div class="feature-desc">Boosts bonus trigger chance by x8 for the next paid base spin. Cost: 3x current bet.</div>
@@ -543,7 +337,6 @@ html, body {
 
       <div class="hud">
         <div class="box">BALANCE<br>$<span id="balance">1000.00</span></div>
-
         <div class="box">
           BET<br>
           <div class="bet-control">
@@ -553,10 +346,8 @@ html, body {
           </div>
           <div class="small">$0.01 - $300</div>
         </div>
-
         <div class="box">LAST WIN<br>$<span id="lastWin">0.00</span></div>
         <div id="freeSpinBox" class="box free-spin-box">FREE SPINS<br><span id="freeSpins">0</span></div>
-
         <button id="menuBtn">MENU</button>
         <button id="autoBtn">AUTO</button>
         <button id="spinBtn">SPIN</button>
@@ -572,62 +363,46 @@ html, body {
 
   <script>
     const game = document.getElementById("game");
-
-    /*
-      Scale the full game box as one object.
-      This keeps the background and reels locked together.
-    */
-    const DESIGN_WIDTH = 1792;
-    const DESIGN_HEIGHT = 1024;
-
-    function resizeGameBox() {
-      const scaleX = window.innerWidth / DESIGN_WIDTH;
-      const scaleY = window.innerHeight / DESIGN_HEIGHT;
-      const scale = Math.min(scaleX, scaleY);
-
-      game.style.setProperty("--game-scale", scale);
-    }
-
-    window.addEventListener("resize", resizeGameBox);
-    window.addEventListener("orientationchange", resizeGameBox);
-    resizeGameBox();
-
-
-
-
     const reels = document.getElementById("reels");
     const spinBtn = document.getElementById("spinBtn");
     const autoBtn = document.getElementById("autoBtn");
     const menuBtn = document.getElementById("menuBtn");
     const betMinus = document.getElementById("betMinus");
     const betPlus = document.getElementById("betPlus");
-
     const featureMenu = document.getElementById("featureMenu");
     const closeMenuBtn = document.getElementById("closeMenuBtn");
     const buyFreeSpinsBtn = document.getElementById("buyFreeSpinsBtn");
     const buyEnhancerBtn = document.getElementById("buyEnhancerBtn");
-
     const winBox = document.getElementById("winBox");
     const winAmountText = document.getElementById("winAmountText");
     const bonusBanner = document.getElementById("bonusBanner");
     const anticipationText = document.getElementById("anticipationText");
     const winTierBanner = document.getElementById("winTierBanner");
-
     const transitionOverlay = document.getElementById("transitionOverlay");
     const transitionTitle = document.getElementById("transitionTitle");
     const transitionSub = document.getElementById("transitionSub");
-
     const balanceEl = document.getElementById("balance");
     const betEl = document.getElementById("bet");
     const lastWinEl = document.getElementById("lastWin");
     const freeSpinsEl = document.getElementById("freeSpins");
     const freeSpinBox = document.getElementById("freeSpinBox");
-
     const bgMusic = document.getElementById("bgMusic");
     const spinSound = document.getElementById("spinSound");
     const bonusSound = document.getElementById("bonusSound");
     const bigWinSound = document.getElementById("bigWinSound");
     const scatterLandSound = document.getElementById("scatterLandSound");
+
+    const DESIGN_WIDTH = 1792;
+    const DESIGN_HEIGHT = 1024;
+
+    function resizeGameBox() {
+      const scale = Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT);
+      game.style.setProperty("--game-scale", scale);
+    }
+
+    window.addEventListener("resize", resizeGameBox);
+    window.addEventListener("orientationchange", resizeGameBox);
+    resizeGameBox();
 
     const symbolFiles = [
       "magic_gun_wild.png",
@@ -646,24 +421,6 @@ html, body {
     const symbolPaths = symbolFiles.map(file => "../assets/symbols/png/" + file);
     const scatterPath = "../assets/symbols/png/bonus_scatter.png";
     const nonScatterPaths = symbolPaths.filter(src => !src.includes("bonus_scatter.png"));
-
-    let balance = 1000;
-    let bet = 1;
-    let freeSpins = 0;
-    let spinning = false;
-    let autoSpin = false;
-    let bonusEnhancerSpins = 0;
-    let bonusModeActive = false;
-    let currentPaidRoundWin = 0;
-    let currentWinningPositions = new Set();
-
-    const betSteps = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1, 2, 5, 10, 20, 50, 100, 200, 300];
-    const RTP_TARGET = 0.96;
-    const BASE_PAYOUT_SCALE = 0.16873;
-    const BONUS_PAYOUT_SCALE = 2.60576;
-    const BONUS_TRIGGER_CHANCE = 1 / 263;
-    const ENHANCER_TRIGGER_MULTIPLIER = 8;
-    const MAX_WIN_MULTIPLIER = 5000;
 
     const SYMBOL_KEYS = {
       "magic_gun_wild.png": "W",
@@ -692,6 +449,7 @@ html, body {
       L5: { 5: 1, 4: 0.3, 3: 0.1 }
     };
 
+    const LINES = [
       [0, 0, 0, 0, 0],
       [1, 1, 1, 1, 1],
       [2, 2, 2, 2, 2],
@@ -721,6 +479,24 @@ html, body {
       { key: "big", label: "BIG WIN", minMultiplier: 12 }
     ];
 
+    let balance = 1000;
+    let bet = 1;
+    let freeSpins = 0;
+    let spinning = false;
+    let autoSpin = false;
+    let bonusEnhancerSpins = 0;
+    let bonusModeActive = false;
+    let currentPaidRoundWin = 0;
+    let currentWinningPositions = new Set();
+
+    const betSteps = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1, 2, 5, 10, 20, 50, 100, 200, 300];
+    const RTP_TARGET = 0.96;
+    const BASE_PAYOUT_SCALE = 0.16873;
+    const BONUS_PAYOUT_SCALE = 2.60576;
+    const BONUS_TRIGGER_CHANCE = 1 / 263;
+    const ENHANCER_TRIGGER_MULTIPLIER = 8;
+    const MAX_WIN_MULTIPLIER = 5000;
+
     function formatMoney(v) { return Number(v).toFixed(2); }
 
     function safePlay(audio) {
@@ -733,14 +509,11 @@ html, body {
       balanceEl.textContent = formatMoney(balance);
       betEl.textContent = formatMoney(bet);
       freeSpinsEl.textContent = freeSpins;
-
       const inBonus = bonusModeActive || freeSpins > 0;
       game.classList.toggle("bonus-mode", inBonus);
       freeSpinBox.classList.toggle("active", inBonus);
-
       betMinus.disabled = spinning || bet <= 0.01;
       betPlus.disabled = spinning || bet >= 300;
-
       buyFreeSpinsBtn.disabled = spinning || inBonus || balance < bet * 100;
       buyEnhancerBtn.disabled = spinning || inBonus || bonusEnhancerSpins > 0 || balance < bet * 3;
       spinBtn.textContent = freeSpins > 0 ? "FREE" : "SPIN";
@@ -766,26 +539,6 @@ html, body {
       return nonScatterPaths[Math.floor(Math.random() * nonScatterPaths.length)];
     }
 
-    function columnScatterPositions(grid, col) {
-      const positions = [];
-      for (let row = 0; row < 3; row++) {
-        const position = row * 5 + col;
-        if (grid[position].includes("bonus_scatter.png")) positions.push(position);
-      }
-      return positions;
-    }
-
-    function enforceOneScatterPerColumn(grid) {
-      for (let col = 0; col < 5; col++) {
-        const positions = columnScatterPositions(grid, col);
-        positions.slice(1).forEach(position => {
-          grid[position] = randomNonScatter();
-        });
-      }
-
-      return grid;
-    }
-
     function makeSpinColumn(scatterFlickerChance = 0.018) {
       const column = [randomNonScatter(), randomNonScatter(), randomNonScatter()];
       if (Math.random() < scatterFlickerChance) {
@@ -796,55 +549,42 @@ html, body {
 
     function makeGrid(scatterChancePerColumn) {
       const grid = new Array(15);
-
       for (let col = 0; col < 5; col++) {
         for (let row = 0; row < 3; row++) {
           grid[row * 5 + col] = randomNonScatter();
         }
-
         if (Math.random() < scatterChancePerColumn) {
           const row = Math.floor(Math.random() * 3);
           grid[row * 5 + col] = scatterPath;
         }
       }
-
-      return enforceOneScatterPerColumn(grid);
+      return grid;
     }
 
     function forceBonus(grid) {
       const columns = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5).slice(0, 3);
-
       for (const col of columns) {
         const row = Math.floor(Math.random() * 3);
         grid[row * 5 + col] = scatterPath;
       }
-
-      return enforceOneScatterPerColumn(grid);
+      return grid;
     }
 
     function makeNormalGrid(enhancerActive = false) {
       const grid = makeGrid(0.006);
       const activeChance = BONUS_TRIGGER_CHANCE * (enhancerActive ? ENHANCER_TRIGGER_MULTIPLIER : 1);
-
-      if (Math.random() < activeChance) {
-        forceBonus(grid);
-      }
-
-      return enforceOneScatterPerColumn(grid);
+      if (Math.random() < activeChance) forceBonus(grid);
+      return grid;
     }
 
-    function makeBonusGrid() {
-      return enforceOneScatterPerColumn(makeGrid(0.025));
-    }
+    function makeBonusGrid() { return makeGrid(0.025); }
 
     function getSymbolKey(src) {
       const file = src.split("/").pop();
       return SYMBOL_KEYS[file] || "";
     }
 
-    function linePositions(line) {
-      return line.map((row, col) => row * 5 + col);
-    }
+    function linePositions(line) { return line.map((row, col) => row * 5 + col); }
 
     function evaluateLine(grid, line, lineIndex) {
       const positions = linePositions(line);
@@ -859,28 +599,18 @@ html, body {
           if (key === candidate || key === "W") count++;
           else break;
         }
-
         if (count >= 3) {
           const multiplier = PAYTABLE[candidate][count] || 0;
           if (multiplier > 0 && (!best || multiplier > best.multiplier)) {
-            best = {
-              line: lineIndex + 1,
-              symbol: candidate,
-              count,
-              multiplier,
-              positions: positions.slice(0, count)
-            };
+            best = { line: lineIndex + 1, symbol: candidate, count, multiplier, positions: positions.slice(0, count) };
           }
         }
       }
-
       return best;
     }
 
     function evaluateGridWin(grid, isBonus) {
-        .map((line, index) => evaluateLine(grid, line, index))
-        .filter(Boolean);
-
+      const wins = LINES.map((line, index) => evaluateLine(grid, line, index)).filter(Boolean);
       const scatterCount = countScatters(grid);
       const scatterPay = isBonus ? 0 : ({ 3: 2, 4: 10, 5: 50 }[scatterCount] || 0);
       const lineMultiplier = wins.reduce((sum, win) => sum + win.multiplier, 0);
@@ -888,29 +618,14 @@ html, body {
       const payoutScale = isBonus ? BONUS_PAYOUT_SCALE : BASE_PAYOUT_SCALE;
       const totalMultiplier = Math.min((lineMultiplier + scatterPay) * payoutScale * bonusKick, MAX_WIN_MULTIPLIER);
       const positions = new Set(wins.flatMap(win => win.positions));
-
       if (scatterPay > 0) {
-        grid.forEach((src, index) => {
-          if (src.includes("bonus_scatter.png")) positions.add(index);
-        });
+        grid.forEach((src, index) => { if (src.includes("bonus_scatter.png")) positions.add(index); });
       }
-
-      return {
-        amount: bet * totalMultiplier,
-        multiplier: totalMultiplier,
-        wins,
-        scatterPay,
-        positions
-      };
+      return { amount: bet * totalMultiplier, multiplier: totalMultiplier, wins, scatterPay, positions };
     }
 
-    function resetPaidRoundCap() {
-      currentPaidRoundWin = 0;
-    }
-
-    function getPaidRoundCap() {
-      return bet * MAX_WIN_MULTIPLIER;
-    }
+    function resetPaidRoundCap() { currentPaidRoundWin = 0; }
+    function getPaidRoundCap() { return bet * MAX_WIN_MULTIPLIER; }
 
     function applyPaidRoundCap(amount) {
       const remaining = Math.max(0, getPaidRoundCap() - currentPaidRoundWin);
@@ -936,7 +651,6 @@ html, body {
     function drawReels(grid = null, options = {}) {
       reels.innerHTML = "";
       const spinningColumns = options.spinningColumns || new Set();
-
       for (let i = 0; i < 15; i++) {
         const img = document.createElement("img");
         img.className = "symbol";
@@ -945,7 +659,7 @@ html, body {
         if (key === "S") img.classList.add("scatter-symbol");
         if (key === "W") img.classList.add("wild-symbol");
         if (currentWinningPositions.has(i)) img.classList.add("win-symbol");
-        if (spinningColumns.has(i % 5)) img.classList.add("spin-blur", "vertical-spin");
+        if (spinningColumns.has(i % 5)) img.classList.add("spin-blur");
         reels.appendChild(img);
       }
     }
@@ -960,31 +674,27 @@ html, body {
           frame[position] = locked ? finalGrid[position] : spinColumn[row];
         }
       }
-      return enforceOneScatterPerColumn(frame);
+      return frame;
     }
 
     function animateSpin(finalGrid) {
       return new Promise(resolve => {
         anticipationText.classList.remove("active");
-
         let ticks = 0;
         let anticipationStarted = false;
         const firstFour = countScattersInReels(finalGrid, 0, 3);
         const shouldAnticipate = firstFour >= 2;
         const stopTicks = [9, 15, 21, 28, shouldAnticipate ? 50 : 36];
-
         const interval = setInterval(() => {
           const spinningColumns = new Set([0, 1, 2, 3, 4].filter(col => ticks < stopTicks[col]));
           const tempGrid = buildSpinFrame(finalGrid, stopTicks, ticks);
           drawReels(tempGrid, { spinningColumns });
           ticks++;
-
           if (!anticipationStarted && shouldAnticipate && ticks >= stopTicks[3]) {
             anticipationStarted = true;
             anticipationText.classList.add("active");
             safePlay(scatterLandSound);
           }
-
           if (ticks >= stopTicks[4]) {
             clearInterval(interval);
             currentWinningPositions = new Set();
@@ -1009,30 +719,67 @@ html, body {
       setTimeout(() => winTierBanner.className = "win-tier-banner", 2600);
     }
 
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function getWinCountDuration(totalWin) {
+      const multiplier = totalWin / bet;
+      if (multiplier >= 100) return 2000;
+      if (multiplier >= 50) return 1800;
+      if (multiplier >= 24) return 1600;
+      if (multiplier >= 12) return 1200;
+      return 0;
+    }
+
+    function animateTotalWinAmount(totalWin, duration) {
+      return new Promise(resolve => {
+        if (totalWin <= 0) {
+          lastWinEl.textContent = "0.00";
+          winAmountText.textContent = "WIN $0.00";
+          winBox.style.display = "none";
+          resolve();
+          return;
+        }
+        winBox.style.display = "flex";
+        if (!duration || duration <= 0) {
+          lastWinEl.textContent = formatMoney(totalWin);
+          winAmountText.textContent = "WIN $" + formatMoney(totalWin);
+          resolve();
+          return;
+        }
+        const startTime = performance.now();
+        function step(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const eased = easeOutCubic(progress);
+          const currentValue = totalWin * eased;
+          lastWinEl.textContent = formatMoney(currentValue);
+          winAmountText.textContent = "WIN $" + formatMoney(currentValue);
+          if (progress < 1) requestAnimationFrame(step);
+          else {
+            lastWinEl.textContent = formatMoney(totalWin);
+            winAmountText.textContent = "WIN $" + formatMoney(totalWin);
+            resolve();
+          }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    async function showTotalWinOnly(totalWin) {
+      await animateTotalWinAmount(totalWin, getWinCountDuration(totalWin));
+    }
+
     function showTransition(title, sub, duration = 1600, mode = "") {
       return new Promise(resolve => {
         transitionTitle.innerHTML = title;
         transitionSub.innerHTML = sub;
-
         transitionOverlay.classList.remove("bonus-intro", "bonus-outro");
-
-        if (mode === "bonus-intro") {
-          transitionOverlay.classList.add("bonus-intro");
-        }
-
-        if (mode === "bonus-outro") {
-          transitionOverlay.classList.add("bonus-outro");
-        }
-
+        if (mode === "bonus-intro") transitionOverlay.classList.add("bonus-intro");
+        if (mode === "bonus-outro") transitionOverlay.classList.add("bonus-outro");
         transitionOverlay.classList.add("active");
-
         setTimeout(() => {
-          transitionOverlay.classList.remove("active");
-          transitionOverlay.classList.remove("bonus-intro", "bonus-outro");
+          transitionOverlay.classList.remove("active", "bonus-intro", "bonus-outro");
           resolve();
         }, duration);
-      });
-    }, duration);
       });
     }
 
@@ -1043,14 +790,12 @@ html, body {
       bonusBanner.style.display = "block";
       safePlay(bonusSound);
       updateHud();
-
       await showTransition("BONUS WON", "8 FREE SPINS", 1800, "bonus-intro");
       setTimeout(spin, 500);
     }
 
     async function spin() {
       if (spinning) return;
-
       if (freeSpins === 0 && balance < bet) {
         autoSpin = false;
         autoBtn.textContent = "AUTO";
@@ -1061,79 +806,50 @@ html, body {
 
       spinning = true;
       spinBtn.disabled = true;
-
       const isBonusSpin = freeSpins > 0;
-      const enhancerActive = !isBonusSpin && bonusEnhancerSpins > 0;
+      const enhancerActive = bonusEnhancerSpins > 0;
 
-      if (!isBonusSpin) {
+      if (isBonusSpin) freeSpins -= 1;
+      else {
         resetPaidRoundCap();
-      }
-
-      if (isBonusSpin) {
-        freeSpins -= 1;
-      } else {
         balance -= bet;
+        if (bonusEnhancerSpins > 0) bonusEnhancerSpins -= 1;
       }
 
       updateHud();
       winBox.style.display = "none";
-      winBox.classList.remove("detail");
       bonusBanner.style.display = "none";
       lastWinEl.textContent = "0.00";
       currentWinningPositions = new Set();
-
       bgMusic.play().catch(() => {});
       safePlay(spinSound);
 
       const finalGrid = isBonusSpin ? makeBonusGrid() : makeNormalGrid(enhancerActive);
-      if (enhancerActive) bonusEnhancerSpins -= 1;
       await animateSpin(finalGrid);
 
-      if (finalGrid.some(src => src.includes("bonus_scatter.png"))) safePlay(scatterLandSound);
-
       const result = evaluateGridWin(finalGrid, isBonusSpin);
+      const cappedWin = applyPaidRoundCap(result.amount);
       currentWinningPositions = result.positions;
       drawReels(finalGrid);
 
-      const win = applyPaidRoundCap(result.amount);
-      result.amount = win;
-      result.multiplier = win / bet;
-      const scatters = countScatters(finalGrid);
+      if (finalGrid.some(src => src.includes("bonus_scatter.png"))) safePlay(scatterLandSound);
+      balance += cappedWin;
+      await showTotalWinOnly(cappedWin);
 
-      balance += win;
-      lastWinEl.textContent = formatMoney(win);
-
-      if (win > 0) {
-        const bestLine = result.wins[0];
-        const detail = bestLine
-          ? `Line ${bestLine.line}: ${bestLine.count}x ${bestLine.symbol}`
-          : result.scatterPay > 0
-            ? `${scatters} scatters`
-            : "";
-        winBox.classList.toggle("detail", Boolean(detail));
-        winBox.innerHTML = "WIN $" + formatMoney(win) + (detail ? `<span class="win-detail">${detail}</span>` : "");
-        winBox.style.display = "flex";
-      }
-
-      const tier = getWinTier(win);
+      const tier = getWinTier(cappedWin);
       if (tier) showWinTierBanner(tier);
-      if (win >= bet * 12) safePlay(bigWinSound);
+      if (cappedWin >= bet * 12) safePlay(bigWinSound);
 
-      if (currentPaidRoundWin >= getPaidRoundCap()) {
-        autoSpin = false;
-        freeSpins = 0;
-        bonusBanner.innerHTML = "MAX WIN<br>x5000 CAP";
-        bonusBanner.style.display = "block";
-      }
-
-      if (!isBonusSpin && scatters >= 3 && currentPaidRoundWin < getPaidRoundCap()) {
+      const scatters = countScatters(finalGrid);
+      if (!isBonusSpin && scatters >= 3) {
         spinning = false;
         spinBtn.disabled = false;
+        updateHud();
         await triggerBonus();
         return;
       }
 
-      if (isBonusSpin && scatters >= 3 && currentPaidRoundWin < getPaidRoundCap()) {
+      if (isBonusSpin && scatters >= 3) {
         freeSpins += 3;
         bonusBanner.innerHTML = "RETRIGGER<br>+3 FREE SPINS";
         bonusBanner.style.display = "block";
@@ -1154,10 +870,7 @@ html, body {
         setTimeout(spin, 650);
         return;
       }
-
-      if (autoSpin) {
-        setTimeout(spin, 450);
-      }
+      if (autoSpin) setTimeout(spin, 450);
     }
 
     function toggleAuto() {
@@ -1167,37 +880,26 @@ html, body {
       if (autoSpin && !spinning) spin();
     }
 
-    function openMenu() {
-      featureMenu.classList.add("active");
-      updateHud();
-    }
-
-    function closeMenu() {
-      featureMenu.classList.remove("active");
-    }
+    function openMenu() { featureMenu.classList.add("active"); updateHud(); }
+    function closeMenu() { featureMenu.classList.remove("active"); }
 
     function buyFreeSpins() {
       const cost = bet * 100;
       if (spinning || freeSpins > 0 || balance < cost) return;
-
       balance -= cost;
-      resetPaidRoundCap();
       freeSpins = 8;
       bonusModeActive = true;
       closeMenu();
       updateHud();
-
       showTransition("BONUS WON", "8 FREE SPINS", 1600, "bonus-intro").then(() => setTimeout(spin, 500));
     }
 
     function buyEnhancer() {
       const cost = bet * 3;
       if (spinning || freeSpins > 0 || bonusEnhancerSpins > 0 || balance < cost) return;
-
       balance -= cost;
       bonusEnhancerSpins = 1;
       closeMenu();
-
       bonusBanner.innerHTML = "BONUS ENHANCER ACTIVE<br>x8 NEXT BASE SPIN";
       bonusBanner.style.display = "block";
       updateHud();
@@ -1214,129 +916,6 @@ html, body {
     buyEnhancerBtn.addEventListener("click", buyEnhancer);
     betPlus.addEventListener("click", increaseBet);
     betMinus.addEventListener("click", decreaseBet);
-  
-/* === FINAL GAME BOX RESIZE LOGIC === */
-(function () {
-  const DESIGN_W = 1792;
-  const DESIGN_H = 1024;
-
-  function fitMagicGunsBox() {
-    const scale = Math.min(
-      window.innerWidth / DESIGN_W,
-      window.innerHeight / DESIGN_H
-    );
-
-    const gameBox = document.getElementById("game");
-    if (gameBox) {
-      gameBox.style.setProperty("--magic-guns-scale", scale);
-    }
-  }
-
-  window.addEventListener("resize", fitMagicGunsBox);
-  window.addEventListener("orientationchange", fitMagicGunsBox);
-  window.addEventListener("load", fitMagicGunsBox);
-
-  fitMagicGunsBox();
-})();
-
-</script>
-
-
-
-
-<script id="reelFailsafe">
-(function () {
-  function forceMagicGunsReels() {
-    const game = document.getElementById("game");
-    let reels = document.getElementById("reels");
-
-    if (!game) {
-      console.error("Magic Guns: #game not found");
-      return;
-    }
-
-    if (!reels) {
-      reels = document.createElement("div");
-      reels.id = "reels";
-      reels.className = "reels";
-      game.appendChild(reels);
-      console.warn("Magic Guns: #reels was missing, recreated it");
-    }
-
-    const symbols = [
-      "../assets/symbols/png/magic_gun_wild.png",
-      "../assets/symbols/png/bonus_scatter.png",
-      "../assets/symbols/png/witch.png",
-      "../assets/symbols/png/magic_bullet.png",
-      "../assets/symbols/png/skull.png",
-      "../assets/symbols/png/potion.png",
-      "../assets/symbols/png/card_a.png",
-      "../assets/symbols/png/card_k.png",
-      "../assets/symbols/png/card_q.png",
-      "../assets/symbols/png/card_j.png",
-      "../assets/symbols/png/card_10.png"
-    ];
-
-    // Force reel container with inline styles
-    Object.assign(reels.style, {
-      position: "absolute",
-      left: "32.8%",
-      top: "18.6%",
-      width: "34.7%",
-      height: "50.8%",
-      display: "grid",
-      gridTemplateColumns: "repeat(5, 1fr)",
-      gridTemplateRows: "repeat(3, 1fr)",
-      gap: "0.45%",
-      padding: "0.35%",
-      background: "rgba(0,0,0,0.35)",
-      border: "4px solid red",
-      borderRadius: "12px",
-      zIndex: "999999",
-      opacity: "1",
-      visibility: "visible",
-      overflow: "hidden",
-      pointerEvents: "auto"
-    });
-
-    reels.innerHTML = "";
-
-    for (let i = 0; i < 15; i++) {
-      const img = document.createElement("img");
-      img.className = "symbol";
-      img.src = symbols[i % symbols.length];
-
-      Object.assign(img.style, {
-        display: "block",
-        width: "100%",
-        height: "100%",
-        objectFit: "contain",
-        opacity: "1",
-        visibility: "visible",
-        background: "rgba(15,0,25,0.85)",
-        border: "1px solid gold",
-        borderRadius: "8px"
-      });
-
-      img.onerror = function () {
-        console.error("Symbol failed to load:", img.src);
-        img.style.background = "red";
-      };
-
-      reels.appendChild(img);
-    }
-
-    console.log("Magic Guns: reels forced visible, symbol count:", reels.children.length);
-  }
-
-  // Run multiple times in case another script clears the reels
-  window.addEventListener("DOMContentLoaded", forceMagicGunsReels);
-  window.addEventListener("load", forceMagicGunsReels);
-  setTimeout(forceMagicGunsReels, 300);
-  setTimeout(forceMagicGunsReels, 1000);
-  setTimeout(forceMagicGunsReels, 2000);
-})();
-</script>
-
+  </script>
 </body>
 </html>
