@@ -1,0 +1,34 @@
+{
+  "symbols": {
+    "W": "assets/symbols/png/magic_gun_wild.png",
+    "S": "assets/symbols/png/bonus_scatter.png",
+    "H1": "assets/symbols/png/witch.png",
+    "H2": "assets/symbols/png/magic_bullet.png",
+    "H3": "assets/symbols/png/skull.png",
+    "H4": "assets/symbols/png/potion.png",
+    "L1": "assets/symbols/png/card_a.png",
+    "L2": "assets/symbols/png/card_k.png",
+    "L3": "assets/symbols/png/card_q.png",
+    "L4": "assets/symbols/png/card_j.png",
+    "L5": "assets/symbols/png/card_10.png"
+  },
+  "backgrounds": {
+    "base": "assets/backgrounds/magic_guns_background.png",
+    "bonus": "assets/backgrounds/magic_guns_bonus_background.png",
+    "bonus_won": "assets/backgrounds/bonus_won_background.png.png"
+  },
+  "ui": {
+    "spin_button": "assets/ui/spin_button.png",
+    "bet_panel": "assets/ui/bet_panel.png",
+    "win_frame": "assets/ui/win_frame.png"
+  },
+  "sounds": {
+    "background_music": "assets/sounds/background_music.mp3",
+    "spin": "assets/sounds/Spin.mp3",
+    "reel_stop": "assets/sounds/reel_stop.mp3",
+    "wild_land": "assets/sounds/wild_land.mp3",
+    "scatter_land": "assets/sounds/scatter_land.mp3",
+    "bonus_trigger": "assets/sounds/bonus_trigger.mp3",
+    "big_win": "assets/sounds/Big_Win.mp3"
+  }
+}

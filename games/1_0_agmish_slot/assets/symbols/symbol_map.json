@@ -1,0 +1,57 @@
+{
+  "W": {
+    "name": "Magic Gun Wild",
+    "role": "Wild + Multiplier",
+    "asset": "magic_gun_wild.png"
+  },
+  "S": {
+    "name": "Bonus Scatter",
+    "role": "Free Spins Trigger",
+    "asset": "bonus_scatter.png"
+  },
+  "H1": {
+    "name": "Witch",
+    "role": "Highest Paying Symbol",
+    "asset": "witch.png"
+  },
+  "H2": {
+    "name": "Magic Bullet",
+    "role": "High Paying Symbol",
+    "asset": "magic_bullet.png"
+  },
+  "H3": {
+    "name": "Skull",
+    "asset": "skull.png",
+    "type": "high"
+  },
+  "H4": {
+    "name": "Potion",
+    "role": "High Paying Symbol",
+    "asset": "potion.png"
+  },
+  "L1": {
+    "name": "A",
+    "role": "Low Symbol",
+    "asset": "card_a.png"
+  },
+  "L2": {
+    "name": "K",
+    "role": "Low Symbol",
+    "asset": "card_k.png"
+  },
+  "L3": {
+    "name": "Q",
+    "role": "Low Symbol",
+    "asset": "card_q.png"
+  },
+  "L4": {
+    "name": "J",
+    "role": "Low Symbol",
+    "asset": "card_j.png"
+  },
+  "L5": {
+    "name": "10",
+    "role": "Low Symbol",
+    "asset": "card_10.png"
+  }
+}

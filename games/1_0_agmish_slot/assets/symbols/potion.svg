@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#003322"/>
+  <rect x="24" y="24" width="464" height="464" rx="52" fill="none" stroke="#48ffb0" stroke-width="10"/>
+  <circle cx="256" cy="180" r="82" fill="none" stroke="#48ffb0" stroke-width="12"/>
+  <text x="256" y="195" text-anchor="middle" font-size="72" font-family="Arial, sans-serif" fill="#48ffb0" font-weight="700">H4</text>
+  <text x="256" y="330" text-anchor="middle" font-size="38" font-family="Arial, sans-serif" fill="#48ffb0" font-weight="700">POTION</text>
+</svg>
