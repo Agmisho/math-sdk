@@ -49,16 +49,16 @@
 
     .reels {
       position: absolute;
-      left: 366px;
-      top: 205px;
-      width: 1060px;
-      height: 505px;
+      left: 406px;
+      top: 185px;
+      width: 980px;
+      height: 455px;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      column-gap: 16px;
-      row-gap: 10px;
-      padding: 8px 16px;
+      column-gap: 14px;
+      row-gap: 8px;
+      padding: 8px 14px;
       background: transparent;
       border: 0;
       box-shadow: none;
@@ -163,7 +163,7 @@
     .win-box {
       position: absolute;
       left: 50%;
-      top: 735px;
+      top: 660px;
       transform: translateX(-50%);
       width: 430px;
       height: 110px;
@@ -195,10 +195,10 @@
     .win-effect-overlay {
       position: absolute;
       left: 50%;
-      top: 205px;
+      top: 185px;
       transform: translateX(-50%);
-      width: 980px;
-      height: 505px;
+      width: 920px;
+      height: 455px;
       background: url("../assets/backgrounds/win_effect.gif") center/contain no-repeat;
       display: none;
       pointer-events: none;
@@ -409,6 +409,11 @@
 
     function formatMoney(v) { return Number(v).toFixed(2); }
     function safePlay(audio) { if (!audio) return; audio.currentTime = 0; audio.play().catch(() => {}); }
+    function getDisplaySymbolSrc(src) {
+      if (src.includes("magic_gun_wild.png")) return "../assets/symbols/gif/magic_gun_wild.gif";
+      if (src.includes("bonus_scatter.png")) return "../assets/symbols/gif/bonus_scatter.gif";
+      return src;
+    }
     function updateHud() {
       balanceEl.textContent = formatMoney(balance);
       betEl.textContent = formatMoney(bet);
@@ -462,8 +467,9 @@
       reels.innerHTML = "";
       const spinningColumns = options.spinningColumns || new Set();
       for (let i=0; i<15; i++) {
-        const img = document.createElement("img"); img.className = "symbol"; img.src = grid ? grid[i] : randomNonScatter();
-        const key = getSymbolKey(img.src);
+        const source = grid ? grid[i] : randomNonScatter();
+        const img = document.createElement("img"); img.className = "symbol"; img.src = getDisplaySymbolSrc(source);
+        const key = getSymbolKey(source);
         if (key === "S") img.classList.add("scatter-symbol");
         if (key === "W") img.classList.add("wild-symbol");
         if (currentWinningPositions.has(i)) img.classList.add("win-symbol");
