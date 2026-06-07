@@ -1,17 +1,17 @@
-# Magic Guns
+# The Inheritance
 
 Internal SDK folder: `games/2_0_The_Inheritance`.
 
 ## Direction
 
-Magic Guns is a premium dark fantasy western slot game using the theme decisions from our previous chats:
+The Inheritance is a premium mystery mansion slot game using the visual direction from the provided sample:
 
-- Dark purple and gold casino style
-- Magical revolvers / gunslinger feeling
-- Purple magical lightning
-- Bonus scatter symbols
-- Wild symbol with multiplier behavior
-- Bonus intro full-screen transition
+- Dark mansion / hidden legacy theme
+- Gold, black, green, and antique luxury styling
+- Vault, family crest, portrait, key, will, brooch, watch, and mystery-object symbols
+- Bonus scatter: Vault Scatter
+- Wild symbol: Family Crest Wild
+- Multiplier symbols: Diamond Seal Multipliers
 - Win effects for Big, Mega, Epic, and Legendary wins
 
 ## First math version
@@ -21,42 +21,59 @@ This first scaffold uses a simple Stake Engine lines-game structure:
 - 5 reels
 - 3 rows
 - 20 paylines
-- Wild symbol: `W`
-- Scatter symbol: `S`
-- High symbols: `H1`, `H2`, `H3`, `H4`
-- Low symbols: `L1`, `L2`, `L3`, `L4`, `L5`
+- 22 total symbols
+- 1 scatter: `S`
+- 5 multipliers: `M2`, `M5`, `M10`, `M20`, `M100`
+- 1 wild: `W`
+- 15 regular paying symbols: `H1-H9`, `L1-L6`
 - Base mode
 - Bonus buy mode
 - Free spins from 3+ scatters
-- Wild multipliers during free spins
 - Max win target: 5000x
 
 ## Frontend symbol mapping
 
-The math engine keeps compact symbol IDs. The frontend should map them to Magic Guns assets:
+The math engine keeps compact symbol IDs. The frontend should map them to the actual asset names:
 
-| Math symbol | Theme asset idea |
+| Math symbol | Asset name |
 |---|---|
-| `W` | Magic Wild revolver |
-| `S` | Bonus Scatter badge / magic guns bonus symbol |
-| `H1` | Golden revolver |
-| `H2` | Purple spell bullet |
-| `H3` | Cowboy hat |
-| `H4` | Sheriff star / cursed badge |
+| `S` | Vault Scatter |
+| `M2` | Diamond Seal Multiplier 2 |
+| `M5` | Diamond Seal Multiplier 5 |
+| `M10` | Diamond Seal Multiplier 10 |
+| `M20` | Diamond Seal Multiplier 20 |
+| `M100` | Diamond Seal Multiplier 100 |
+| `W` | Family Crest Wild |
+| `H1` | Heriess |
+| `H2` | Covered Portrait Mystery |
+| `H3` | Treasure Chest |
+| `H4` | Legacy Key |
+| `H5` | Diamond Brooch |
+| `H6` | Antique Pocket Watch |
+| `H7` | Magnifying Glass |
+| `H8` | will |
+| `H9` | Old Letter |
 | `L1` | A |
 | `L2` | K |
 | `L3` | Q |
 | `L4` | J |
 | `L5` | 10 |
+| `L6` | extra regular mansion symbol placeholder |
+
+## Removed from math
+
+The separate asset named `Wild` is not used in the math model. Only `Family Crest Wild` is the wild symbol.
 
 ## Planned frontend events
 
-The starter math files use the default line-win events first. Later we will add custom event names that the Magic Guns frontend can animate:
+The starter math files use the default line-win events first. Later we will add custom event names that the frontend can animate:
 
 - `bonusTrigger`
 - `bonusIntro`
-- `wildMultiplier`
 - `scatterLanding`
+- `multiplierLanding`
+- `mansionLevelUpdate`
+- `collectedUpdate`
 - `bigWin`
 - `megaWin`
 - `epicWin`
@@ -64,10 +81,11 @@ The starter math files use the default line-win events first. Later we will add 
 
 ## Next work
 
-1. Confirm final symbol list and asset names.
-2. Confirm paylines vs ways.
-3. Tune reel strips.
-4. Tune paytable.
-5. Add Magic Guns-specific custom events.
-6. Generate books/configs.
-7. Connect frontend assets in `arcane-reels`.
+1. Confirm what `L6` should visually map to, since regular `Wild` was removed.
+2. Run the math scaffold in Codespaces.
+3. Fix any SDK runtime errors.
+4. Tune reel strips.
+5. Tune paytable.
+6. Add collection and mansion level logic.
+7. Generate books/configs.
+8. Connect frontend assets in `arcane-reels`.
