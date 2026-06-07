@@ -32,8 +32,9 @@ class GameConfig(Config):
         # 22-symbol model:
         # 1 scatter: S = Vault Scatter
         # 5 multipliers: M2, M5, M10, M20, M100 = Diamond Seal Multipliers
-        # 1 wild: W = Family Crest Wild
+        # 1 wild: W = Wild
         # 15 paying symbols: H1-H9 and L1-L6
+        # L6 = Family Crest Wild as a regular paying symbol
         self.paytable = {
             (5, "W"): 50,
             (4, "W"): 20,
