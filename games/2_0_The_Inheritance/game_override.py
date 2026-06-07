@@ -1,5 +1,4 @@
 from game_executables import GameExecutables
-from src.calculations.statistics import get_random_outcome
 
 
 class GameStateOverride(GameExecutables):
@@ -10,16 +9,22 @@ class GameStateOverride(GameExecutables):
 
     def assign_special_sym_function(self):
         self.special_symbol_functions = {
-            "W": [self.assign_mult_property],
+            "M2": [self.assign_fixed_mult_property],
+            "M5": [self.assign_fixed_mult_property],
+            "M10": [self.assign_fixed_mult_property],
+            "M20": [self.assign_fixed_mult_property],
+            "M100": [self.assign_fixed_mult_property],
         }
 
-    def assign_mult_property(self, symbol) -> dict:
-        multiplier_value = 1
-        if self.gametype == self.config.freegame_type:
-            multiplier_value = get_random_outcome(
-                self.get_current_distribution_conditions()["mult_values"][self.gametype]
-            )
-        symbol.assign_attribute({"multiplier": multiplier_value})
+    def assign_fixed_mult_property(self, symbol) -> dict:
+        multiplier_values = {
+            "M2": 2,
+            "M5": 5,
+            "M10": 10,
+            "M20": 20,
+            "M100": 100,
+        }
+        symbol.assign_attribute({"multiplier": multiplier_values.get(symbol.name, 1)})
 
     def check_repeat(self):
         super().check_repeat()
