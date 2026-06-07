@@ -26,9 +26,7 @@ Total symbols: 22
 | `M10` | Diamond Seal Multiplier 10 | x10 multiplier |
 | `M20` | Diamond Seal Multiplier 20 | x20 multiplier |
 | `M100` | Diamond Seal Multiplier 100 | x100 multiplier / ultra rare |
-| `W` | Family Crest Wild | Wild substitute |
-
-The regular asset named `Wild` is removed from the math model.
+| `W` | Wild | Wild substitute |
 
 ## Paying symbols
 
@@ -48,7 +46,7 @@ The regular asset named `Wild` is removed from the math model.
 | `L3` | Q |
 | `L4` | J |
 | `L5` | 10 |
-| `L6` | placeholder regular symbol after removing regular Wild |
+| `L6` | Family Crest Wild |
 
 ## First version rules
 
