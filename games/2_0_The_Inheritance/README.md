@@ -10,7 +10,8 @@ The Inheritance is a premium mystery mansion slot game using the visual directio
 - Gold, black, green, and antique luxury styling
 - Vault, family crest, portrait, key, will, brooch, watch, and mystery-object symbols
 - Bonus scatter: Vault Scatter
-- Wild symbol: Family Crest Wild
+- Wild symbol: Wild
+- Regular family crest symbol: Family Crest Wild
 - Multiplier symbols: Diamond Seal Multipliers
 - Win effects for Big, Mega, Epic, and Legendary wins
 
@@ -43,7 +44,7 @@ The math engine keeps compact symbol IDs. The frontend should map them to the ac
 | `M10` | Diamond Seal Multiplier 10 |
 | `M20` | Diamond Seal Multiplier 20 |
 | `M100` | Diamond Seal Multiplier 100 |
-| `W` | Family Crest Wild |
+| `W` | Wild |
 | `H1` | Heriess |
 | `H2` | Covered Portrait Mystery |
 | `H3` | Treasure Chest |
@@ -58,11 +59,7 @@ The math engine keeps compact symbol IDs. The frontend should map them to the ac
 | `L3` | Q |
 | `L4` | J |
 | `L5` | 10 |
-| `L6` | extra regular mansion symbol placeholder |
-
-## Removed from math
-
-The separate asset named `Wild` is not used in the math model. Only `Family Crest Wild` is the wild symbol.
+| `L6` | Family Crest Wild |
 
 ## Planned frontend events
 
@@ -81,11 +78,10 @@ The starter math files use the default line-win events first. Later we will add 
 
 ## Next work
 
-1. Confirm what `L6` should visually map to, since regular `Wild` was removed.
-2. Run the math scaffold in Codespaces.
-3. Fix any SDK runtime errors.
-4. Tune reel strips.
-5. Tune paytable.
-6. Add collection and mansion level logic.
-7. Generate books/configs.
-8. Connect frontend assets in `arcane-reels`.
+1. Run the math scaffold in Codespaces.
+2. Fix any SDK runtime errors.
+3. Tune reel strips.
+4. Tune paytable.
+5. Add collection and mansion level logic.
+6. Generate books/configs.
+7. Connect frontend assets in `arcane-reels`.
