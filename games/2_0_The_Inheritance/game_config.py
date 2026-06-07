@@ -1,4 +1,4 @@
-"""Configuration for the Magic Guns math model."""
+"""Configuration for The Inheritance math model."""
 
 import os
 from src.config.config import Config
@@ -19,7 +19,7 @@ class GameConfig(Config):
         super().__init__()
         self.game_id = "2_0_The_Inheritance"
         self.provider_number = 2
-        self.working_name = "Magic Guns"
+        self.working_name = "The Inheritance"
         self.wincap = 5000.0
         self.win_type = "lines"
         self.rtp = 0.9700
@@ -29,43 +29,60 @@ class GameConfig(Config):
         self.num_reels = 5
         self.num_rows = [3] * self.num_reels
 
-        # Symbol plan:
-        # W  = Magic Wild revolver
-        # S  = Bonus Scatter
-        # H1 = top premium symbol
-        # H2-H4 = premium symbols
-        # L1-L5 = low card symbols
+        # 22-symbol model:
+        # 1 scatter: S = Vault Scatter
+        # 5 multipliers: M2, M5, M10, M20, M100 = Diamond Seal Multipliers
+        # 1 wild: W = Family Crest Wild
+        # 15 paying symbols: H1-H9 and L1-L6
         self.paytable = {
             (5, "W"): 50,
             (4, "W"): 20,
             (3, "W"): 10,
-            (5, "H1"): 50,
-            (4, "H1"): 20,
-            (3, "H1"): 10,
-            (5, "H2"): 15,
-            (4, "H2"): 5,
-            (3, "H2"): 3,
-            (5, "H3"): 10,
-            (4, "H3"): 3,
-            (3, "H3"): 2,
-            (5, "H4"): 8,
-            (4, "H4"): 2,
-            (3, "H4"): 1,
+            (5, "H1"): 80,
+            (4, "H1"): 25,
+            (3, "H1"): 12,
+            (5, "H2"): 60,
+            (4, "H2"): 20,
+            (3, "H2"): 10,
+            (5, "H3"): 45,
+            (4, "H3"): 15,
+            (3, "H3"): 8,
+            (5, "H4"): 35,
+            (4, "H4"): 12,
+            (3, "H4"): 6,
+            (5, "H5"): 25,
+            (4, "H5"): 10,
+            (3, "H5"): 5,
+            (5, "H6"): 20,
+            (4, "H6"): 8,
+            (3, "H6"): 4,
+            (5, "H7"): 15,
+            (4, "H7"): 6,
+            (3, "H7"): 3,
+            (5, "H8"): 12,
+            (4, "H8"): 5,
+            (3, "H8"): 2,
+            (5, "H9"): 10,
+            (4, "H9"): 4,
+            (3, "H9"): 1.5,
             (5, "L1"): 5,
             (4, "L1"): 1,
             (3, "L1"): 0.5,
-            (5, "L2"): 3,
-            (4, "L2"): 0.7,
-            (3, "L2"): 0.3,
+            (5, "L2"): 4,
+            (4, "L2"): 0.8,
+            (3, "L2"): 0.4,
             (5, "L3"): 3,
             (4, "L3"): 0.7,
             (3, "L3"): 0.3,
-            (5, "L4"): 2,
-            (4, "L4"): 0.5,
-            (3, "L4"): 0.2,
-            (5, "L5"): 1,
-            (4, "L5"): 0.3,
-            (3, "L5"): 0.1,
+            (5, "L4"): 2.5,
+            (4, "L4"): 0.6,
+            (3, "L4"): 0.25,
+            (5, "L5"): 2,
+            (4, "L5"): 0.5,
+            (3, "L5"): 0.2,
+            (5, "L6"): 1.5,
+            (4, "L6"): 0.4,
+            (3, "L6"): 0.15,
         }
 
         self.paylines = {
@@ -92,7 +109,11 @@ class GameConfig(Config):
         }
 
         self.include_padding = True
-        self.special_symbols = {"wild": ["W"], "scatter": ["S"], "multiplier": ["W"]}
+        self.special_symbols = {
+            "wild": ["W"],
+            "scatter": ["S"],
+            "multiplier": ["M2", "M5", "M10", "M20", "M100"],
+        }
 
         self.freespin_triggers = {
             self.basegame_type: {3: 8, 4: 12, 5: 15},
@@ -110,7 +131,13 @@ class GameConfig(Config):
 
         self.padding_reels[self.basegame_type] = self.reels["BR0"]
         self.padding_reels[self.freegame_type] = self.reels["FR0"]
-        self.padding_symbol_values = {"W": {"multiplier": {2: 100, 3: 50, 4: 50, 5: 50, 10: 30, 20: 20, 50: 5}}}
+        self.padding_symbol_values = {
+            "M2": {"multiplier": {2: 1}},
+            "M5": {"multiplier": {5: 1}},
+            "M10": {"multiplier": {10: 1}},
+            "M20": {"multiplier": {20: 1}},
+            "M100": {"multiplier": {100: 1}},
+        }
 
         freegame_condition = {
             "reel_weights": {
@@ -120,7 +147,7 @@ class GameConfig(Config):
             "scatter_triggers": {3: 50, 4: 20, 5: 5},
             "mult_values": {
                 self.basegame_type: {1: 1},
-                self.freegame_type: {2: 60, 3: 80, 4: 50, 5: 20, 10: 15, 20: 10, 50: 5},
+                self.freegame_type: {2: 70, 5: 45, 10: 20, 20: 8, 100: 1},
             },
             "force_wincap": False,
             "force_freegame": True,
@@ -140,7 +167,7 @@ class GameConfig(Config):
             },
             "mult_values": {
                 self.basegame_type: {1: 1},
-                self.freegame_type: {2: 10, 3: 20, 4: 50, 5: 60, 10: 100, 20: 90, 50: 50},
+                self.freegame_type: {2: 10, 5: 25, 10: 40, 20: 80, 100: 10},
             },
             "scatter_triggers": {4: 1, 5: 2},
             "force_wincap": True,
@@ -151,7 +178,7 @@ class GameConfig(Config):
             "reel_weights": {self.basegame_type: {"BR0": 1}},
             "mult_values": {
                 self.basegame_type: {1: 1},
-                self.freegame_type: {2: 100, 3: 80, 4: 50, 5: 20, 10: 10, 20: 5, 50: 1},
+                self.freegame_type: {2: 100, 5: 40, 10: 10, 20: 2, 100: 1},
             },
             "force_wincap": False,
             "force_freegame": False,
