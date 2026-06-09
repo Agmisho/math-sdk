@@ -37,14 +37,13 @@ class GameExecutables(GameCalculations):
         return None
 
     def inject_controlled_multiplier_symbol(self) -> list:
-        """Inject the selected multiplier symbol into one visible free-spin board position."""
+        """Inject the selected multiplier symbol into one actual board position."""
         symbol_name = self.choose_controlled_multiplier_symbol()
         if symbol_name is None:
             return []
 
         reel_index = random.randint(0, self.config.num_reels - 1)
-        visible_row_index = random.randint(0, 2)
-        board_row_index = visible_row_index + 1 if self.config.include_padding else visible_row_index
+        board_row_index = random.randint(0, len(self.board[reel_index]) - 1)
 
         self.board[reel_index][board_row_index] = self.symbol_storage.create_symbol(symbol_name)
 
@@ -72,11 +71,10 @@ class GameExecutables(GameCalculations):
         for reel_index, reel in enumerate(self.board):
             for row_index, symbol in enumerate(reel):
                 if symbol.name in self.multiplier_symbol_values:
-                    row = row_index + 1 if self.config.include_padding else row_index
                     positions.append(
                         {
                             "reel": reel_index,
-                            "row": row,
+                            "row": row_index,
                             "symbol": symbol.name,
                             "multiplier": self.multiplier_symbol_values[symbol.name],
                         }
@@ -100,8 +98,7 @@ class GameExecutables(GameCalculations):
         for reel_index, reel in enumerate(self.board):
             for row_index, symbol in enumerate(reel):
                 if symbol.name == self.collection_symbol:
-                    row = row_index + 1 if self.config.include_padding else row_index
-                    positions.append({"reel": reel_index, "row": row})
+                    positions.append({"reel": reel_index, "row": row_index})
         return positions
 
     def calculate_mansion_level(self, collected_count: int) -> int:
