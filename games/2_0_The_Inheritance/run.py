@@ -1,78 +1,61 @@
-"""Fast development runner for The Inheritance.
-
-This runner does not run full book generation. Use full_generate.py later when
-feature logic is stable and ready for production-style SDK output.
-"""
-
-from collections import Counter
+"""Main file for generating results for The Inheritance."""
 
 from gamestate import GameState
 from game_config import GameConfig
-
-
-def latest_event(game, event_type):
-    events = [event for event in game.book.events if event.get("type") == event_type]
-    return events[-1] if events else None
-
-
-def run_single_check(game, sim, gametype, betmode, criteria):
-    game.betmode = betmode
-    game.criteria = criteria
-    game.reset_seed(sim)
-    game.reset_book()
-    game.betmode = betmode
-    game.criteria = criteria
-    game.gametype = gametype
-
-    game.draw_board()
-    game.update_collection_state()
-    game.evaluate_lines_board()
-    game.win_manager.update_gametype_wins(game.gametype)
-    game.evaluate_finalwin()
-
-    multiplier_event = latest_event(game, "multiplierUpdate")
-    collection_event = latest_event(game, "collectionUpdate")
-
-    return {
-        "sim": sim,
-        "gameType": game.gametype,
-        "criteria": criteria,
-        "finalWin": game.final_win,
-        "eventCount": len(game.book.events),
-        "collected": collection_event.get("collected") if collection_event else None,
-        "mansionLevel": collection_event.get("mansionLevel") if collection_event else None,
-        "appliedMultiplier": multiplier_event.get("appliedMultiplier") if multiplier_event else 1,
-        "landedMultiplier": multiplier_event.get("landedMultiplier") if multiplier_event else 1,
-    }
+from game_optimization import OptimizationSetup
+from optimization_program.run_script import OptimizationExecution
+from utils.game_analytics.run_analysis import create_stat_sheet
+from utils.rgs_verification import execute_all_tests
+from src.state.run_sims import create_books
+from src.write_data.write_configs import generate_configs
 
 
 if __name__ == "__main__":
+
+    num_threads = 10
+    rust_threads = 20
+    batching_size = 5000
+    compression = True
+    profiling = False
+
+    num_sim_args = {
+        "base": int(1e4),
+        "bonus": int(1e4),
+    }
+
+    run_conditions = {
+        "run_sims": True,
+        "run_optimization": True,
+        "run_analysis": True,
+        "run_format_checks": True,
+    }
+    target_modes = list(num_sim_args.keys())
+
     config = GameConfig()
-    game = GameState(config)
+    gamestate = GameState(config)
+    if run_conditions["run_optimization"] or run_conditions["run_analysis"]:
+        OptimizationSetup(config)
 
-    print("The Inheritance fast development check")
-    print({
-        "gameId": config.game_id,
-        "name": config.working_name,
-        "wincap": config.wincap,
-        "reels": config.num_reels,
-        "rows": config.num_rows,
-        "paylines": len(config.paylines),
-        "paytableEntries": len(config.paytable),
-    })
+    if run_conditions["run_sims"]:
+        create_books(
+            gamestate,
+            config,
+            num_sim_args,
+            batching_size,
+            num_threads,
+            compression,
+            profiling,
+        )
 
-    print("BASE checks")
-    for sim in range(5):
-        print(run_single_check(game, sim, config.basegame_type, "base", "basegame"))
+    generate_configs(gamestate)
 
-    print("BONUS checks")
-    bonus_results = []
-    for sim in range(1000, 1020):
-        result = run_single_check(game, sim, config.freegame_type, "bonus", "freegame")
-        bonus_results.append(result)
-        print(result)
+    if run_conditions["run_optimization"]:
+        OptimizationExecution().run_all_modes(config, target_modes, rust_threads)
+        generate_configs(gamestate)
 
-    print("BONUS multiplier summary")
-    print(dict(sorted(Counter(result["appliedMultiplier"] for result in bonus_results).items())))
+    if run_conditions["run_analysis"]:
+        custom_keys = [{"symbol": "scatter"}]
+        create_stat_sheet(gamestate, custom_keys=custom_keys)
 
-    print("The Inheritance fast development check complete")
+    if run_conditions["run_format_checks"]:
+        execute_all_tests(config)
