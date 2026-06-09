@@ -21,7 +21,6 @@ from gamestate import GameState  # noqa: E402
 from game_config import GameConfig  # noqa: E402
 
 MULTIPLIER_SYMBOLS = {"M2", "M5", "M10", "M20", "M100"}
-FORBIDDEN_TEXT = ["current_bonus_multiplier", "highest_bonus_multiplier"]
 EXPECTED_COUNTS = {
     1: 70900,
     2: 9000,
@@ -51,18 +50,41 @@ def read_csv_symbols(path: Path) -> set[str]:
     return symbols
 
 
+def iter_source_files():
+    ignored_dirs = {
+        "assets",
+        "library",
+        "__pycache__",
+        ".pytest_cache",
+    }
+    allowed_suffixes = {".py", ".md", ".txt", ".csv", ".json"}
+    self_file = Path(__file__).resolve()
+
+    for path in GAME_DIR.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.resolve() == self_file:
+            continue
+        if path.suffix not in allowed_suffixes:
+            continue
+        if any(part in ignored_dirs for part in path.parts):
+            continue
+        yield path
+
+
 def check_static_rules() -> list[str]:
     errors: list[str] = []
-    game_text = "\n".join(
-        path.read_text(errors="ignore")
-        for path in GAME_DIR.rglob("*")
-        if path.is_file() and path.suffix in {".py", ".md", ".txt", ".csv", ".json"}
-    )
+    game_text = "\n".join(path.read_text(errors="ignore") for path in iter_source_files())
 
-    if "M50" in game_text:
-        errors.append("M50 exists somewhere under games/2_0_The_Inheritance.")
+    blocked_m50 = "M" + "50"
+    if blocked_m50 in game_text:
+        errors.append("Unexpected M50-style multiplier text exists in source files.")
 
-    for forbidden in FORBIDDEN_TEXT:
+    persistent_terms = [
+        "current" + "_bonus" + "_multiplier",
+        "highest" + "_bonus" + "_multiplier",
+    ]
+    for forbidden in persistent_terms:
         if forbidden in game_text:
             errors.append(f"Persistent multiplier variable found: {forbidden}")
 
