@@ -65,6 +65,19 @@ class GameExecutables(GameCalculations):
                     landed_values.append(self.multiplier_symbol_values[symbol.name])
         return max(landed_values) if landed_values else 1
 
+    def update_bonus_multiplier_state(self, landed_multiplier: int) -> int:
+        """Upgrade the persistent bonus multiplier without ever reducing it."""
+        if not hasattr(self, "current_bonus_multiplier"):
+            self.current_bonus_multiplier = 1
+        if not hasattr(self, "highest_bonus_multiplier"):
+            self.highest_bonus_multiplier = 1
+
+        if landed_multiplier > self.current_bonus_multiplier:
+            self.current_bonus_multiplier = landed_multiplier
+        if self.current_bonus_multiplier > self.highest_bonus_multiplier:
+            self.highest_bonus_multiplier = self.current_bonus_multiplier
+        return self.current_bonus_multiplier
+
     def get_landed_multiplier_positions(self) -> list:
         """Return all visible Diamond Seal multiplier positions on the current board."""
         positions = []
@@ -81,12 +94,19 @@ class GameExecutables(GameCalculations):
                     )
         return positions
 
-    def emit_multiplier_update_event(self, multiplier: int, positions: list) -> None:
+    def emit_multiplier_update_event(
+        self,
+        applied_multiplier: int,
+        landed_multiplier: int,
+        positions: list,
+    ) -> None:
         """Emit multiplier state for frontend animation during free spins."""
         event = {
             "index": len(self.book.events),
             "type": "multiplierUpdate",
-            "multiplier": int(multiplier),
+            "appliedMultiplier": int(applied_multiplier),
+            "landedMultiplier": int(landed_multiplier),
+            "highestMultiplier": int(getattr(self, "highest_bonus_multiplier", applied_multiplier)),
             "positions": positions,
             "gameType": self.gametype,
         }
@@ -153,10 +173,13 @@ class GameExecutables(GameCalculations):
         """Populate win data, record wins, apply bonus multipliers, and emit events."""
         spin_multiplier = 1
         multiplier_positions = []
+        landed_multiplier = 1
+
         if self.gametype == self.config.freegame_type:
             multiplier_positions = self.inject_controlled_multiplier_symbol()
-            spin_multiplier = self.get_landed_multiplier()
-            self.emit_multiplier_update_event(spin_multiplier, multiplier_positions)
+            landed_multiplier = self.get_landed_multiplier()
+            spin_multiplier = self.update_bonus_multiplier_state(landed_multiplier)
+            self.emit_multiplier_update_event(spin_multiplier, landed_multiplier, multiplier_positions)
 
         self.win_data = Lines.get_lines(
             self.board,
