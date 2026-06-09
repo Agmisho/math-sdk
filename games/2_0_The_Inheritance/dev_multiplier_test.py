@@ -39,8 +39,12 @@ def read_csv_symbols(path: Path) -> set[str]:
     return set(read_csv_cells(path))
 
 
+def count_csv_multiplier_symbols(path: Path) -> Counter:
+    return Counter(symbol for symbol in read_csv_cells(path) if symbol in MULTIPLIER_SYMBOLS)
+
+
 def count_csv_multipliers(path: Path) -> int:
-    return sum(1 for symbol in read_csv_cells(path) if symbol in MULTIPLIER_SYMBOLS)
+    return sum(count_csv_multiplier_symbols(path).values())
 
 
 def iter_source_files():
@@ -83,28 +87,37 @@ def check_static_rules() -> list[str]:
         if forbidden in game_text:
             errors.append(f"Unexpected controlled or persistent multiplier logic found: {forbidden}")
 
-    br0_path = GAME_DIR / "reels" / "BR0.csv"
-    fr0_path = GAME_DIR / "reels" / "FR0.csv"
-    wcap_path = GAME_DIR / "reels" / "FRWCAP.csv"
+    reel_paths = {
+        "BR0.csv": GAME_DIR / "reels" / "BR0.csv",
+        "FR0.csv": GAME_DIR / "reels" / "FR0.csv",
+        "FRWCAP.csv": GAME_DIR / "reels" / "FRWCAP.csv",
+    }
+    reel_symbols = {name: read_csv_symbols(path) for name, path in reel_paths.items()}
+    reel_counts = {name: count_csv_multiplier_symbols(path) for name, path in reel_paths.items()}
 
-    br0_symbols = read_csv_symbols(br0_path)
-    fr0_symbols = read_csv_symbols(fr0_path)
-    wcap_symbols = read_csv_symbols(wcap_path)
-    br0_multiplier_count = count_csv_multipliers(br0_path)
-    fr0_multiplier_count = count_csv_multipliers(fr0_path)
+    for name, symbols in reel_symbols.items():
+        missing = sorted(MULTIPLIER_SYMBOLS.difference(symbols))
+        if missing:
+            errors.append(f"{name} must contain all Diamond Seal multipliers; missing: {', '.join(missing)}.")
 
-    if not br0_symbols.intersection(MULTIPLIER_SYMBOLS):
-        errors.append("BR0.csv must contain low-frequency Diamond Seal multipliers.")
-    if not fr0_symbols.intersection(MULTIPLIER_SYMBOLS):
-        errors.append("FR0.csv must contain natural Diamond Seal multipliers.")
-    if not wcap_symbols.intersection(MULTIPLIER_SYMBOLS):
-        errors.append("FRWCAP.csv must contain natural Diamond Seal multipliers.")
+    br0_multiplier_count = sum(reel_counts["BR0.csv"].values())
+    fr0_multiplier_count = sum(reel_counts["FR0.csv"].values())
     if br0_multiplier_count >= fr0_multiplier_count:
         errors.append(
             f"BR0 multiplier count ({br0_multiplier_count}) must be below FR0 count ({fr0_multiplier_count})."
         )
 
     return errors
+
+
+def print_reel_multiplier_counts() -> None:
+    print("Natural reel multiplier counts:")
+    for name in ("BR0.csv", "FR0.csv", "FRWCAP.csv"):
+        path = GAME_DIR / "reels" / name
+        counts = count_csv_multiplier_symbols(path)
+        ordered = {symbol: counts[symbol] for symbol in sorted(MULTIPLIER_SYMBOLS)}
+        ordered["total"] = sum(counts.values())
+        print(name, ordered)
 
 
 def setup_spin(game: GameState, config: GameConfig, seed: int, gametype: str) -> None:
@@ -197,6 +210,7 @@ def main() -> int:
         return 1
 
     print("Static rule check passed.")
+    print_reel_multiplier_counts()
     run_forced_reset_demo()
     config = GameConfig()
     run_frequency_test(config.basegame_type, samples=20_000)
