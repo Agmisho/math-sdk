@@ -11,13 +11,29 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - 5 reels
 - 5 rows
 - 15 paylines
-- RTP configuration: 96%
+- RTP configuration: 97%
 - Max win target: 5000x
 - Base mode
+- Scatter chance enhancer mode
 - Bonus buy mode
 - Free spins from 3+ scatters
 - `run.py` is the SDK generation entrypoint
 - Development scripts are separate and are not part of the production generation flow
+
+## Bet modes
+
+| Mode | Cost | Purpose |
+|---|---:|---|
+| `base` | 1x | Standard base spin |
+| `scatter_boost` | 3x | Base spin with 8% relative higher 3-scatter trigger chance |
+| `bonus` | 100x | Bought free-spin feature |
+
+Scatter chance enhancer target:
+
+```text
+Normal 3-scatter trigger design reference: 1 in 255
+Scatter boost target reference: about 8% relative higher chance, around 1 in 236
+```
 
 ## Payline layout
 
@@ -117,16 +133,17 @@ Multiplier symbols do not have direct paytable payouts.
 
 ## Reels
 
-- `BR0.csv` is the base-game reel strip and contains low-frequency natural Diamond Seal multiplier symbols.
-- `FR0.csv` is the normal free-spin / bought-bonus reel strip and contains natural Diamond Seal multiplier symbols at a higher frequency than `BR0.csv`.
+- `BR0.csv` is the base-game reel strip and contains all Diamond Seal multiplier symbols at lower frequency.
+- `FR0.csv` is the normal free-spin / bought-bonus reel strip and contains Diamond Seal multiplier symbols at a much higher frequency than `BR0.csv`.
 - `FRWCAP.csv` is the wincap-support free-spin reel strip and contains natural Diamond Seal multiplier symbols.
 - The `WCAP` reel condition is included in the distribution model for wincap simulations.
 
 Current build-level frequency direction:
 
 ```text
-BR0 base game: lower multiplier frequency
-FR0 free / bought bonus: higher multiplier frequency
+BR0 base game: lower multiplier frequency, all M2/M5/M10/M20/M100 possible
+FR0 free / bought bonus: much higher multiplier frequency
+FRWCAP: wincap-support multiplier-rich free-spin strip
 ```
 
 ## Free spins
