@@ -4,6 +4,8 @@ This runner intentionally bypasses the full SDK book-generation distribution loo
 Use it while feature logic is being built and validated.
 """
 
+from collections import Counter
+
 from gamestate import GameState
 from game_config import GameConfig
 
@@ -45,7 +47,13 @@ if __name__ == "__main__":
         print(run_single_check(game, sim, config.basegame_type, "base", "basegame"))
 
     print("Running The Inheritance BONUS fast feature check...")
+    bonus_results = []
     for sim in range(20, 40):
-        print(run_single_check(game, sim, config.freegame_type, "bonus", "freegame"))
+        result = run_single_check(game, sim, config.freegame_type, "bonus", "freegame")
+        bonus_results.append(result)
+        print(result)
+
+    print("Multiplier frequency summary from visible bonus samples:")
+    print(dict(sorted(Counter(result["landed_multiplier"] for result in bonus_results).items())))
 
     print("The Inheritance fast feature check complete.")
