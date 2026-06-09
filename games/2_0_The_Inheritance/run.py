@@ -1,10 +1,4 @@
-"""Main file for generating results for Magic Guns.
-
-This is the first scaffold for the game currently stored under:
-    games/2_0_The_Inheritance
-
-The public game name is Magic Guns.
-"""
+"""Main file for generating development results for The Inheritance."""
 
 from gamestate import GameState
 from game_config import GameConfig
@@ -18,16 +12,16 @@ from src.write_data.write_configs import generate_configs
 
 if __name__ == "__main__":
 
-    num_threads = 10
-    rust_threads = 20
-    batching_size = 5000
+    num_threads = 4
+    rust_threads = 8
+    batching_size = 1000
     compression = True
     profiling = False
 
-    # Keep the first run light. Increase later when the math is stable.
+    # Development run size. Increase only after feature logic is stable.
     num_sim_args = {
-        "base": int(1e4),
-        "bonus": int(1e4),
+        "base": int(1e3),
+        "bonus": int(1e3),
     }
 
     run_conditions = {
@@ -61,7 +55,7 @@ if __name__ == "__main__":
         generate_configs(gamestate)
 
     if run_conditions["run_analysis"]:
-        custom_keys = [{"symbol": "scatter"}]
+        custom_keys = [{"symbol": "scatter"}, {"symbol": "H4"}]
         create_stat_sheet(gamestate, custom_keys=custom_keys)
 
     if run_conditions["run_format_checks"]:
