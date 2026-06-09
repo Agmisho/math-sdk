@@ -45,7 +45,7 @@ class GameExecutables(GameCalculations):
         landed_multiplier: int,
         positions: list,
     ) -> None:
-        """Emit current-spin multiplier state for frontend animation during free spins."""
+        """Emit current-spin multiplier state for frontend animation."""
         event = {
             "index": len(self.book.events),
             "type": "multiplierUpdate",
@@ -118,10 +118,9 @@ class GameExecutables(GameCalculations):
         """Populate win data, record wins, apply current-spin multipliers, and emit events."""
         spin_multiplier = 1
         landed_multiplier = 1
-        multiplier_positions = []
+        multiplier_positions = self.get_landed_multiplier_positions()
 
-        if self.gametype == self.config.freegame_type:
-            multiplier_positions = self.get_landed_multiplier_positions()
+        if multiplier_positions or self.gametype == self.config.freegame_type:
             landed_multiplier = self.get_landed_multiplier()
             spin_multiplier = landed_multiplier
             self.emit_multiplier_update_event(spin_multiplier, landed_multiplier, multiplier_positions)
