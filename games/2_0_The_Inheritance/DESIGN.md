@@ -21,11 +21,11 @@ Total symbols: 22
 | Math symbol | Asset name | Role |
 |---|---|---|
 | `S` | Vault Scatter | Bonus trigger |
-| `M2` | Diamond Seal Multiplier 2 | x2 multiplier |
-| `M5` | Diamond Seal Multiplier 5 | x5 multiplier |
-| `M10` | Diamond Seal Multiplier 10 | x10 multiplier |
-| `M20` | Diamond Seal Multiplier 20 | x20 multiplier |
-| `M100` | Diamond Seal Multiplier 100 | x100 multiplier / ultra rare |
+| `M2` | Diamond Seal Multiplier 2 | current-spin x2 multiplier |
+| `M5` | Diamond Seal Multiplier 5 | current-spin x5 multiplier |
+| `M10` | Diamond Seal Multiplier 10 | current-spin x10 multiplier |
+| `M20` | Diamond Seal Multiplier 20 | current-spin x20 multiplier |
+| `M100` | Diamond Seal Multiplier 100 | current-spin x100 multiplier / ultra rare |
 | `W` | Wild | Wild substitute |
 
 ## Paying symbols
@@ -64,6 +64,8 @@ Total symbols: 22
   - 4 scatters = +8 free spins
   - 5 scatters = +12 free spins
 - Multiplier values: x2, x5, x10, x20, x100
+- Multiplier application: highest Diamond Seal visible on the current spin only
+- Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
 - Max win target: 5000x
 
 ## Frontend win effect thresholds
