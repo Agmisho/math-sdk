@@ -18,7 +18,7 @@ class OptimizationSetup:
             "conditions": {
                 "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
                 "freegame": ConstructConditions(rtp=0.37, hr=200, search_conditions={"symbol": "scatter"}).return_dict(),
-                "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
+                "basegame": ConstructConditions(hr=3.5, rtp=0.60).return_dict(),
             },
             "scaling": ConstructScaling(
                 [
@@ -50,7 +50,7 @@ class OptimizationSetup:
             "conditions": {
                 "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
                 "freegame": ConstructConditions(rtp=0.38, hr=185, search_conditions={"symbol": "scatter"}).return_dict(),
-                "basegame": ConstructConditions(hr=3.5, rtp=0.58).return_dict(),
+                "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
             },
             "scaling": ConstructScaling(
                 [
@@ -80,7 +80,7 @@ class OptimizationSetup:
 
         bonus_mode = {
             "conditions": {
-                "freegame": ConstructConditions(rtp=0.96, hr="x").return_dict(),
+                "freegame": ConstructConditions(rtp=0.97, hr="x").return_dict(),
             },
             "scaling": ConstructScaling(
                 [
