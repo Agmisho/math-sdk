@@ -148,10 +148,10 @@ class GameConfig(Config):
                 self.basegame_type: {"BR0": 1},
                 self.freegame_type: {"FR0": 1},
             },
-            # 8% relative lift over the normal 3-scatter trigger target.
+            # 15% relative lift over the normal 3-scatter trigger target.
             # Normal design reference: 3-scatter trigger ~= 1 in 255.
-            # Boosted target reference: ~= 1 in 236 before final tuning.
-            "scatter_triggers": {3: 54, 4: 22, 5: 5},
+            # Boosted target reference: ~= 1 in 222 before final tuning.
+            "scatter_triggers": {3: 58, 4: 23, 5: 6},
             "force_wincap": False,
             "force_freegame": True,
         }
@@ -193,9 +193,9 @@ class GameConfig(Config):
                 is_feature=True,
                 is_buybonus=False,
                 distributions=[
-                    Distribution(criteria="freegame", quota=0.108, conditions=scatter_boost_freegame_condition),
+                    Distribution(criteria="freegame", quota=0.115, conditions=scatter_boost_freegame_condition),
                     Distribution(criteria="0", quota=0.4, win_criteria=0.0, conditions=zerowin_condition),
-                    Distribution(criteria="basegame", quota=0.492, conditions=basegame_condition),
+                    Distribution(criteria="basegame", quota=0.485, conditions=basegame_condition),
                 ],
             ),
             BetMode(
