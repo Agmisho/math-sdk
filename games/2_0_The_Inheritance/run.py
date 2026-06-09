@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     num_sim_args = {
         "base": int(1e4),
+        "scatter_boost": int(1e4),
         "bonus": int(1e4),
     }
 
