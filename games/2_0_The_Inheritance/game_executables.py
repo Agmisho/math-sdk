@@ -57,26 +57,13 @@ class GameExecutables(GameCalculations):
         ]
 
     def get_landed_multiplier(self) -> int:
-        """Return the highest Diamond Seal multiplier visible on the board."""
+        """Return the current-spin multiplier from visible Diamond Seal symbols."""
         landed_values = []
         for reel in self.board:
             for symbol in reel:
                 if symbol.name in self.multiplier_symbol_values:
                     landed_values.append(self.multiplier_symbol_values[symbol.name])
         return max(landed_values) if landed_values else 1
-
-    def update_bonus_multiplier_state(self, landed_multiplier: int) -> int:
-        """Upgrade the persistent bonus multiplier without ever reducing it."""
-        if not hasattr(self, "current_bonus_multiplier"):
-            self.current_bonus_multiplier = 1
-        if not hasattr(self, "highest_bonus_multiplier"):
-            self.highest_bonus_multiplier = 1
-
-        if landed_multiplier > self.current_bonus_multiplier:
-            self.current_bonus_multiplier = landed_multiplier
-        if self.current_bonus_multiplier > self.highest_bonus_multiplier:
-            self.highest_bonus_multiplier = self.current_bonus_multiplier
-        return self.current_bonus_multiplier
 
     def get_landed_multiplier_positions(self) -> list:
         """Return all visible Diamond Seal multiplier positions on the current board."""
@@ -94,19 +81,14 @@ class GameExecutables(GameCalculations):
                     )
         return positions
 
-    def emit_multiplier_update_event(
-        self,
-        applied_multiplier: int,
-        landed_multiplier: int,
-        positions: list,
-    ) -> None:
-        """Emit multiplier state for frontend animation during free spins."""
+    def emit_multiplier_update_event(self, multiplier: int, positions: list) -> None:
+        """Emit current-spin multiplier state for frontend animation during free spins."""
         event = {
             "index": len(self.book.events),
             "type": "multiplierUpdate",
-            "appliedMultiplier": int(applied_multiplier),
-            "landedMultiplier": int(landed_multiplier),
-            "highestMultiplier": int(getattr(self, "highest_bonus_multiplier", applied_multiplier)),
+            "multiplier": int(multiplier),
+            "appliedMultiplier": int(multiplier),
+            "landedMultiplier": int(multiplier),
             "positions": positions,
             "gameType": self.gametype,
         }
@@ -170,16 +152,15 @@ class GameExecutables(GameCalculations):
         self.book.add_event(event)
 
     def evaluate_lines_board(self):
-        """Populate win data, record wins, apply bonus multipliers, and emit events."""
+        """Populate win data, record wins, apply current-spin multiplier, and emit events."""
         spin_multiplier = 1
         multiplier_positions = []
-        landed_multiplier = 1
 
         if self.gametype == self.config.freegame_type:
-            multiplier_positions = self.inject_controlled_multiplier_symbol()
-            landed_multiplier = self.get_landed_multiplier()
-            spin_multiplier = self.update_bonus_multiplier_state(landed_multiplier)
-            self.emit_multiplier_update_event(spin_multiplier, landed_multiplier, multiplier_positions)
+            injected_positions = self.inject_controlled_multiplier_symbol()
+            spin_multiplier = self.get_landed_multiplier()
+            multiplier_positions = self.get_landed_multiplier_positions() if injected_positions else []
+            self.emit_multiplier_update_event(spin_multiplier, multiplier_positions)
 
         self.win_data = Lines.get_lines(
             self.board,
