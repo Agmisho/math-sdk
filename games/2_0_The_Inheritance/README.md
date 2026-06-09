@@ -117,8 +117,8 @@ Multiplier symbols do not have direct paytable payouts.
 
 ## Reels
 
-- `BR0.csv` is the base-game reel strip.
-- `FR0.csv` is the normal free-spin reel strip and contains natural Diamond Seal multiplier symbols.
+- `BR0.csv` is the base-game reel strip and contains low-frequency natural Diamond Seal multiplier symbols.
+- `FR0.csv` is the normal free-spin reel strip and contains natural Diamond Seal multiplier symbols at a higher frequency than `BR0.csv`.
 - `FRWCAP.csv` is the wincap-support free-spin reel strip and contains natural Diamond Seal multiplier symbols.
 - The `WCAP` reel condition is included in the distribution model for wincap simulations.
 
