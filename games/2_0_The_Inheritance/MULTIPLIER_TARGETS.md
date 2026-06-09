@@ -1,6 +1,6 @@
 # The Inheritance Multiplier Hit-Rate Targets
 
-These are the target visible-board multiplier hit rates for bonus/free-spin mode before final reel tuning.
+These are the target controlled multiplier hit rates for free-spin mode before final reel tuning.
 
 ## Target probabilities
 
@@ -27,19 +27,17 @@ No-multiplier rate:
 
 ## Symbol model note
 
-The multiplier set remains 5 symbols:
+The multiplier set is exactly five Diamond Seal symbols:
 
 ```text
 M2, M5, M10, M20, M100
 ```
 
-`M50` does not exist and must not be added to the math model or frontend asset mapping.
-
 ## Implementation direction
 
 Short reel strips alone are not suitable for hitting exact rare-symbol probabilities, especially `M100 = 0.001`, because each reel exposes three visible rows.
 
-Use controlled reel weighting or controlled multiplier selection to target these probabilities:
+Use controlled multiplier selection to target these probabilities:
 
 ```text
 M2    = 0.090
@@ -50,4 +48,15 @@ M100  = 0.001
 None  = 0.709
 ```
 
-Final tuning should be verified with at least 100,000 bonus/free-spin samples, not 500 samples.
+## Application rule
+
+The controlled multiplier result applies to the current free-spin evaluation only:
+
+```text
+- no multiplier result applies x1
+- one or more visible Diamond Seal symbols apply the highest visible value
+- the next spin starts from x1 again
+- no stacking or carryover is used
+```
+
+Final tuning should be verified with at least 100,000 free-spin samples.
