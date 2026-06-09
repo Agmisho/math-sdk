@@ -9,12 +9,44 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 ## Math model
 
 - 5 reels
-- 3 rows
-- 20 paylines
+- 5 rows
+- 15 paylines
 - Max win target: 5000x
 - Base mode
 - Bonus buy mode
 - Free spins from 3+ scatters
+
+## Payline layout
+
+Rows are indexed from top to bottom:
+
+```text
+Top row    = 0
+Second row = 1
+Middle row = 2
+Fourth row = 3
+Bottom row = 4
+```
+
+The 15 paylines match the supplied 5x5 payline image:
+
+| Line | Row path |
+|---:|---|
+| 1 | `[0, 0, 0, 0, 0]` |
+| 2 | `[1, 1, 1, 1, 1]` |
+| 3 | `[2, 2, 2, 2, 2]` |
+| 4 | `[3, 3, 3, 3, 3]` |
+| 5 | `[4, 4, 4, 4, 4]` |
+| 6 | `[0, 1, 2, 3, 4]` |
+| 7 | `[4, 3, 2, 1, 0]` |
+| 8 | `[0, 1, 0, 1, 0]` |
+| 9 | `[1, 0, 1, 0, 1]` |
+| 10 | `[1, 2, 1, 2, 1]` |
+| 11 | `[2, 1, 2, 1, 2]` |
+| 12 | `[2, 3, 2, 3, 2]` |
+| 13 | `[3, 2, 3, 2, 3]` |
+| 14 | `[3, 4, 3, 4, 3]` |
+| 15 | `[4, 3, 4, 3, 4]` |
 
 ## Symbol model
 
