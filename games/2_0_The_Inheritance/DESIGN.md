@@ -11,6 +11,8 @@
 
 - 5 reels x 5 rows
 - 15 paylines, matching the supplied payline image
+- RTP configuration: 96%
+- Max win target: 5000x
 - Row index 0 is the top row
 - Row index 4 is the bottom row
 
@@ -52,7 +54,7 @@ Total symbols: 22
 | `M5` | Diamond Seal Multiplier 5 | current-spin x5 multiplier |
 | `M10` | Diamond Seal Multiplier 10 | current-spin x10 multiplier |
 | `M20` | Diamond Seal Multiplier 20 | current-spin x20 multiplier |
-| `M100` | Diamond Seal Multiplier 100 | current-spin x100 multiplier / ultra rare |
+| `M100` | Diamond Seal Multiplier 100 | current-spin x100 multiplier |
 | `W` | Wild | Wild substitute |
 
 ## Paying symbols
@@ -89,9 +91,16 @@ Total symbols: 22
   - 4 scatters = +8 free spins
   - 5 scatters = +12 free spins
 - Multiplier values: x2, x5, x10, x20, x100
+- Multiplier implementation: natural reel-strip Diamond Seal symbols in free-spin strips
 - Multiplier application: highest Diamond Seal visible on the current spin only
 - Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
-- Max win target: 5000x
+- No stacking, persistence, or carryover
+
+## Reel set
+
+- `BR0.csv`: base-game strip
+- `FR0.csv`: normal free-spin strip with natural multipliers
+- `FRWCAP.csv`: wincap-support free-spin strip with natural multipliers
 
 ## Frontend win effect thresholds
 
