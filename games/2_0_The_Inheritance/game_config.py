@@ -22,7 +22,7 @@ class GameConfig(Config):
         self.working_name = "The Inheritance"
         self.wincap = 5000.0
         self.win_type = "lines"
-        self.rtp = 0.9700
+        self.rtp = 0.9600
         self.construct_paths()
 
         # Game Dimensions
@@ -139,17 +139,12 @@ class GameConfig(Config):
                 self.freegame_type: {"FR0": 1},
             },
             "scatter_triggers": {3: 50, 4: 20, 5: 5},
-            "mult_values": {
-                self.basegame_type: {1: 1},
-                self.freegame_type: {2: 70, 5: 45, 10: 20, 20: 8, 100: 1},
-            },
             "force_wincap": False,
             "force_freegame": True,
         }
 
         basegame_condition = {
             "reel_weights": {self.basegame_type: {"BR0": 1}},
-            "mult_values": {self.basegame_type: {1: 1}},
             "force_wincap": False,
             "force_freegame": False,
         }
@@ -160,20 +155,12 @@ class GameConfig(Config):
                 self.freegame_type: {"FR0": 1, "WCAP": 5},
             },
             "scatter_triggers": {4: 1, 5: 2},
-            "mult_values": {
-                self.basegame_type: {1: 1},
-                self.freegame_type: {2: 70, 5: 45, 10: 20, 20: 8, 100: 1},
-            },
             "force_wincap": True,
             "force_freegame": True,
         }
 
         zerowin_condition = {
             "reel_weights": {self.basegame_type: {"BR0": 1}},
-            "mult_values": {
-                self.basegame_type: {1: 1},
-                self.freegame_type: {2: 100, 5: 40, 10: 10, 20: 2, 100: 1},
-            },
             "force_wincap": False,
             "force_freegame": False,
         }
