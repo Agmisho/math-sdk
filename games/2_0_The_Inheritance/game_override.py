@@ -31,6 +31,5 @@ class GameStateOverride(GameExecutables):
         symbol.assign_attribute({"multiplier": multiplier_values.get(symbol.name, 1)})
 
     def check_repeat(self):
-        # Smoke-test mode: do not force exact win criteria while feature logic is being built.
-        # This prevents long loops when a distribution condition is rare or temporarily unstable.
-        super().check_repeat()
+        self.repeat_count += 1
+        self.check_current_repeat_count()
