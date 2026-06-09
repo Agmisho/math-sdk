@@ -11,7 +11,7 @@
 
 - 5 reels x 5 rows
 - 15 paylines, matching the supplied payline image
-- RTP configuration: 96%
+- RTP configuration target: 97%
 - Max win target: 5000x
 - Row index 0 is the top row
 - Row index 4 is the bottom row
@@ -77,10 +77,22 @@ Total symbols: 22
 | `L5` | 10 |
 | `L6` | Family Crest Wild |
 
-## First version rules
+## Bet modes
 
 - Base spin cost: 1x
+- Scatter chance enhancer cost: 3x
 - Bonus buy cost: 100x
+
+Scatter chance enhancer target:
+
+```text
+Normal 3-scatter trigger design reference: 1 in 255
+Enhancer target: 8% relative increase to the 3-scatter trigger chance
+Enhancer target reference: about 1 in 236 before final tuning
+```
+
+## First version rules
+
 - Free spins trigger:
   - 3 scatters = 8 free spins
   - 4 scatters = 12 free spins
@@ -92,14 +104,16 @@ Total symbols: 22
   - 5 scatters = +12 free spins
 - Multiplier values: x2, x5, x10, x20, x100
 - Multiplier implementation: natural reel-strip Diamond Seal symbols in base and free-spin strips
+- Base multipliers remain possible, including x100, at lower frequency than free/bought spins
+- Free and bought bonus spins use higher-frequency multiplier reel strips
 - Multiplier application: highest Diamond Seal visible on the current spin only
 - Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
 - No stacking, persistence, or carryover
 
 ## Reel set
 
-- `BR0.csv`: base-game strip with low-frequency natural multipliers
-- `FR0.csv`: normal free-spin strip with higher-frequency natural multipliers
+- `BR0.csv`: base-game strip with low-frequency natural multipliers, including all five Diamond Seal values
+- `FR0.csv`: normal free-spin / bought-bonus strip with higher-frequency natural multipliers
 - `FRWCAP.csv`: wincap-support free-spin strip with natural multipliers
 
 ## Frontend win effect thresholds
@@ -111,4 +125,4 @@ Total symbols: 22
 
 ## Important note
 
-This is the first math scaffold. The reel strips and paytable are starter values and must be tuned after the first simulation reports.
+This is the first math scaffold. The reel strips and paytable are starter values and must be tuned after the first simulation reports. Full RTP/math certification is not complete yet.
