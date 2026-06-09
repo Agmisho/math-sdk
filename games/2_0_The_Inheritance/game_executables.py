@@ -1,3 +1,5 @@
+import random
+
 from game_calculations import GameCalculations
 from src.calculations.lines import Lines
 
@@ -12,7 +14,48 @@ class GameExecutables(GameCalculations):
         "M100": 100,
     }
 
+    multiplier_target_weights = {
+        None: 709,
+        "M2": 90,
+        "M5": 80,
+        "M10": 70,
+        "M20": 50,
+        "M100": 1,
+    }
+
     collection_symbol = "H4"  # Legacy Key
+
+    def choose_controlled_multiplier_symbol(self):
+        """Choose a free-spin multiplier symbol using the target hit-rate model."""
+        total_weight = sum(self.multiplier_target_weights.values())
+        roll = random.randint(1, total_weight)
+        cumulative = 0
+        for symbol_name, weight in self.multiplier_target_weights.items():
+            cumulative += weight
+            if roll <= cumulative:
+                return symbol_name
+        return None
+
+    def inject_controlled_multiplier_symbol(self) -> list:
+        """Inject the selected multiplier symbol into one visible free-spin board position."""
+        symbol_name = self.choose_controlled_multiplier_symbol()
+        if symbol_name is None:
+            return []
+
+        reel_index = random.randint(0, self.config.num_reels - 1)
+        visible_row_index = random.randint(0, 2)
+        board_row_index = visible_row_index + 1 if self.config.include_padding else visible_row_index
+
+        self.board[reel_index][board_row_index] = self.symbol_storage.create_symbol(symbol_name)
+
+        return [
+            {
+                "reel": reel_index,
+                "row": board_row_index,
+                "symbol": symbol_name,
+                "multiplier": self.multiplier_symbol_values[symbol_name],
+            }
+        ]
 
     def get_landed_multiplier(self) -> int:
         """Return the highest Diamond Seal multiplier visible on the board."""
@@ -114,7 +157,7 @@ class GameExecutables(GameCalculations):
         spin_multiplier = 1
         multiplier_positions = []
         if self.gametype == self.config.freegame_type:
-            multiplier_positions = self.get_landed_multiplier_positions()
+            multiplier_positions = self.inject_controlled_multiplier_symbol()
             spin_multiplier = self.get_landed_multiplier()
             self.emit_multiplier_update_event(spin_multiplier, multiplier_positions)
 
