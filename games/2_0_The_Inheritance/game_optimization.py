@@ -13,13 +13,9 @@ class OptimizationSetup:
 
     def __init__(self, game_config):
         self.game_config = game_config
-        wincaps = {}
-        for bm in game_config.bet_modes:
-            wincaps[bm.get_name()] = bm.get_wincap()
 
         base_mode = {
             "conditions": {
-                "wincap": ConstructConditions(rtp=0.01, av_win=wincaps["base"], search_conditions=wincaps["base"]).return_dict(),
                 "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
                 "freegame": ConstructConditions(rtp=0.37, hr=200, search_conditions={"symbol": "scatter"}).return_dict(),
                 "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
@@ -52,7 +48,6 @@ class OptimizationSetup:
 
         scatter_boost_mode = {
             "conditions": {
-                "wincap": ConstructConditions(rtp=0.01, av_win=wincaps["scatter_boost"], search_conditions=wincaps["scatter_boost"]).return_dict(),
                 "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
                 "freegame": ConstructConditions(rtp=0.38, hr=185, search_conditions={"symbol": "scatter"}).return_dict(),
                 "basegame": ConstructConditions(hr=3.5, rtp=0.58).return_dict(),
@@ -85,7 +80,6 @@ class OptimizationSetup:
 
         bonus_mode = {
             "conditions": {
-                "wincap": ConstructConditions(rtp=0.01, av_win=wincaps["bonus"], search_conditions=wincaps["bonus"]).return_dict(),
                 "freegame": ConstructConditions(rtp=0.96, hr="x").return_dict(),
             },
             "scaling": ConstructScaling(
