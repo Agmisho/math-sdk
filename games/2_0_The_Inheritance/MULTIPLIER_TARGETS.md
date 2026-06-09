@@ -1,14 +1,14 @@
 # The Inheritance Multiplier Reel Notes
 
-The final implementation uses natural reel-strip multiplier symbols in free-spin reel strips.
+The final implementation uses natural reel-strip multiplier symbols.
 
 ## Implementation model
 
 Multiplier outcomes are not selected by controlled injection. Diamond Seal symbols exist directly in reel strips:
 
-- `FR0.csv` contains natural free-spin multipliers.
-- `FRWCAP.csv` contains natural wincap-support multipliers.
-- `BR0.csv` is a base-game strip and does not carry Diamond Seal multiplier behavior.
+- `BR0.csv` contains low-frequency base-game multipliers.
+- `FR0.csv` contains normal free-spin multipliers at a higher frequency than `BR0.csv`.
+- `FRWCAP.csv` contains wincap-support multipliers.
 
 The multiplier set is exactly five Diamond Seal symbols:
 
@@ -18,7 +18,7 @@ M2, M5, M10, M20, M100
 
 ## Application rule
 
-The visible board determines the applied multiplier for each free-spin evaluation:
+The visible board determines the applied multiplier for each spin evaluation:
 
 ```text
 - no visible Diamond Seal applies x1
