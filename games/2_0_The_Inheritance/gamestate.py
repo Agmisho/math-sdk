@@ -30,7 +30,7 @@ class GameState(GameStateOverride):
             self.draw_board()
             self.update_collection_state()
 
-            # Free spins: same lines mechanic, with Diamond Seal multipliers applied as global spin multipliers.
+            # Free spins: line wins use the highest visible Diamond Seal multiplier for this spin.
             self.evaluate_lines_board()
 
             if self.check_fs_condition():
