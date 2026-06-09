@@ -118,9 +118,16 @@ Multiplier symbols do not have direct paytable payouts.
 ## Reels
 
 - `BR0.csv` is the base-game reel strip and contains low-frequency natural Diamond Seal multiplier symbols.
-- `FR0.csv` is the normal free-spin reel strip and contains natural Diamond Seal multiplier symbols at a higher frequency than `BR0.csv`.
+- `FR0.csv` is the normal free-spin / bought-bonus reel strip and contains natural Diamond Seal multiplier symbols at a higher frequency than `BR0.csv`.
 - `FRWCAP.csv` is the wincap-support free-spin reel strip and contains natural Diamond Seal multiplier symbols.
 - The `WCAP` reel condition is included in the distribution model for wincap simulations.
+
+Current build-level frequency direction:
+
+```text
+BR0 base game: lower multiplier frequency
+FR0 free / bought bonus: higher multiplier frequency
+```
 
 ## Free spins
 
@@ -143,7 +150,7 @@ Diamond Seal multipliers are natural moving reel symbols.
 
 - `M2`, `M5`, `M10`, `M20`, and `M100` are separate symbols.
 - They can land in the same spin, on the same line, or next to each other.
-- If one or more land in the same spin, the highest visible multiplier applies.
+- If one or more land in the same spin, the highest visible multiplier applies globally to that spin.
 - The multiplier applies only to the current spin.
 - The next spin starts from x1 unless another Diamond Seal symbol lands.
 - There is no stacking, no carryover, and no persistent bonus multiplier.
