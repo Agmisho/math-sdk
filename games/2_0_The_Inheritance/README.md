@@ -12,6 +12,7 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - 5 rows
 - 15 paylines
 - RTP configuration: 97%
+- Volatility target: High
 - Max win target: 5000x
 - Base mode
 - Scatter chance enhancer mode
@@ -20,13 +21,14 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - `run.py` is the SDK generation entrypoint
 - Development scripts are separate and are not part of the production generation flow
 
-## Bet modes
+## Buy menu
 
-| Mode | Cost | Purpose |
-|---|---:|---|
-| `base` | 1x | Standard base spin |
-| `scatter_boost` | 3x | Base spin with 8% relative higher 3-scatter trigger chance |
-| `bonus` | 100x | Bought free-spin feature |
+The frontend `BUY` button opens a Buy menu with two options:
+
+| Buy menu option | Internal mode | Cost | Behavior |
+|---|---|---:|---|
+| Scatter Boost | `scatter_boost` | 3x base bet per spin | Base spin with 8% relative higher 3-scatter trigger chance |
+| Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
 
 Scatter chance enhancer target:
 
@@ -34,6 +36,21 @@ Scatter chance enhancer target:
 Normal 3-scatter trigger design reference: 1 in 255
 Scatter boost target reference: about 8% relative higher chance, around 1 in 236
 ```
+
+Bonus Buy entry behavior:
+
+```text
+Bonus Buy can start as if triggered by 3, 4, or 5 scatters.
+The configured scatter entry weights are defined in game_config.py under freegame_condition.scatter_triggers.
+```
+
+## Bet modes
+
+| Mode | Cost | Purpose |
+|---|---:|---|
+| `base` | 1x | Standard base spin |
+| `scatter_boost` | 3x | Buy-menu Scatter Boost spin |
+| `bonus` | 100x | Buy-menu Bonus Buy feature |
 
 ## Payline layout
 
@@ -80,7 +97,7 @@ Total symbols: 22
 
 | Math symbol | Asset name | Role |
 |---|---|---|
-| `S` | Vault Scatter | Free-spin trigger |
+| `S` | Vault_Scatter | Free-spin trigger |
 | `W` | Wild | Wild substitute |
 | `M2` | Diamond Seal Multiplier 2 | Current-spin x2 multiplier |
 | `M5` | Diamond Seal Multiplier 5 | Current-spin x5 multiplier |
@@ -92,7 +109,7 @@ Total symbols: 22
 
 | Math symbol | Asset name |
 |---|---|
-| `H1` | Heriess |
+| `H1` | Heiress |
 | `H2` | Covered Portrait Mystery |
 | `H3` | Treasure Chest |
 | `H4` | Legacy Key |
@@ -106,7 +123,7 @@ Total symbols: 22
 | `L3` | Q |
 | `L4` | J |
 | `L5` | 10 |
-| `L6` | Family Crest Wild |
+| `L6` | Family Crest |
 
 ## Paytable
 
