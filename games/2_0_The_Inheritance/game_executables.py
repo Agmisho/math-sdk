@@ -23,6 +23,34 @@ class GameExecutables(GameCalculations):
                     landed_values.append(self.multiplier_symbol_values[symbol.name])
         return max(landed_values) if landed_values else 1
 
+    def get_landed_multiplier_positions(self) -> list:
+        """Return all visible Diamond Seal multiplier positions on the current board."""
+        positions = []
+        for reel_index, reel in enumerate(self.board):
+            for row_index, symbol in enumerate(reel):
+                if symbol.name in self.multiplier_symbol_values:
+                    row = row_index + 1 if self.config.include_padding else row_index
+                    positions.append(
+                        {
+                            "reel": reel_index,
+                            "row": row,
+                            "symbol": symbol.name,
+                            "multiplier": self.multiplier_symbol_values[symbol.name],
+                        }
+                    )
+        return positions
+
+    def emit_multiplier_update_event(self, multiplier: int, positions: list) -> None:
+        """Emit multiplier state for frontend animation during free spins."""
+        event = {
+            "index": len(self.book.events),
+            "type": "multiplierUpdate",
+            "multiplier": int(multiplier),
+            "positions": positions,
+            "gameType": self.gametype,
+        }
+        self.book.add_event(event)
+
     def get_collection_positions(self) -> list:
         """Return all visible Legacy Key positions on the current board."""
         positions = []
@@ -84,8 +112,11 @@ class GameExecutables(GameCalculations):
     def evaluate_lines_board(self):
         """Populate win data, record wins, apply bonus multipliers, and emit events."""
         spin_multiplier = 1
+        multiplier_positions = []
         if self.gametype == self.config.freegame_type:
+            multiplier_positions = self.get_landed_multiplier_positions()
             spin_multiplier = self.get_landed_multiplier()
+            self.emit_multiplier_update_event(spin_multiplier, multiplier_positions)
 
         self.win_data = Lines.get_lines(
             self.board,
