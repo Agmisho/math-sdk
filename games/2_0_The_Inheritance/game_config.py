@@ -193,8 +193,8 @@ class GameConfig(Config):
                 is_feature=True,
                 is_buybonus=False,
                 distributions=[
-                    Distribution(criteria="freegame", quota=0.115, conditions=scatter_boost_freegame_condition),
-                    Distribution(criteria="0", quota=0.4, win_criteria=0.0, conditions=zerowin_condition),
+                    Distribution(criteria="freegame", quota=0.135, conditions=scatter_boost_freegame_condition),
+                    Distribution(criteria="0", quota=0.38, win_criteria=0.0, conditions=zerowin_condition),
                     Distribution(criteria="basegame", quota=0.485, conditions=basegame_condition),
                 ],
             ),
