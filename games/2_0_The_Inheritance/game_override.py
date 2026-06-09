@@ -6,6 +6,10 @@ class GameStateOverride(GameExecutables):
 
     def reset_book(self):
         super().reset_book()
+        self.collected_count = 0
+        self.collection_target = 10
+        self.mansion_level = 1
+        self.display_multiplier = 1
 
     def assign_special_sym_function(self):
         self.special_symbol_functions = {
