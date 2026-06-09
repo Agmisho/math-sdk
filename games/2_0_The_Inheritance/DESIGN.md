@@ -91,15 +91,15 @@ Total symbols: 22
   - 4 scatters = +8 free spins
   - 5 scatters = +12 free spins
 - Multiplier values: x2, x5, x10, x20, x100
-- Multiplier implementation: natural reel-strip Diamond Seal symbols in free-spin strips
+- Multiplier implementation: natural reel-strip Diamond Seal symbols in base and free-spin strips
 - Multiplier application: highest Diamond Seal visible on the current spin only
 - Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
 - No stacking, persistence, or carryover
 
 ## Reel set
 
-- `BR0.csv`: base-game strip
-- `FR0.csv`: normal free-spin strip with natural multipliers
+- `BR0.csv`: base-game strip with low-frequency natural multipliers
+- `FR0.csv`: normal free-spin strip with higher-frequency natural multipliers
 - `FRWCAP.csv`: wincap-support free-spin strip with natural multipliers
 
 ## Frontend win effect thresholds
