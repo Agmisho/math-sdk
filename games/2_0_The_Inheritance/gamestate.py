@@ -10,6 +10,7 @@ class GameState(GameStateOverride):
         while self.repeat:
             self.reset_book()
             self.draw_board()
+            self.update_collection_state()
 
             # Base game: evaluate line wins and emit default line-win events.
             self.evaluate_lines_board()
@@ -27,8 +28,9 @@ class GameState(GameStateOverride):
         while self.fs < self.tot_fs:
             self.update_freespin()
             self.draw_board()
+            self.update_collection_state()
 
-            # Free spins: same lines mechanic, with wild multipliers assigned by game_override.
+            # Free spins: same lines mechanic, with Diamond Seal multipliers applied as global spin multipliers.
             self.evaluate_lines_board()
 
             if self.check_fs_condition():
