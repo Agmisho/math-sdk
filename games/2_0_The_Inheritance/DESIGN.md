@@ -12,6 +12,7 @@
 - 5 reels x 5 rows
 - 15 paylines, matching the supplied payline image
 - RTP configuration target: 97%
+- Volatility target: High
 - Max win target: 5000x
 - Row index 0 is the top row
 - Row index 4 is the bottom row
@@ -49,7 +50,7 @@ Total symbols: 22
 
 | Math symbol | Asset name | Role |
 |---|---|---|
-| `S` | Vault Scatter | Bonus trigger |
+| `S` | Vault_Scatter | Bonus trigger |
 | `M2` | Diamond Seal Multiplier 2 | current-spin x2 multiplier |
 | `M5` | Diamond Seal Multiplier 5 | current-spin x5 multiplier |
 | `M10` | Diamond Seal Multiplier 10 | current-spin x10 multiplier |
@@ -61,7 +62,7 @@ Total symbols: 22
 
 | Math symbol | Asset name |
 |---|---|
-| `H1` | Heriess |
+| `H1` | Heiress |
 | `H2` | Covered Portrait Mystery |
 | `H3` | Treasure Chest |
 | `H4` | Legacy Key |
@@ -75,13 +76,16 @@ Total symbols: 22
 | `L3` | Q |
 | `L4` | J |
 | `L5` | 10 |
-| `L6` | Family Crest Wild |
+| `L6` | Family Crest |
 
-## Bet modes
+## Buy menu
 
-- Base spin cost: 1x
-- Scatter chance enhancer cost: 3x
-- Bonus buy cost: 100x
+Frontend `BUY` opens a Buy menu.
+
+| Option | Internal mode | Cost | Behavior |
+|---|---|---:|---|
+| Scatter Boost | `scatter_boost` | 3x base bet per spin | 8% relative higher 3-scatter trigger chance |
+| Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
 
 Scatter chance enhancer target:
 
@@ -102,11 +106,12 @@ Enhancer target reference: about 1 in 236 before final tuning
   - 3 scatters = +5 free spins
   - 4 scatters = +8 free spins
   - 5 scatters = +12 free spins
+- Bonus Buy entry can start as 3-, 4-, or 5-scatter entry according to configured entry weights
 - Multiplier values: x2, x5, x10, x20, x100
 - Multiplier implementation: natural reel-strip Diamond Seal symbols in base and free-spin strips
 - Base multipliers remain possible, including x100, at lower frequency than free/bought spins
 - Free and bought bonus spins use higher-frequency multiplier reel strips
-- Multiplier application: highest Diamond Seal visible on the current spin only
+- Multiplier application: highest Diamond Seal visible on the current spin only, applied globally
 - Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
 - No stacking, persistence, or carryover
 
