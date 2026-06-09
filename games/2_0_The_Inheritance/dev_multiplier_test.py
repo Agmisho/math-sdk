@@ -1,7 +1,7 @@
-"""Development test for The Inheritance multiplier behavior.
+"""Development test for The Inheritance natural multiplier behavior.
 
-This script is intentionally lightweight. It validates the controlled free-spin
-Diamond Seal multiplier model without running full SDK book generation.
+This script is intentionally lightweight. It validates the free-spin Diamond
+Seal multiplier model without running full SDK book generation.
 """
 
 from __future__ import annotations
@@ -21,22 +21,7 @@ from gamestate import GameState  # noqa: E402
 from game_config import GameConfig  # noqa: E402
 
 MULTIPLIER_SYMBOLS = {"M2", "M5", "M10", "M20", "M100"}
-EXPECTED_COUNTS = {
-    1: 70900,
-    2: 9000,
-    5: 8000,
-    10: 7000,
-    20: 5000,
-    100: 100,
-}
-TOLERANCE = {
-    1: 1000,
-    2: 500,
-    5: 500,
-    10: 500,
-    20: 400,
-    100: 60,
-}
+EXPECTED_MULTIPLIERS = {1, 2, 5, 10, 20, 100}
 
 
 def read_csv_symbols(path: Path) -> set[str]:
@@ -76,22 +61,30 @@ def check_static_rules() -> list[str]:
     errors: list[str] = []
     game_text = "\n".join(path.read_text(errors="ignore") for path in iter_source_files())
 
-    blocked_m50 = "M" + "50"
-    if blocked_m50 in game_text:
-        errors.append("Unexpected M50-style multiplier text exists in source files.")
+    blocked_text = "M" + "50"
+    if blocked_text in game_text:
+        errors.append("Unexpected fifty-times multiplier text exists in source files.")
 
-    persistent_terms = [
+    blocked_terms = [
         "current" + "_bonus" + "_multiplier",
         "highest" + "_bonus" + "_multiplier",
+        "inject" + "_controlled" + "_multiplier" + "_symbol",
+        "multiplier" + "_target" + "_weights",
     ]
-    for forbidden in persistent_terms:
+    for forbidden in blocked_terms:
         if forbidden in game_text:
-            errors.append(f"Persistent multiplier variable found: {forbidden}")
+            errors.append(f"Unexpected controlled or persistent multiplier logic found: {forbidden}")
 
+    br0_symbols = read_csv_symbols(GAME_DIR / "reels" / "BR0.csv")
     fr0_symbols = read_csv_symbols(GAME_DIR / "reels" / "FR0.csv")
-    natural_multipliers = sorted(fr0_symbols.intersection(MULTIPLIER_SYMBOLS))
-    if natural_multipliers:
-        errors.append(f"FR0.csv contains natural multiplier symbols: {natural_multipliers}")
+    wcap_symbols = read_csv_symbols(GAME_DIR / "reels" / "FRWCAP.csv")
+
+    if br0_symbols.intersection(MULTIPLIER_SYMBOLS):
+        errors.append("BR0.csv should not contain Diamond Seal multipliers.")
+    if not fr0_symbols.intersection(MULTIPLIER_SYMBOLS):
+        errors.append("FR0.csv must contain natural Diamond Seal multipliers.")
+    if not wcap_symbols.intersection(MULTIPLIER_SYMBOLS):
+        errors.append("FRWCAP.csv must contain natural Diamond Seal multipliers.")
 
     return errors
 
@@ -113,6 +106,43 @@ def get_latest_multiplier_event(game: GameState) -> dict:
     return events[-1]
 
 
+def make_board(game: GameState, symbol_name: str = "L1") -> None:
+    game.board = [
+        [game.create_symbol(symbol_name) for _ in range(game.config.num_rows[reel])]
+        for reel in range(game.config.num_reels)
+    ]
+    game.get_special_symbols_on_board()
+
+
+def run_forced_reset_demo() -> None:
+    config = GameConfig()
+    game = GameState(config)
+    setup_free_spin(game, config, 0)
+
+    sequence = [
+        [(0, 0, "M20"), (2, 1, "M5")],
+        [],
+        [(1, 3, "M2")],
+        [],
+        [(3, 2, "M100"), (4, 4, "M10")],
+        [],
+    ]
+
+    print("Forced current-spin reset examples:")
+    for index, placements in enumerate(sequence, start=1):
+        game.reset_book()
+        game.betmode = "bonus"
+        game.criteria = "freegame"
+        game.gametype = config.freegame_type
+        make_board(game)
+        for reel, row, symbol_name in placements:
+            game.board[reel][row] = game.create_symbol(symbol_name)
+        game.get_special_symbols_on_board()
+        game.evaluate_lines_board()
+        event = get_latest_multiplier_event(game)
+        print({"spin": index, "placements": placements, "event": event})
+
+
 def run_frequency_test(samples: int = 100_000) -> Counter:
     config = GameConfig()
     game = GameState(config)
@@ -129,47 +159,17 @@ def run_frequency_test(samples: int = 100_000) -> Counter:
         if multiplier > 1 and len(examples) < 5:
             examples.append(event)
 
-    print("Multiplier frequency from", samples, "bonus/free-spin samples:")
+    print("Multiplier frequency from", samples, "natural free-spin samples:")
     print(dict(sorted(counts.items())))
     print("Multiplier event examples:")
     for event in examples:
         print(event)
 
-    for multiplier, expected in EXPECTED_COUNTS.items():
-        observed = counts.get(multiplier, 0)
-        allowed = TOLERANCE[multiplier]
-        if abs(observed - expected) > allowed:
-            print(
-                f"WARNING: multiplier x{multiplier} observed {observed}, "
-                f"expected around {expected} (+/- {allowed})."
-            )
+    unexpected = set(counts.keys()).difference(EXPECTED_MULTIPLIERS)
+    if unexpected:
+        print("WARNING: Unexpected applied multiplier values:", sorted(unexpected))
 
     return counts
-
-
-def run_reset_sequence() -> None:
-    config = GameConfig()
-    game = GameState(config)
-    print("20-spin current-spin multiplier reset check:")
-
-    previous_applied = 1
-    saw_reset_after_multiplier = False
-
-    for spin in range(20):
-        setup_free_spin(game, config, 1000 + spin)
-        game.draw_board()
-        game.evaluate_lines_board()
-        event = get_latest_multiplier_event(game)
-        applied = int(event["appliedMultiplier"])
-        landed = int(event["landedMultiplier"])
-        print({"spin": spin + 1, "landed": landed, "applied": applied})
-
-        if previous_applied > 1 and applied == 1:
-            saw_reset_after_multiplier = True
-        previous_applied = applied
-
-    if not saw_reset_after_multiplier:
-        print("WARNING: This 20-spin seed range did not show a multiplier followed by x1 reset.")
 
 
 def main() -> int:
@@ -181,7 +181,7 @@ def main() -> int:
         return 1
 
     print("Static rule check passed.")
-    run_reset_sequence()
+    run_forced_reset_demo()
     run_frequency_test()
     print("Multiplier development test complete.")
     return 0
