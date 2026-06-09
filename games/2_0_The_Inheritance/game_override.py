@@ -10,8 +10,6 @@ class GameStateOverride(GameExecutables):
         self.collection_target = 10
         self.mansion_level = 1
         self.display_multiplier = 1
-        self.current_bonus_multiplier = 1
-        self.highest_bonus_multiplier = 1
 
     def assign_special_sym_function(self):
         self.special_symbol_functions = {
