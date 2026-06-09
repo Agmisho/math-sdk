@@ -12,6 +12,8 @@ class GameExecutables(GameCalculations):
         "M100": 100,
     }
 
+    collection_symbol = "H4"  # Legacy Key
+
     def get_landed_multiplier(self) -> int:
         """Return the highest Diamond Seal multiplier visible on the board."""
         landed_values = []
@@ -20,6 +22,64 @@ class GameExecutables(GameCalculations):
                 if symbol.name in self.multiplier_symbol_values:
                     landed_values.append(self.multiplier_symbol_values[symbol.name])
         return max(landed_values) if landed_values else 1
+
+    def get_collection_positions(self) -> list:
+        """Return all visible Legacy Key positions on the current board."""
+        positions = []
+        for reel_index, reel in enumerate(self.board):
+            for row_index, symbol in enumerate(reel):
+                if symbol.name == self.collection_symbol:
+                    row = row_index + 1 if self.config.include_padding else row_index
+                    positions.append({"reel": reel_index, "row": row})
+        return positions
+
+    def calculate_mansion_level(self, collected_count: int) -> int:
+        """Map collection progress to the mansion level display."""
+        if collected_count >= 10:
+            return 5
+        if collected_count >= 9:
+            return 4
+        if collected_count >= 6:
+            return 3
+        if collected_count >= 3:
+            return 2
+        return 1
+
+    def calculate_display_multiplier(self, collected_count: int) -> int:
+        """Map collection progress to the side-panel multiplier display."""
+        if collected_count >= 10:
+            return 10
+        if collected_count >= 9:
+            return 7
+        if collected_count >= 7:
+            return 5
+        if collected_count >= 5:
+            return 4
+        if collected_count >= 3:
+            return 3
+        if collected_count >= 1:
+            return 2
+        return 1
+
+    def update_collection_state(self) -> None:
+        """Collect Legacy Keys and emit a frontend state event."""
+        positions = self.get_collection_positions()
+        if positions:
+            self.collected_count = min(self.collection_target, self.collected_count + len(positions))
+        self.mansion_level = self.calculate_mansion_level(self.collected_count)
+        self.display_multiplier = self.calculate_display_multiplier(self.collected_count)
+
+        event = {
+            "index": len(self.book.events),
+            "type": "collectionUpdate",
+            "collected": int(self.collected_count),
+            "target": int(self.collection_target),
+            "mansionLevel": int(self.mansion_level),
+            "displayMultiplier": int(self.display_multiplier),
+            "positions": positions,
+            "gameType": self.gametype,
+        }
+        self.book.add_event(event)
 
     def evaluate_lines_board(self):
         """Populate win data, record wins, apply bonus multipliers, and emit events."""
