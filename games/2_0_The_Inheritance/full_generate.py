@@ -1,7 +1,6 @@
 """Full SDK generation entrypoint for The Inheritance.
 
-Use this only after fast feature checks pass. This follows the standard SDK
-sample lines-game generation flow.
+This mirrors run.py and is kept as a secondary explicit full-generation entrypoint.
 """
 
 from gamestate import GameState
@@ -23,6 +22,7 @@ if __name__ == "__main__":
 
     num_sim_args = {
         "base": int(1e4),
+        "scatter_boost": int(1e4),
         "bonus": int(1e4),
     }
 
