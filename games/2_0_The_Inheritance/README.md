@@ -11,10 +11,13 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - 5 reels
 - 5 rows
 - 15 paylines
+- RTP configuration: 96%
 - Max win target: 5000x
 - Base mode
 - Bonus buy mode
 - Free spins from 3+ scatters
+- `run.py` is the SDK generation entrypoint
+- Development scripts are separate and are not part of the production generation flow
 
 ## Payline layout
 
@@ -112,6 +115,13 @@ Total symbols: 22
 
 Multiplier symbols do not have direct paytable payouts.
 
+## Reels
+
+- `BR0.csv` is the base-game reel strip.
+- `FR0.csv` is the normal free-spin reel strip and contains natural Diamond Seal multiplier symbols.
+- `FRWCAP.csv` is the wincap-support free-spin reel strip and contains natural Diamond Seal multiplier symbols.
+- The `WCAP` reel condition is included in the distribution model for wincap simulations.
+
 ## Free spins
 
 Base game trigger:
@@ -129,7 +139,7 @@ Free-spin retrigger:
 
 ## Diamond Seal multiplier behavior
 
-Diamond Seal multipliers are moving reel symbols only.
+Diamond Seal multipliers are natural moving reel symbols.
 
 - `M2`, `M5`, `M10`, `M20`, and `M100` are separate symbols.
 - They can land in the same spin, on the same line, or next to each other.
@@ -138,22 +148,19 @@ Diamond Seal multipliers are moving reel symbols only.
 - The next spin starts from x1 unless another Diamond Seal symbol lands.
 - There is no stacking, no carryover, and no persistent bonus multiplier.
 
-Target controlled hit rates:
+`multiplierUpdate` includes:
 
-| Result | Target rate |
-|---|---:|
-| No multiplier | 0.709 |
-| `M2` | 0.090 |
-| `M5` | 0.080 |
-| `M10` | 0.070 |
-| `M20` | 0.050 |
-| `M100` | 0.001 |
+- `multiplier`
+- `appliedMultiplier`
+- `landedMultiplier`
+- `positions`
+- `gameType`
 
 ## Collection event
 
 `H4` Legacy Key is the collection symbol.
 
-`collectionUpdate` should include:
+`collectionUpdate` includes:
 
 - `collected`
 - `target`
@@ -170,7 +177,10 @@ From repository root:
 
 ```bash
 PYTHONPATH=games/2_0_The_Inheritance:. python3 games/2_0_The_Inheritance/dev_multiplier_test.py
-PYTHONPATH=. python3 games/2_0_The_Inheritance/run.py
 ```
 
-Full book generation should wait until feature logic and fast tests are stable.
+Full SDK generation uses:
+
+```bash
+PYTHONPATH=. python3 games/2_0_The_Inheritance/run.py
+```
