@@ -8,35 +8,44 @@ from gamestate import GameState
 from game_config import GameConfig
 
 
+def run_single_check(game, sim, gametype, betmode, criteria):
+    game.betmode = betmode
+    game.criteria = criteria
+    game.reset_seed(sim)
+    game.reset_book()
+    game.betmode = betmode
+    game.criteria = criteria
+    game.gametype = gametype
+
+    game.draw_board()
+    game.update_collection_state()
+    landed_multiplier = game.get_landed_multiplier()
+    game.evaluate_lines_board()
+    game.win_manager.update_gametype_wins(game.gametype)
+    game.evaluate_finalwin()
+
+    return {
+        "sim": sim,
+        "game_type": game.gametype,
+        "final_win": game.final_win,
+        "events": len(game.book.events),
+        "collected": game.collected_count,
+        "mansion_level": game.mansion_level,
+        "display_multiplier": game.display_multiplier,
+        "landed_multiplier": landed_multiplier,
+    }
+
+
 if __name__ == "__main__":
     config = GameConfig()
     game = GameState(config)
 
-    print("Running The Inheritance fast feature check...")
-
+    print("Running The Inheritance BASE fast feature check...")
     for sim in range(20):
-        game.betmode = "base"
-        game.criteria = "basegame"
-        game.reset_seed(sim)
-        game.reset_book()
-        game.betmode = "base"
-        game.criteria = "basegame"
+        print(run_single_check(game, sim, config.basegame_type, "base", "basegame"))
 
-        game.draw_board()
-        game.update_collection_state()
-        game.evaluate_lines_board()
-        game.win_manager.update_gametype_wins(game.gametype)
-        game.evaluate_finalwin()
-
-        print(
-            {
-                "sim": sim,
-                "final_win": game.final_win,
-                "events": len(game.book.events),
-                "collected": game.collected_count,
-                "mansion_level": game.mansion_level,
-                "display_multiplier": game.display_multiplier,
-            }
-        )
+    print("Running The Inheritance BONUS fast feature check...")
+    for sim in range(20, 40):
+        print(run_single_check(game, sim, config.freegame_type, "bonus", "freegame"))
 
     print("The Inheritance fast feature check complete.")
