@@ -22,7 +22,7 @@ class GameConfig(Config):
         self.working_name = "The Inheritance"
         self.wincap = 5000.0
         self.win_type = "lines"
-        self.rtp = 0.9600
+        self.rtp = 0.9700
         self.construct_paths()
 
         # Game Dimensions
@@ -143,6 +143,19 @@ class GameConfig(Config):
             "force_freegame": True,
         }
 
+        scatter_boost_freegame_condition = {
+            "reel_weights": {
+                self.basegame_type: {"BR0": 1},
+                self.freegame_type: {"FR0": 1},
+            },
+            # 8% relative lift over the normal 3-scatter trigger target.
+            # Normal design reference: 3-scatter trigger ~= 1 in 255.
+            # Boosted target reference: ~= 1 in 236 before final tuning.
+            "scatter_triggers": {3: 54, 4: 22, 5: 5},
+            "force_wincap": False,
+            "force_freegame": True,
+        }
+
         basegame_condition = {
             "reel_weights": {self.basegame_type: {"BR0": 1}},
             "force_wincap": False,
@@ -165,7 +178,7 @@ class GameConfig(Config):
             "force_freegame": False,
         }
 
-        mode_maxwins = {"base": 5000, "bonus": 5000}
+        mode_maxwins = {"base": 5000, "scatter_boost": 5000, "bonus": 5000}
         self.bet_modes = [
             BetMode(
                 name="base",
@@ -185,6 +198,26 @@ class GameConfig(Config):
                     Distribution(criteria="freegame", quota=0.1, conditions=freegame_condition),
                     Distribution(criteria="0", quota=0.4, win_criteria=0.0, conditions=zerowin_condition),
                     Distribution(criteria="basegame", quota=0.5, conditions=basegame_condition),
+                ],
+            ),
+            BetMode(
+                name="scatter_boost",
+                cost=3.0,
+                rtp=self.rtp,
+                max_win=mode_maxwins["scatter_boost"],
+                auto_close_disabled=False,
+                is_feature=True,
+                is_buybonus=False,
+                distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["scatter_boost"],
+                        conditions=wincap_condition,
+                    ),
+                    Distribution(criteria="freegame", quota=0.108, conditions=scatter_boost_freegame_condition),
+                    Distribution(criteria="0", quota=0.399, win_criteria=0.0, conditions=zerowin_condition),
+                    Distribution(criteria="basegame", quota=0.492, conditions=basegame_condition),
                 ],
             ),
             BetMode(
