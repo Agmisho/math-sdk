@@ -29,12 +29,7 @@ class GameConfig(Config):
         self.num_reels = 5
         self.num_rows = [5] * self.num_reels
 
-        # 22-symbol model:
-        # 1 scatter: S = Vault Scatter
-        # 5 multipliers: M2, M5, M10, M20, M100 = Diamond Seal Multipliers
-        # 1 wild: W = Wild
-        # 15 paying symbols: H1-H9 and L1-L6
-        # L6 = Family Crest Wild as a regular paying symbol
+        # Board and Symbol Properties
         self.paytable = {
             (5, "W"): 50,
             (4, "W"): 20,
@@ -122,6 +117,7 @@ class GameConfig(Config):
             self.freegame_type: min(self.freespin_triggers[self.freegame_type].keys()) - 1,
         }
 
+        # Reels
         reels = {"BR0": "BR0.csv", "FR0": "FR0.csv", "WCAP": "FRWCAP.csv"}
         self.reels = {}
         for r, f in reels.items():
@@ -158,6 +154,20 @@ class GameConfig(Config):
             "force_freegame": False,
         }
 
+        wincap_condition = {
+            "reel_weights": {
+                self.basegame_type: {"BR0": 1},
+                self.freegame_type: {"FR0": 1, "WCAP": 5},
+            },
+            "scatter_triggers": {4: 1, 5: 2},
+            "mult_values": {
+                self.basegame_type: {1: 1},
+                self.freegame_type: {2: 70, 5: 45, 10: 20, 20: 8, 100: 1},
+            },
+            "force_wincap": True,
+            "force_freegame": True,
+        }
+
         zerowin_condition = {
             "reel_weights": {self.basegame_type: {"BR0": 1}},
             "mult_values": {
@@ -179,6 +189,12 @@ class GameConfig(Config):
                 is_feature=True,
                 is_buybonus=False,
                 distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["base"],
+                        conditions=wincap_condition,
+                    ),
                     Distribution(criteria="freegame", quota=0.1, conditions=freegame_condition),
                     Distribution(criteria="0", quota=0.4, win_criteria=0.0, conditions=zerowin_condition),
                     Distribution(criteria="basegame", quota=0.5, conditions=basegame_condition),
@@ -193,7 +209,13 @@ class GameConfig(Config):
                 is_feature=False,
                 is_buybonus=True,
                 distributions=[
-                    Distribution(criteria="freegame", quota=1.0, conditions=freegame_condition),
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["bonus"],
+                        conditions=wincap_condition,
+                    ),
+                    Distribution(criteria="freegame", quota=0.1, conditions=freegame_condition),
                 ],
             ),
         ]
