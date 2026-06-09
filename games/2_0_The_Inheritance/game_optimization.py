@@ -1,4 +1,4 @@
-"""Optimization setup for Magic Guns."""
+"""Optimization setup for The Inheritance."""
 
 from optimization_program.optimization_config import (
     ConstructScaling,
