@@ -48,6 +48,8 @@ class GameStateOverride(GameExecutables):
             return False
         if not getattr(self, "legacy_scatter_credit_available", False):
             return False
+        if not self.get_current_distribution_conditions().get("force_freegame", False):
+            return False
         return self.count_special_symbols(scatter_key) == 2
 
     def get_effective_scatter_count(self, scatter_key: str = "scatter") -> int:
