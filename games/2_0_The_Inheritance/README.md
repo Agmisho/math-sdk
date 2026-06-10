@@ -18,6 +18,7 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - Scatter chance enhancer mode
 - Bonus buy mode
 - Free spins from 3+ scatters
+- Persistent Legacy Key virtual scatter credit
 - `run.py` is the SDK generation entrypoint
 - Development scripts are separate and are not part of the production generation flow
 
@@ -178,6 +179,32 @@ Free-spin retrigger:
 - 4 scatters = +8 free spins
 - 5 scatters = +12 free spins
 
+## Legacy Key persistent scatter credit
+
+`H4` Legacy Key is both a paying symbol and the persistent collection symbol.
+
+Rules:
+
+- Legacy Keys are collected only during paid `base` and `scatter_boost` spins.
+- Legacy Keys are not collected during free spins.
+- Legacy Keys are not collected during Bonus Buy.
+- Key collection persists between paid spins and must be stored by the frontend/server player state.
+- Collection target is 10 keys.
+- When the player starts an eligible paid spin with 10 keys, one virtual scatter credit is available.
+- If that spin lands exactly 2 natural scatters, the virtual credit makes it 3 effective scatters.
+- 3 effective scatters trigger 8 free spins.
+- After the virtual scatter credit is used and the free game is won/triggered, collection resets to 0.
+
+`legacyScatterCredit` includes:
+
+- `collected`
+- `target`
+- `virtualScatters`
+- `naturalScatters`
+- `effectiveScatters`
+- `used`
+- `gameType`
+
 ## Diamond Seal multiplier behavior
 
 Diamond Seal multipliers are natural moving reel symbols.
@@ -199,8 +226,6 @@ Diamond Seal multipliers are natural moving reel symbols.
 
 ## Collection event
 
-`H4` Legacy Key is the collection symbol.
-
 `collectionUpdate` includes:
 
 - `collected`
@@ -218,6 +243,7 @@ From repository root:
 
 ```bash
 PYTHONPATH=games/2_0_The_Inheritance:. python3 games/2_0_The_Inheritance/dev_multiplier_test.py
+PYTHONPATH=. python3 games/2_0_The_Inheritance/dev_legacy_key_credit_test.py
 ```
 
 Full SDK generation uses:
