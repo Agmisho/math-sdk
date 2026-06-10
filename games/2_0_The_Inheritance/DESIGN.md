@@ -115,6 +115,33 @@ Enhancer target reference: about 1 in 222 before final tuning
 - Multiplier reset: every spin starts from x1 unless a Diamond Seal lands
 - No stacking, persistence, or carryover
 
+## Legacy Key persistent scatter credit
+
+- `H4` Legacy Key is rare and is also a normal paying symbol.
+- Legacy Keys collect only during paid `base` and `scatter_boost` spins.
+- Legacy Keys do not collect during free spins.
+- Legacy Keys do not collect during Bonus Buy.
+- The collection target is 10 keys.
+- Collection progress persists between paid spins and must be stored by the frontend/server player state.
+- When a player starts an eligible paid spin with 10 keys, the spin receives one virtual scatter credit.
+- If that spin lands exactly 2 natural scatters, the virtual credit raises the effective scatter count to 3.
+- 3 effective scatters trigger 8 free spins.
+- After the credit is used and the free game is triggered, key collection resets to 0.
+- Bonus Buy does not use this mechanic.
+- Free spins do not use this mechanic.
+
+`legacyScatterCredit` event fields:
+
+```text
+collected
+target
+virtualScatters
+naturalScatters
+effectiveScatters
+used
+gameType
+```
+
 ## Reel set
 
 - `BR0.csv`: base-game strip with low-frequency natural multipliers, including all five Diamond Seal values
