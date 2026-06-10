@@ -157,13 +157,19 @@ class GameConfig(Config):
         }
 
         basegame_condition = {
-            "reel_weights": {self.basegame_type: {"BR0": 1}},
+            "reel_weights": {
+                self.basegame_type: {"BR0": 1},
+                self.freegame_type: {"FR0": 1},
+            },
             "force_wincap": False,
             "force_freegame": False,
         }
 
         zerowin_condition = {
-            "reel_weights": {self.basegame_type: {"BR0": 1}},
+            "reel_weights": {
+                self.basegame_type: {"BR0": 1},
+                self.freegame_type: {"FR0": 1},
+            },
             "force_wincap": False,
             "force_freegame": False,
         }
