@@ -94,9 +94,17 @@ class GameExecutables(GameCalculations):
             return 2
         return 1
 
+    def can_collect_legacy_keys(self) -> bool:
+        """Legacy Keys are collected only on paid base/scatter_boost spins."""
+        if self.gametype != self.config.basegame_type:
+            return False
+        if getattr(self, "betmode", None) == "bonus":
+            return False
+        return True
+
     def update_collection_state(self) -> None:
         """Collect Legacy Keys and emit a frontend state event."""
-        positions = self.get_collection_positions()
+        positions = self.get_collection_positions() if self.can_collect_legacy_keys() else []
         if positions:
             self.collected_count = min(self.collection_target, self.collected_count + len(positions))
         self.mansion_level = self.calculate_mansion_level(self.collected_count)
