@@ -1,98 +1,18 @@
-import _ from 'lodash';
-
 import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 120;
 
 export const REEL_PADDING = 0.53;
 
-// initial board (padded top and bottom)
+const sym = (name: RawSymbol['name']) => ({ name });
+
+// Initial board includes one padded symbol above and below the 5 visible rows.
 export const INITIAL_BOARD: RawSymbol[][] = [
-	[
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L1',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'L1',
-		},
-	],
-	[
-		{
-			name: 'H1',
-		},
-		{
-			name: 'L5',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'H3',
-		},
-		{
-			name: 'L4',
-		},
-	],
-	[
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L5',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H4',
-		},
-		{
-			name: 'L4',
-		},
-	],
-	[
-		{
-			name: 'H4',
-		},
-		{
-			name: 'H3',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'L5',
-		},
-		{
-			name: 'L1',
-		},
-	],
-	[
-		{
-			name: 'H3',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H1',
-		},
-		{
-			name: 'H1',
-		},
-	],
+	[sym('L1'), sym('H1'), sym('H3'), sym('L2'), sym('H4'), sym('S'), sym('L3')],
+	[sym('H2'), sym('L2'), sym('H4'), sym('L3'), sym('H1'), sym('M2'), sym('L6')],
+	[sym('L3'), sym('H3'), sym('S'), sym('M5'), sym('H4'), sym('L2'), sym('H1')],
+	[sym('L4'), sym('H4'), sym('L2'), sym('H2'), sym('S'), sym('H1'), sym('L5')],
+	[sym('H5'), sym('L5'), sym('H1'), sym('L3'), sym('H4'), sym('M2'), sym('S')],
 ];
 
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
@@ -121,7 +41,7 @@ export const PORTRAIT_MAIN_SIZES = {
 	height: PORTRAIT_HEIGHT,
 };
 
-export const HIGH_SYMBOLS = ['H1', 'H2', 'H3', 'H4', 'H5'];
+export const HIGH_SYMBOLS = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9'];
 
 export const INITIAL_SYMBOL_STATE: SymbolState = 'static';
 
@@ -190,138 +110,73 @@ const wStatic = { type: 'sprite', assetKey: 'w.png', sizeRatios: { width: 1.12, 
 
 const wSizeRatios = { width: 1.5 * 0.9, height: SPECIAL_SYMBOL_SIZE * 1.15 };
 const sSizeRatios = { width: 2.5, height: SPECIAL_SYMBOL_SIZE * 2.3 };
+const multiplierSizeRatios = { width: 0.35, height: 0.35 };
+
+const highSymbol = (staticSymbol: typeof h1Static, assetKey: 'H1' | 'H2' | 'H3' | 'H4' | 'H5', animationName: string) => ({
+	explosion,
+	win: {
+		type: 'spine',
+		assetKey,
+		animationName,
+		sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.57 },
+	},
+	postWinStatic: staticSymbol,
+	static: staticSymbol,
+	spin: staticSymbol,
+	land: staticSymbol,
+});
+
+const lowSymbol = (staticSymbol: typeof l1Static, assetKey: 'L1' | 'L2' | 'L3' | 'L4' | 'M', animationName: string) => ({
+	explosion,
+	win: {
+		type: 'spine',
+		assetKey,
+		animationName,
+		sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.65 },
+	},
+	postWinStatic: staticSymbol,
+	static: staticSymbol,
+	spin: staticSymbol,
+	land: staticSymbol,
+});
+
+const multiplierSymbol = (label: string) => ({
+	explosion,
+	win: {
+		type: 'spine',
+		assetKey: 'M',
+		animationName: 'low_multiplier_pay',
+		sizeRatios: multiplierSizeRatios,
+	},
+	postWinStatic: l5Static,
+	static: l5Static,
+	spin: l5Static,
+	land: l5Static,
+	label,
+});
 
 export const SYMBOL_INFO_MAP = {
-	H1: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H1',
-			animationName: 'h1',
-			sizeRatios: { width: 0.5 * 1.15, height: HIGH_SYMBOL_SIZE * 0.57 },
-		},
-		postWinStatic: h1Static,
-		static: h1Static,
-		spin: h1Static,
-		land: h1Static,
-	},
-	H2: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H2',
-			animationName: 'h2',
-			sizeRatios: { width: 0.5, height: HIGH_SYMBOL_SIZE * 0.57 },
-		},
-		postWinStatic: h2Static,
-		static: h2Static,
-		spin: h2Static,
-		land: h2Static,
-	},
-	H3: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H3',
-			animationName: 'h3',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h3Static,
-		static: h3Static,
-		spin: h3Static,
-		land: h3Static,
-	},
-	H4: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H4',
-			animationName: 'h4',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h4Static,
-		static: h4Static,
-		spin: h4Static,
-		land: h4Static,
-	},
-	H5: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H5',
-			animationName: 'h5',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h5Static,
-		static: h5Static,
-		spin: h5Static,
-		land: h5Static,
-	},
-	L1: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L1',
-			animationName: 'l1',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.65 },
-		},
-		postWinStatic: l1Static,
-		static: l1Static,
-		spin: l1Static,
-		land: l1Static,
-	},
-	L2: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L2',
-			animationName: 'l2',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.65 },
-		},
-		postWinStatic: l2Static,
-		static: l2Static,
-		spin: l2Static,
-		land: l2Static,
-	},
-	L3: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L3',
-			animationName: 'l3',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.63 },
-		},
-		postWinStatic: l3Static,
-		static: l3Static,
-		spin: l3Static,
-		land: l3Static,
-	},
-	L4: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L4',
-			animationName: 'l4',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.63 },
-		},
-		postWinStatic: l4Static,
-		static: l4Static,
-		spin: l4Static,
-		land: l4Static,
-	},
-	L5: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: 'low_multiplier_pay',
-			sizeRatios: { width: 0.3, height: 0.3 },
-		},
-		postWinStatic: l5Static,
-		static: l5Static,
-		spin: l5Static,
-		land: l5Static,
-	},
+	H1: highSymbol(h1Static, 'H1', 'h1'),
+	H2: highSymbol(h2Static, 'H2', 'h2'),
+	H3: highSymbol(h3Static, 'H3', 'h3'),
+	H4: highSymbol(h4Static, 'H4', 'h4'),
+	H5: highSymbol(h5Static, 'H5', 'h5'),
+	// Temporary placeholder mappings until final Inheritance symbol art is added.
+	H6: highSymbol(h1Static, 'H1', 'h1'),
+	H7: highSymbol(h2Static, 'H2', 'h2'),
+	H8: highSymbol(h3Static, 'H3', 'h3'),
+	H9: highSymbol(h4Static, 'H4', 'h4'),
+	L1: lowSymbol(l1Static, 'L1', 'l1'),
+	L2: lowSymbol(l2Static, 'L2', 'l2'),
+	L3: lowSymbol(l3Static, 'L3', 'l3'),
+	L4: lowSymbol(l4Static, 'L4', 'l4'),
+	L5: lowSymbol(l5Static, 'M', 'low_multiplier_pay'),
+	L6: lowSymbol(l5Static, 'M', 'low_multiplier_pay'),
+	M2: multiplierSymbol('2x'),
+	M5: multiplierSymbol('5x'),
+	M10: multiplierSymbol('10x'),
+	M20: multiplierSymbol('20x'),
+	M100: multiplierSymbol('100x'),
 	W: {
 		explosion,
 		postWinStatic: {
