@@ -1,3 +1,6 @@
+const inheritanceAsset = (path: string) => `/assets/the-inheritance/${path.split('/').map(encodeURIComponent).join('/')}`;
+const symbol = (filename: string) => ({ type: 'sprite', src: inheritanceAsset(`symbols/${filename}`) });
+
 export default {
 	loader: {
 		type: 'spine',
@@ -13,107 +16,55 @@ export default {
 		src: new URL('../../assets/sprites/pressToContinueText/MM_pressanywhere.json', import.meta.url).href,
 		preload: true,
 	},
-	H1: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/h1.json', import.meta.url).href,
-			scale: 2,
-		},
+	inheritanceBackground: {
+		type: 'sprite',
+		src: inheritanceAsset('backgrounds/background.png'),
+		preload: true,
 	},
-	H2: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/h2.json', import.meta.url).href,
-			scale: 2,
-		},
+	inheritanceFrame: {
+		type: 'sprite',
+		src: inheritanceAsset('ui/frame.png'),
+		preload: true,
 	},
-	H3: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/h3.json', import.meta.url).href,
-			scale: 2,
-		},
+	inheritanceUiPanel: {
+		type: 'sprite',
+		src: inheritanceAsset('ui/UI.png'),
+		preload: true,
 	},
-	H4: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/h4.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	H5: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/h5.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	L1: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/l1.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	L2: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/l2.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	L3: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/l3.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	L4: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols/symbols.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols/l4.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	M: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols2/symbols2.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols2/M.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	S: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols2/symbols2.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols2/S.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
+	buttonSpin: { type: 'sprite', src: inheritanceAsset('buttons/Spin.png'), preload: true },
+	buttonAuto: { type: 'sprite', src: inheritanceAsset('buttons/Auto.png'), preload: true },
+	buttonBuy: { type: 'sprite', src: inheritanceAsset('buttons/Buy.png'), preload: true },
+	buttonInfo: { type: 'sprite', src: inheritanceAsset('buttons/Info.png'), preload: true },
+	buttonVolume: { type: 'sprite', src: inheritanceAsset('buttons/Volume.png'), preload: true },
+	buttonSpeed: { type: 'sprite', src: inheritanceAsset('buttons/speed.png'), preload: true },
+	buttonSpeedActive: { type: 'sprite', src: inheritanceAsset('buttons/speed1.png'), preload: true },
+	S: symbol('Vault Scatter.png'),
+	W: symbol('Wild.png'),
+	M2: symbol('Diamond Seal Multiplier 2.png'),
+	M5: symbol('Diamond Seal Multiplier 5.png'),
+	M10: symbol('Diamond Seal Multiplier 10.png'),
+	M20: symbol('Diamond Seal Multiplier 20.png'),
+	M100: symbol('Diamond Seal Multiplier 100.png'),
+	H1: symbol('Heiress.png'),
+	H2: symbol('Covered Portrait Mystery.png'),
+	H3: symbol('Treasure Chest.png'),
+	H4: symbol('Legacy Key.png'),
+	H5: symbol('Diamond Brooch.png'),
+	H6: symbol('Antique Pocket Watch.png'),
+	H7: symbol('Magnifying Glass.png'),
+	H8: symbol('will.png'),
+	H9: symbol('Old Letter.png'),
+	L1: symbol('A.png'),
+	L2: symbol('K.png'),
+	L3: symbol('Q.png'),
+	L4: symbol('J.png'),
+	L5: symbol('10.png'),
+	L6: symbol('Family Crest Wild.png'),
 	explosion: {
 		type: 'spine',
 		src: {
 			atlas: new URL('../../assets/spines/symbols3/symbols3.atlas', import.meta.url).href,
 			skeleton: new URL('../../assets/spines/symbols3/explosion.json', import.meta.url).href,
-			scale: 2,
-		},
-	},
-	W: {
-		type: 'spine',
-		src: {
-			atlas: new URL('../../assets/spines/symbols3/symbols3.atlas', import.meta.url).href,
-			skeleton: new URL('../../assets/spines/symbols3/W.json', import.meta.url).href,
 			scale: 2,
 		},
 	},
