@@ -5,18 +5,18 @@
 
 	const context = getContext();
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
-	const panelY = $derived(canvas.height - 88);
-	const labelStyle = {
+	const UI_RATIO = 1672 / 941;
+	const panelWidth = $derived(canvas.width * 0.82);
+	const panelHeight = $derived(panelWidth / UI_RATIO);
+	const panelX = $derived(canvas.width / 2);
+	const panelY = $derived(canvas.height - panelHeight * 0.38);
+	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
+	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
+	const buttonSize = $derived(panelWidth * 0.065);
+	const spinSize = $derived(panelWidth * 0.13);
+	const valueStyle = {
 		fontFamily: 'proxima-nova',
-		fontSize: REM * 1.35,
-		fontWeight: '700',
-		align: 'center',
-		fill: 0xffffff,
-		stroke: { color: 0x000000, width: 4 },
-	};
-	const smallStyle = {
-		fontFamily: 'proxima-nova',
-		fontSize: REM * 1.0,
+		fontSize: REM * 0.9,
 		fontWeight: '700',
 		align: 'center',
 		fill: 0xffffff,
@@ -24,25 +24,16 @@
 	};
 </script>
 
-<Sprite
-	key="inheritanceUiPanel"
-	anchor={0.5}
-	x={canvas.width / 2}
-	y={panelY}
-	width={canvas.width * 0.86}
-	height={canvas.height * 0.22}
-	zIndex={20}
-/>
+<Sprite key="inheritanceUiPanel" anchor={0.5} x={panelX} y={panelY} width={panelWidth} height={panelHeight} zIndex={20} />
 
-<Text anchor={0.5} x={canvas.width * 0.30} y={panelY - 20} text={'BALANCE\n0.00'} style={labelStyle} zIndex={21} />
-<Text anchor={0.5} x={canvas.width * 0.50} y={panelY - 20} text={'WIN\n0.00'} style={labelStyle} zIndex={21} />
-<Text anchor={0.5} x={canvas.width * 0.70} y={panelY - 20} text={'BET\n1.00'} style={labelStyle} zIndex={21} />
-<Text anchor={0.5} x={canvas.width * 0.40} y={panelY + 42} text={'KEYS 0/10'} style={smallStyle} zIndex={21} />
-<Text anchor={0.5} x={canvas.width * 0.60} y={panelY + 42} text={'MULTIPLIER x1'} style={smallStyle} zIndex={21} />
+<Sprite key="buttonInfo" anchor={0.5} x={uiX(0.10)} y={uiY(0.46)} width={buttonSize} height={buttonSize} zIndex={22} />
+<Sprite key="buttonSpeed" anchor={0.5} x={uiX(0.21)} y={uiY(0.46)} width={buttonSize} height={buttonSize} zIndex={22} />
+<Sprite key="buttonVolume" anchor={0.5} x={uiX(0.32)} y={uiY(0.46)} width={buttonSize} height={buttonSize} zIndex={22} />
+<Sprite key="buttonSpin" anchor={0.5} x={uiX(0.50)} y={uiY(0.39)} width={spinSize} height={spinSize} zIndex={22} />
+<Sprite key="buttonAuto" anchor={0.5} x={uiX(0.70)} y={uiY(0.46)} width={buttonSize} height={buttonSize} zIndex={22} />
+<Sprite key="buttonBuy" anchor={0.5} x={uiX(0.81)} y={uiY(0.46)} width={buttonSize} height={buttonSize} zIndex={22} />
 
-<Sprite key="buttonInfo" anchor={0.5} x={canvas.width * 0.20} y={panelY + 42} width={74} height={74} zIndex={22} />
-<Sprite key="buttonBuy" anchor={0.5} x={canvas.width * 0.27} y={panelY + 42} width={86} height={86} zIndex={22} />
-<Sprite key="buttonSpeed" anchor={0.5} x={canvas.width * 0.47} y={panelY + 42} width={78} height={78} zIndex={22} />
-<Sprite key="buttonAuto" anchor={0.5} x={canvas.width * 0.53} y={panelY + 42} width={86} height={86} zIndex={22} />
-<Sprite key="buttonSpin" anchor={0.5} x={canvas.width * 0.76} y={panelY + 42} width={106} height={106} zIndex={22} />
-<Sprite key="buttonVolume" anchor={0.5} x={canvas.width * 0.84} y={panelY + 42} width={74} height={74} zIndex={22} />
+<Text anchor={0.5} x={uiX(0.91)} y={uiY(0.43)} text={'0.00'} style={valueStyle} zIndex={23} />
+<Text anchor={0.5} x={uiX(0.50)} y={uiY(0.78)} text={'BET 1.00'} style={valueStyle} zIndex={23} />
+<Text anchor={0.5} x={uiX(0.40)} y={uiY(0.68)} text={'KEYS 0/10'} style={valueStyle} zIndex={23} />
+<Text anchor={0.5} x={uiX(0.60)} y={uiY(0.68)} text={'MULTIPLIER x1'} style={valueStyle} zIndex={23} />
