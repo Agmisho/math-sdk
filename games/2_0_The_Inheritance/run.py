@@ -1,5 +1,6 @@
 """Main file for generating results for The Inheritance."""
 
+import glob
 import json
 import os
 
@@ -42,6 +43,36 @@ def ensure_legacy_scatter_credit_event_configs(gamestate):
             json.dump(data, file, indent=4)
 
 
+def clean_generated_outputs(gamestate, modes):
+    """Remove stale generated files for this game before a fresh SDK run."""
+    roots = [
+        gamestate.output_files.book_path,
+        gamestate.output_files.config_path,
+        gamestate.output_files.force_path,
+        gamestate.output_files.publish_path,
+    ]
+    patterns = []
+    for mode in modes:
+        patterns.extend(
+            [
+                f"*_{mode}.json",
+                f"*_{mode}.jsonl",
+                f"*_{mode}.jsonl.zst",
+                f"*_{mode}.verification.json",
+                f"*_{mode}.csv",
+                f"*_{mode}_0.csv",
+                f"*_{mode}.xlsx",
+            ]
+        )
+    patterns.extend(["force.json", "manifest.json", "math_config.json", "config.json", "config_fe_*.json"])
+
+    for root in roots:
+        for pattern in patterns:
+            for filename in glob.glob(os.path.join(root, pattern)):
+                if os.path.isfile(filename):
+                    os.remove(filename)
+
+
 if __name__ == "__main__":
 
     num_threads = 10
@@ -58,7 +89,7 @@ if __name__ == "__main__":
 
     run_conditions = {
         "run_sims": True,
-        "run_optimization": True,
+        "run_optimization": False,
         "run_analysis": True,
         "run_format_checks": True,
     }
@@ -70,6 +101,7 @@ if __name__ == "__main__":
         OptimizationSetup(config)
 
     if run_conditions["run_sims"]:
+        clean_generated_outputs(gamestate, target_modes)
         create_books(
             gamestate,
             config,

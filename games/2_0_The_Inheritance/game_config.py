@@ -148,10 +148,10 @@ class GameConfig(Config):
                 self.basegame_type: {"BR0": 1},
                 self.freegame_type: {"FR0": 1},
             },
-            # 15% relative lift over the normal 3-scatter trigger target.
+            # 8% relative lift over the normal 3-scatter trigger target.
             # Normal design reference: 3-scatter trigger ~= 1 in 255.
-            # Boosted target reference: ~= 1 in 222 before final tuning.
-            "scatter_triggers": {3: 58, 4: 23, 5: 6},
+            # Boosted target reference: ~= 1 in 236 before final tuning.
+            "scatter_triggers": {3: 50, 4: 20, 5: 5},
             "force_wincap": False,
             "force_freegame": True,
         }
@@ -163,6 +163,16 @@ class GameConfig(Config):
             },
             "force_wincap": False,
             "force_freegame": False,
+        }
+
+        wincap_condition = {
+            "reel_weights": {
+                self.basegame_type: {"BR0": 1},
+                self.freegame_type: {"FR0": 1, "WCAP": 8},
+            },
+            "scatter_triggers": {4: 1, 5: 2},
+            "force_wincap": True,
+            "force_freegame": True,
         }
 
         zerowin_condition = {
@@ -185,9 +195,15 @@ class GameConfig(Config):
                 is_feature=True,
                 is_buybonus=False,
                 distributions=[
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["base"],
+                        conditions=wincap_condition,
+                    ),
                     Distribution(criteria="freegame", quota=0.1, conditions=freegame_condition),
                     Distribution(criteria="0", quota=0.4, win_criteria=0.0, conditions=zerowin_condition),
-                    Distribution(criteria="basegame", quota=0.5, conditions=basegame_condition),
+                    Distribution(criteria="basegame", quota=0.499, conditions=basegame_condition),
                 ],
             ),
             BetMode(
@@ -199,9 +215,15 @@ class GameConfig(Config):
                 is_feature=True,
                 is_buybonus=False,
                 distributions=[
-                    Distribution(criteria="freegame", quota=0.135, conditions=scatter_boost_freegame_condition),
-                    Distribution(criteria="0", quota=0.38, win_criteria=0.0, conditions=zerowin_condition),
-                    Distribution(criteria="basegame", quota=0.485, conditions=basegame_condition),
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["scatter_boost"],
+                        conditions=wincap_condition,
+                    ),
+                    Distribution(criteria="freegame", quota=0.108, conditions=scatter_boost_freegame_condition),
+                    Distribution(criteria="0", quota=0.392, win_criteria=0.0, conditions=zerowin_condition),
+                    Distribution(criteria="basegame", quota=0.499, conditions=basegame_condition),
                 ],
             ),
             BetMode(
@@ -213,7 +235,13 @@ class GameConfig(Config):
                 is_feature=False,
                 is_buybonus=True,
                 distributions=[
-                    Distribution(criteria="freegame", quota=0.1, conditions=freegame_condition),
+                    Distribution(
+                        criteria="wincap",
+                        quota=0.001,
+                        win_criteria=mode_maxwins["bonus"],
+                        conditions=wincap_condition,
+                    ),
+                    Distribution(criteria="freegame", quota=0.999, conditions=freegame_condition),
                 ],
             ),
         ]

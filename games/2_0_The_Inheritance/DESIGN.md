@@ -84,15 +84,15 @@ Frontend `BUY` opens a Buy menu.
 
 | Option | Internal mode | Cost | Behavior |
 |---|---|---:|---|
-| Scatter Boost | `scatter_boost` | 3x base bet per spin | 15% relative higher 3-scatter trigger chance |
+| Scatter Boost | `scatter_boost` | 3x base bet per spin | 8% relative higher 3-scatter trigger chance |
 | Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
 
 Scatter chance enhancer target:
 
 ```text
 Normal 3-scatter trigger design reference: 1 in 255
-Enhancer target: 15% relative increase to the 3-scatter trigger chance
-Enhancer target reference: about 1 in 222 before final tuning
+Enhancer target: 8% relative increase to the 3-scatter trigger chance
+Enhancer target reference: about 1 in 236 before final tuning
 ```
 
 ## First version rules

@@ -28,14 +28,14 @@ The frontend `BUY` button opens a Buy menu with two options:
 
 | Buy menu option | Internal mode | Cost | Behavior |
 |---|---|---:|---|
-| Scatter Boost | `scatter_boost` | 3x base bet per spin | Base spin with 15% relative higher 3-scatter trigger chance |
+| Scatter Boost | `scatter_boost` | 3x base bet per spin | Base spin with 8% relative higher 3-scatter trigger chance |
 | Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
 
 Scatter chance enhancer target:
 
 ```text
 Normal 3-scatter trigger design reference: 1 in 255
-Scatter boost target reference: about 15% relative higher chance, around 1 in 222
+Scatter boost target reference: about 8% relative higher chance, around 1 in 222
 ```
 
 Bonus Buy entry behavior:
@@ -243,6 +243,7 @@ From repository root:
 
 ```bash
 PYTHONPATH=games/2_0_The_Inheritance:. python3 games/2_0_The_Inheritance/dev_multiplier_test.py
+PYTHONPATH=games/2_0_The_Inheritance:. python3 games/2_0_The_Inheritance/dev_sdk_smoke_test.py
 PYTHONPATH=. python3 games/2_0_The_Inheritance/dev_legacy_key_credit_test.py
 ```
 

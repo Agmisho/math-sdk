@@ -24,7 +24,7 @@ Current development strip counts are:
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | `BR0.csv` | 80 | 400 | 1 | 1 | 1 | 1 | 1 | 5 |
 | `FR0.csv` | 120 | 600 | 5 | 6 | 3 | 2 | 2 | 18 |
-| `FRWCAP.csv` | 120 | 600 | 3 | 3 | 2 | 3 | 2 | 13 |
+| `FRWCAP.csv` | 120 | 600 | 25 | 25 | 30 | 40 | 75 | 195 |
 
 This keeps base multipliers possible, including `M100`, while making them less frequent than free-spin and bought-bonus multipliers.
 
@@ -60,7 +60,7 @@ gameType
 - Max win target: 5000x.
 - Bonus buy cost: 100x.
 - Scatter chance enhancer cost: 3x.
-- Scatter chance enhancer target: 8% relative increase over the normal 3-scatter trigger design reference of 1 in 255.
+- Scatter chance enhancer target: 8% relative increase over the normal 3-scatter trigger design reference of 1 in 255, around 1 in 236.
 
 ## Tuning note
 

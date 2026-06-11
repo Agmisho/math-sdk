@@ -118,6 +118,11 @@ class GameStateOverride(GameExecutables):
         self.repeat = True
         return False
 
+
+    def get_trigger_scatter_count(self, scatter_count: int) -> int:
+        max_trigger = max(self.config.freespin_triggers[self.gametype].keys())
+        return min(scatter_count, max_trigger)
+
     def run_freespin_from_base(self, scatter_key: str = "scatter") -> None:
         """Trigger free spins and reset Legacy Keys if the virtual scatter credit was used."""
         effective_scatters = self.get_effective_scatter_count(scatter_key)
@@ -143,13 +148,19 @@ class GameStateOverride(GameExecutables):
         if self.legacy_scatter_credit_used:
             self.emit_legacy_scatter_credit_event(natural_scatters, effective_scatters, used=True)
 
-        self.tot_fs = self.config.freespin_triggers[self.gametype][effective_scatters]
+        trigger_scatters = self.get_trigger_scatter_count(effective_scatters)
+        self.tot_fs = self.config.freespin_triggers[self.gametype][trigger_scatters]
         if self.gametype == self.config.basegame_type:
             basegame_trigger, freegame_trigger = True, False
         else:
             basegame_trigger, freegame_trigger = False, True
         fs_trigger_event(self, basegame_trigger=basegame_trigger, freegame_trigger=freegame_trigger)
 
+
+    def update_fs_retrigger_amt(self, scatter_key: str = "scatter") -> None:
+        trigger_scatters = self.get_trigger_scatter_count(self.count_special_symbols(scatter_key))
+        self.tot_fs += self.config.freespin_triggers[self.gametype][trigger_scatters]
+        fs_trigger_event(self, freegame_trigger=True, basegame_trigger=False)
+
     def check_repeat(self):
-        self.repeat_count += 1
-        self.check_current_repeat_count()
+        super().check_repeat()
