@@ -11,7 +11,7 @@
 
 	const context = getContext();
 	const POSITION_ADJUSTMENT = 1.0;
-	const SPRITE_SCALE = { width: 1.28, height: 1.18 };
+	const SPRITE_SCALE = { width: 1.22, height: 1.12 };
 </script>
 
 <Sprite
