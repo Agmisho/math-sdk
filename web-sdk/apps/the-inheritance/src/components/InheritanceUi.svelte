@@ -6,17 +6,17 @@
 	const context = getContext();
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
-	const panelWidth = $derived(canvas.width * 0.82);
+	const panelWidth = $derived(canvas.width * 0.74);
 	const panelHeight = $derived(panelWidth / UI_RATIO);
 	const panelX = $derived(canvas.width / 2);
-	const panelY = $derived(canvas.height - panelHeight * 0.30);
+	const panelY = $derived(canvas.height - panelHeight * 0.34);
 	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
-	const buttonSize = $derived(panelWidth * 0.095);
-	const spinSize = $derived(panelWidth * 0.17);
+	const buttonSize = $derived(panelWidth * 0.060);
+	const spinSize = $derived(panelWidth * 0.112);
 	const valueStyle = {
 		fontFamily: 'proxima-nova',
-		fontSize: REM * 0.75,
+		fontSize: REM * 0.7,
 		fontWeight: '700',
 		align: 'center',
 		fill: 0xffffff,
