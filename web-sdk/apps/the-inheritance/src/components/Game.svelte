@@ -4,10 +4,9 @@
 	import { EnablePixiExtension } from 'components-pixi';
 	import { EnableHotkey } from 'components-shared';
 	import { MainContainer } from 'components-layout';
-	import { App, Text, REM } from 'pixi-svelte';
+	import { App } from 'pixi-svelte';
 	import { stateModal } from 'state-shared';
 
-	import { UI, UiGameName } from 'components-ui-pixi';
 	import { GameVersion, Modals } from 'components-ui-html';
 
 	import { getContext } from '../game/context';
@@ -25,7 +24,7 @@
 	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
-	import I18nTest from './I18nTest.svelte';
+	import InheritanceUi from './InheritanceUi.svelte';
 
 	const context = getContext();
 
@@ -66,24 +65,7 @@
 			<Anticipations />
 		</MainContainer>
 
-		<UI>
-			{#snippet gameName()}
-				<UiGameName name="THE INHERITANCE" />
-			{/snippet}
-			{#snippet logo()}
-				<Text
-					anchor={{ x: 1, y: 0 }}
-					text="THE INHERITANCE"
-					style={{
-						fontFamily: 'proxima-nova',
-						fontSize: REM * 1.5,
-						fontWeight: '600',
-						lineHeight: REM * 2,
-						fill: 0xffffff,
-					}}
-				/>
-			{/snippet}
-		</UI>
+		<InheritanceUi />
 		<Win />
 		<FreeSpinIntro />
 		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
@@ -91,8 +73,6 @@
 		{/if}
 		<FreeSpinOutro />
 		<Transition />
-
-		<I18nTest />
 	{/if}
 </App>
 
