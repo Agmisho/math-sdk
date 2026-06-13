@@ -10,15 +10,18 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const POSITION_ADJUSTMENT = 1.0;
-	const SPRITE_SCALE = { width: 1.22, height: 1.12 };
+	const FRAME_RATIO = 1672 / 941;
+	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
+	const frameWidth = $derived(canvas.width * 0.66);
+	const frameHeight = $derived(frameWidth / FRAME_RATIO);
+	const frameY = $derived(frameHeight * 0.52 + 12);
 </script>
 
 <Sprite
 	key="inheritanceFrame"
 	anchor={0.5}
-	x={context.stateGameDerived.boardLayout().x * POSITION_ADJUSTMENT}
-	y={context.stateGameDerived.boardLayout().y * POSITION_ADJUSTMENT}
-	width={context.stateGameDerived.boardLayout().width * SPRITE_SCALE.width}
-	height={context.stateGameDerived.boardLayout().height * SPRITE_SCALE.height}
+	x={canvas.width / 2}
+	y={frameY}
+	width={frameWidth}
+	height={frameHeight}
 />
