@@ -20,6 +20,10 @@ import {
 	SCATTER_LAND_SOUND_MAP,
 } from './constants';
 
+const FRAME_RATIO = 1672 / 941;
+const FRAME_WIDTH_RATIO = 0.66;
+const FRAME_INNER_WIDTH_RATIO = 0.72;
+
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
@@ -79,11 +83,17 @@ export const stateGame = $state({
 	scatterCounter: 0,
 });
 
+const frameWidth = () => stateLayoutDerived.canvasSizes().width * FRAME_WIDTH_RATIO;
+const frameHeight = () => frameWidth() / FRAME_RATIO;
+const frameY = () => frameHeight() * 0.52 + 12;
+const boardScale = () => (frameWidth() * FRAME_INNER_WIDTH_RATIO) / BOARD_SIZES.width;
+
 const boardLayout = () => ({
-	x: stateLayoutDerived.mainLayout().width * 0.5,
-	y: stateLayoutDerived.mainLayout().height * 0.42,
+	x: stateLayoutDerived.canvasSizes().width * 0.5,
+	y: frameY(),
 	anchor: { x: 0.5, y: 0.5 },
 	pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
+	scale: boardScale(),
 	...BOARD_SIZES,
 });
 
