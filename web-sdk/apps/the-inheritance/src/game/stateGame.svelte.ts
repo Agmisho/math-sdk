@@ -21,8 +21,10 @@ import {
 } from './constants';
 
 const FRAME_RATIO = 1672 / 941;
-const FRAME_WIDTH_RATIO = 0.66;
-const FRAME_INNER_WIDTH_RATIO = 0.72;
+const frameWidth = () => Math.min(stateLayoutDerived.canvasSizes().width * 0.66, stateLayoutDerived.canvasSizes().height * 0.56 * FRAME_RATIO);
+const frameHeight = () => frameWidth() / FRAME_RATIO;
+const frameY = () => stateLayoutDerived.canvasSizes().height * 0.06 + frameHeight() / 2;
+const boardScale = () => (frameHeight() * 0.62) / BOARD_SIZES.height;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
@@ -83,17 +85,14 @@ export const stateGame = $state({
 	scatterCounter: 0,
 });
 
-const frameWidth = () => stateLayoutDerived.canvasSizes().width * FRAME_WIDTH_RATIO;
-const frameHeight = () => frameWidth() / FRAME_RATIO;
-const frameY = () => frameHeight() * 0.52 + 12;
-const boardScale = () => (frameWidth() * FRAME_INNER_WIDTH_RATIO) / BOARD_SIZES.width;
-
 const boardLayout = () => ({
 	x: stateLayoutDerived.canvasSizes().width * 0.5,
 	y: frameY(),
 	anchor: { x: 0.5, y: 0.5 },
 	pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 	scale: boardScale(),
+	frameWidth: frameWidth(),
+	frameHeight: frameHeight(),
 	...BOARD_SIZES,
 });
 
