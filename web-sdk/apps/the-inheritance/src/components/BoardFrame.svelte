@@ -10,13 +10,15 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
+	const BLEND_MODE = 'screen';
 </script>
 
 <Sprite
 	key="inheritanceFrame"
-	anchor={0.5}
-	x={context.stateGameDerived.boardLayout().x}
-	y={context.stateGameDerived.boardLayout().y}
+	anchor={0}
+	x={0}
+	y={0}
 	width={context.stateGameDerived.boardLayout().frameWidth}
 	height={context.stateGameDerived.boardLayout().frameHeight}
+	blendMode={BLEND_MODE}
 />
