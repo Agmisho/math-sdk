@@ -9,7 +9,7 @@
 
 	const context = getContext();
 	const ARTBOARD = { width: 1672, height: 941 };
-	const BLEND_MODE = 'screen';
+	const BLEND_MODE = 'screen' as const;
 
 	let stopDisabled = $state(false);
 
