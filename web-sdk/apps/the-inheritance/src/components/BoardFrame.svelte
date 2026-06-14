@@ -10,7 +10,7 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const BLEND_MODE = 'screen';
+	const BLEND_MODE = 'screen' as const;
 </script>
 
 <Sprite
