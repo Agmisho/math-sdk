@@ -1,8 +1,9 @@
 import type { RawSymbol, SymbolState } from './types';
 
-export const SYMBOL_SIZE = 96;
+export const SYMBOL_SIZE = 145;
+export const REEL_SPACING = 270;
 
-export const REEL_PADDING = 0.53;
+export const REEL_PADDING = 0.5;
 
 const sym = (name: RawSymbol['name']) => ({ name });
 
@@ -18,18 +19,18 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
 
 export const BOARD_SIZES = {
-	width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
+	width: SYMBOL_SIZE + REEL_SPACING * (BOARD_DIMENSIONS.x - 1),
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 
-export const BACKGROUND_RATIO = 2039 / 1000;
-export const PORTRAIT_BACKGROUND_RATIO = 1242 / 2208;
+export const BACKGROUND_RATIO = 1672 / 941;
+export const PORTRAIT_BACKGROUND_RATIO = 1672 / 941;
 const PORTRAIT_RATIO = 800 / 1422;
-const LANDSCAPE_RATIO = 1600 / 900;
-const DESKTOP_RATIO = 1422 / 800;
+const LANDSCAPE_RATIO = 1672 / 941;
+const DESKTOP_RATIO = 1672 / 941;
 
-const DESKTOP_HEIGHT = 800;
-const LANDSCAPE_HEIGHT = 900;
+const DESKTOP_HEIGHT = 941;
+const LANDSCAPE_HEIGHT = 941;
 const PORTRAIT_HEIGHT = 1422;
 export const DESKTOP_MAIN_SIZES = { width: DESKTOP_HEIGHT * DESKTOP_RATIO, height: DESKTOP_HEIGHT };
 export const LANDSCAPE_MAIN_SIZES = {
