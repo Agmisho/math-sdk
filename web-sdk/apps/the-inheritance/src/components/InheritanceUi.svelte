@@ -44,7 +44,7 @@
 		);
 	const panelHeight = () => panelWidth() / UI_RATIO;
 	const panelX = () => canvas().width * 0.5;
-	const panelY = () => canvas().height - panelHeight() * 0.25;
+	const panelY = () => canvas().height - panelHeight() * (isPortrait() ? 0.25 : 0.18);
 	const uiX = (ratioX: number) => panelX() + panelWidth() * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY() + panelHeight() * (ratioY - 0.5);
 	const smallButtonSize = () => Math.max(34, panelWidth() * (isPortrait() ? 0.078 : 0.06));
