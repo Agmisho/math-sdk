@@ -48,15 +48,10 @@
 		<LoadingScreen onloaded={() => (context.stateLayout.showLoadingScreen = false)} />
 	{:else}
 		<ResumeBet />
-		<!--
-			The reason why <Sound /> is rendered after clicking the loading screen:
-			"Autoplay with sound is allowed if: The user has interacted with the domain (click, tap, etc.)."
-			Ref: https://developer.chrome.com/blog/autoplay
-		-->
 		<Sound />
 
-		<Board />
 		<BoardFrame />
+		<Board />
 		<Anticipations />
 
 		<InheritanceUi />
