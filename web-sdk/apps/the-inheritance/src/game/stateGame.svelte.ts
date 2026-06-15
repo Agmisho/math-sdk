@@ -97,7 +97,7 @@ const boardLayout = () => {
 
 	return {
 		x: canvas.width * 0.5,
-		y: topReserve + availableHeight * (isPortrait ? 0.43 : 0.42),
+		y: topReserve + availableHeight * (isPortrait ? 0.4 : 0.36),
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
