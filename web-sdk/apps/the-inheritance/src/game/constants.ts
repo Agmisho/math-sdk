@@ -7,13 +7,13 @@ export const REEL_PADDING = 0.5;
 
 const sym = (name: RawSymbol['name']) => ({ name });
 
-// Initial board includes one padded symbol above and below the 5 visible rows.
+// Initial board includes one padded symbol above and below the 4 visible rows.
 export const INITIAL_BOARD: RawSymbol[][] = [
-	[sym('L1'), sym('H1'), sym('H3'), sym('L2'), sym('H4'), sym('S'), sym('L3')],
-	[sym('H2'), sym('L2'), sym('H4'), sym('L3'), sym('H1'), sym('M2'), sym('L6')],
-	[sym('L3'), sym('H3'), sym('S'), sym('M5'), sym('H4'), sym('L2'), sym('H1')],
-	[sym('L4'), sym('H4'), sym('L2'), sym('H2'), sym('S'), sym('H1'), sym('L5')],
-	[sym('H5'), sym('L5'), sym('H1'), sym('L3'), sym('H4'), sym('M2'), sym('S')],
+	[sym('L1'), sym('H1'), sym('H3'), sym('L2'), sym('H4'), sym('S')],
+	[sym('H2'), sym('L2'), sym('H4'), sym('L3'), sym('H1'), sym('M2')],
+	[sym('L3'), sym('H3'), sym('S'), sym('M5'), sym('H4'), sym('L2')],
+	[sym('L4'), sym('H4'), sym('L2'), sym('H2'), sym('S'), sym('H1')],
+	[sym('H5'), sym('L5'), sym('H1'), sym('L3'), sym('H4'), sym('M2')],
 ];
 
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
