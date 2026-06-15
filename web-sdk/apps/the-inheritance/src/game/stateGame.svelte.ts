@@ -20,6 +20,8 @@ import {
 	SCATTER_LAND_SOUND_MAP,
 } from './constants';
 
+const FRAME_RATIO = 1672 / 941;
+
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
@@ -82,29 +84,21 @@ export const stateGame = $state({
 const boardLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-	const topReserve = Math.max(58, canvas.height * (isPortrait ? 0.08 : 0.1));
-	const hudReserve = Math.max(isPortrait ? 190 : 150, canvas.height * (isPortrait ? 0.25 : 0.24));
-	const availableHeight = Math.max(1, canvas.height - topReserve - hudReserve);
-	const maxBoardWidth = isPortrait
-		? canvas.width * 0.86
-		: Math.min(canvas.width * 0.58, canvas.height * 0.75);
-	const maxBoardHeight = availableHeight * (isPortrait ? 0.88 : 0.76);
-	const scale = Math.max(0.28, Math.min(maxBoardWidth / BOARD_SIZES.width, maxBoardHeight / BOARD_SIZES.height));
-	const screenWidth = BOARD_SIZES.width * scale;
-	const screenHeight = BOARD_SIZES.height * scale;
-	const frameWidth = Math.min(canvas.width * 0.92, screenWidth * (isPortrait ? 1.12 : 1.18));
-	const frameHeight = screenHeight * (isPortrait ? 1.18 : 1.22);
+	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.74 : 0.52), canvas.height * 0.50 * FRAME_RATIO);
+	const frameHeight = frameWidth / FRAME_RATIO;
+	const frameY = canvas.height * (isPortrait ? 0.18 : 0.12) + frameHeight / 2;
+	const scale = (frameHeight * 0.68) / BOARD_SIZES.height;
 
 	return {
 		x: canvas.width * 0.5,
-		y: topReserve + availableHeight * (isPortrait ? 0.4 : 0.42),
+		y: frameY,
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
-		screenWidth,
-		screenHeight,
 		frameWidth,
 		frameHeight,
+		screenWidth: BOARD_SIZES.width * scale,
+		screenHeight: BOARD_SIZES.height * scale,
 		...BOARD_SIZES,
 	};
 };
