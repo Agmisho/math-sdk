@@ -50,8 +50,8 @@
 		<ResumeBet />
 		<Sound />
 
-		<BoardFrame />
 		<Board />
+		<BoardFrame />
 		<Anticipations />
 
 		<InheritanceUi />
