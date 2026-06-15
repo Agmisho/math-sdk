@@ -88,7 +88,7 @@ const boardLayout = () => {
 	const maxBoardWidth = isPortrait
 		? canvas.width * 0.86
 		: Math.min(canvas.width * 0.58, canvas.height * 0.75);
-	const maxBoardHeight = availableHeight * 0.88;
+	const maxBoardHeight = availableHeight * (isPortrait ? 0.88 : 0.76);
 	const scale = Math.max(0.28, Math.min(maxBoardWidth / BOARD_SIZES.width, maxBoardHeight / BOARD_SIZES.height));
 	const screenWidth = BOARD_SIZES.width * scale;
 	const screenHeight = BOARD_SIZES.height * scale;
@@ -97,7 +97,7 @@ const boardLayout = () => {
 
 	return {
 		x: canvas.width * 0.5,
-		y: topReserve + availableHeight * (isPortrait ? 0.4 : 0.36),
+		y: topReserve + availableHeight * (isPortrait ? 0.4 : 0.42),
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
