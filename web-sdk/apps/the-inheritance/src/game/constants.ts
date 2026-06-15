@@ -1,7 +1,7 @@
 import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 145;
-export const REEL_SPACING = 270;
+export const REEL_SPACING = 145;
 
 export const REEL_PADDING = 0.5;
 
@@ -85,13 +85,13 @@ const explosion = {
 	sizeRatios: { width: 1, height: 1 },
 };
 
-const symbolSprite = (assetKey: RawSymbol['name'], width = 1, height = 1) => ({
+const symbolSprite = (assetKey: RawSymbol['name'], width = 0.82, height = 0.82) => ({
 	type: 'sprite',
 	assetKey,
 	sizeRatios: { width, height },
 });
 
-const symbolInfo = (assetKey: RawSymbol['name'], width = 1, height = 1) => {
+const symbolInfo = (assetKey: RawSymbol['name'], width = 0.82, height = 0.82) => {
 	const sprite = symbolSprite(assetKey, width, height);
 	return {
 		explosion,
@@ -104,13 +104,13 @@ const symbolInfo = (assetKey: RawSymbol['name'], width = 1, height = 1) => {
 };
 
 export const SYMBOL_INFO_MAP = {
-	S: symbolInfo('S', 1.15, 1.15),
-	W: symbolInfo('W', 1.1, 1.1),
-	M2: symbolInfo('M2', 1, 1),
-	M5: symbolInfo('M5', 1, 1),
-	M10: symbolInfo('M10', 1, 1),
-	M20: symbolInfo('M20', 1, 1),
-	M100: symbolInfo('M100', 1, 1),
+	S: symbolInfo('S', 0.9, 0.9),
+	W: symbolInfo('W', 0.9, 0.9),
+	M2: symbolInfo('M2', 0.86, 0.86),
+	M5: symbolInfo('M5', 0.86, 0.86),
+	M10: symbolInfo('M10', 0.86, 0.86),
+	M20: symbolInfo('M20', 0.86, 0.86),
+	M100: symbolInfo('M100', 0.86, 0.86),
 	H1: symbolInfo('H1'),
 	H2: symbolInfo('H2'),
 	H3: symbolInfo('H3'),
