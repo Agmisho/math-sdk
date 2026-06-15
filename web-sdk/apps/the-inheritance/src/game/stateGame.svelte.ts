@@ -80,16 +80,32 @@ export const stateGame = $state({
 });
 
 const boardLayout = () => {
-	const mainLayout = stateLayoutDerived.mainLayout();
+	const canvas = stateLayoutDerived.canvasSizes();
+	const isPortrait = canvas.height > canvas.width * 1.05;
+	const shortSide = Math.max(1, Math.min(canvas.width, canvas.height));
+	const topReserve = Math.max(58, canvas.height * (isPortrait ? 0.08 : 0.1));
+	const hudReserve = Math.max(isPortrait ? 190 : 150, canvas.height * (isPortrait ? 0.25 : 0.24));
+	const availableHeight = Math.max(1, canvas.height - topReserve - hudReserve);
+	const maxBoardWidth = isPortrait
+		? canvas.width * 0.86
+		: Math.min(canvas.width * 0.58, canvas.height * 0.75);
+	const maxBoardHeight = availableHeight * 0.88;
+	const scale = Math.max(0.28, Math.min(maxBoardWidth / BOARD_SIZES.width, maxBoardHeight / BOARD_SIZES.height));
+	const screenWidth = BOARD_SIZES.width * scale;
+	const screenHeight = BOARD_SIZES.height * scale;
+	const frameWidth = Math.min(canvas.width * 0.92, screenWidth * (isPortrait ? 1.12 : 1.18));
+	const frameHeight = screenHeight * (isPortrait ? 1.18 : 1.22);
 
 	return {
-		x: mainLayout.width * 0.5,
-		y: mainLayout.height * 0.505,
+		x: canvas.width * 0.5,
+		y: topReserve + availableHeight * (isPortrait ? 0.43 : 0.42),
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
-		scale: 1,
-		frameWidth: mainLayout.width,
-		frameHeight: mainLayout.height,
+		scale,
+		screenWidth,
+		screenHeight,
+		frameWidth,
+		frameHeight,
 		...BOARD_SIZES,
 	};
 };
