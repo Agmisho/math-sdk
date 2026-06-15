@@ -3,7 +3,6 @@
 
 	import { EnablePixiExtension } from 'components-pixi';
 	import { EnableHotkey } from 'components-shared';
-	import { MainContainer } from 'components-layout';
 	import { App } from 'pixi-svelte';
 	import { stateModal } from 'state-shared';
 
@@ -25,7 +24,6 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import InheritanceUi from './InheritanceUi.svelte';
-	import LegacyKeyCounter from './LegacyKeyCounter.svelte';
 
 	const context = getContext();
 
@@ -57,16 +55,9 @@
 		-->
 		<Sound />
 
-		<LegacyKeyCounter />
-
-		<MainContainer>
-			<Board />
-			<Anticipations />
-		</MainContainer>
-
-		<MainContainer>
-			<BoardFrame />
-		</MainContainer>
+		<BoardFrame />
+		<Board />
+		<Anticipations />
 
 		<InheritanceUi />
 		<Win />
