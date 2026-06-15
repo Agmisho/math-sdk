@@ -4,9 +4,17 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const backgroundProps = $derived(context.stateLayoutDerived.normalBackgroundLayout({ scale: 1 }));
+	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 </script>
 
-<Rectangle {...context.stateLayoutDerived.canvasSizes()} backgroundColor={0x000000} zIndex={-3} />
+<Rectangle {...canvas} backgroundColor={0x000000} zIndex={-3} />
 
-<Sprite key="inheritanceBackground" {...backgroundProps} zIndex={-2} />
+<Sprite
+	key="inheritanceBackground"
+	anchor={0.5}
+	x={canvas.width / 2}
+	y={canvas.height / 2}
+	width={canvas.width}
+	height={canvas.height}
+	zIndex={-2}
+/>
