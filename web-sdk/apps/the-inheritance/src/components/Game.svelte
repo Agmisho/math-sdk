@@ -25,6 +25,7 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import InheritanceUi from './InheritanceUi.svelte';
+	import LegacyKeyCounter from './LegacyKeyCounter.svelte';
 
 	const context = getContext();
 
@@ -55,6 +56,8 @@
 			Ref: https://developer.chrome.com/blog/autoplay
 		-->
 		<Sound />
+
+		<LegacyKeyCounter />
 
 		<MainContainer>
 			<Board />
