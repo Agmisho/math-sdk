@@ -84,10 +84,13 @@ export const stateGame = $state({
 const boardLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.74 : 0.52), canvas.height * 0.50 * FRAME_RATIO);
+	const frameWidth = Math.min(
+		canvas.width * (isPortrait ? 0.84 : 0.62),
+		canvas.height * (isPortrait ? 0.45 : 0.58) * FRAME_RATIO,
+	);
 	const frameHeight = frameWidth / FRAME_RATIO;
-	const frameY = canvas.height * (isPortrait ? 0.18 : 0.12) + frameHeight / 2;
-	const scale = (frameHeight * 0.68) / BOARD_SIZES.height;
+	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
+	const scale = (frameWidth * 0.62) / BOARD_SIZES.width;
 
 	return {
 		x: canvas.width * 0.5,
