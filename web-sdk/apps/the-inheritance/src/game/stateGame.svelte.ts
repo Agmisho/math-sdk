@@ -82,7 +82,6 @@ export const stateGame = $state({
 const boardLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-	const shortSide = Math.max(1, Math.min(canvas.width, canvas.height));
 	const topReserve = Math.max(58, canvas.height * (isPortrait ? 0.08 : 0.1));
 	const hudReserve = Math.max(isPortrait ? 190 : 150, canvas.height * (isPortrait ? 0.25 : 0.24));
 	const availableHeight = Math.max(1, canvas.height - topReserve - hudReserve);
