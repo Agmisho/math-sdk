@@ -7,14 +7,14 @@
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
 	const isPortrait = $derived(canvas.height > canvas.width * 1.05);
-	const panelWidth = $derived(Math.min(canvas.width * (isPortrait ? 0.86 : 0.58), canvas.height * 0.28 * UI_RATIO));
+	const panelWidth = $derived(Math.min(canvas.width * (isPortrait ? 0.88 : 0.64), canvas.height * 0.34 * UI_RATIO));
 	const panelHeight = $derived(panelWidth / UI_RATIO);
 	const panelX = $derived(canvas.width / 2);
-	const panelY = $derived(canvas.height - panelHeight * 0.58);
+	const panelY = $derived(context.stateGameDerived.boardLayout().y + context.stateGameDerived.boardLayout().frameHeight / 2 + panelHeight * 0.42);
 	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
-	const smallButtonSize = $derived(panelWidth * 0.056);
-	const spinButtonSize = $derived(panelWidth * 0.124);
+	const smallButtonSize = $derived(panelWidth * 0.058);
+	const spinButtonSize = $derived(panelWidth * 0.128);
 </script>
 
 <Sprite key="inheritanceUiPanel" anchor={0.5} x={panelX} y={panelY} width={panelWidth} height={panelHeight} zIndex={20} />
