@@ -44,13 +44,13 @@
 		);
 	const panelHeight = () => panelWidth() / UI_RATIO;
 	const panelX = () => canvas().width * 0.5;
-	const panelY = () => canvas().height - panelHeight() * (isPortrait() ? 0.25 : 0.36);
+	const panelY = () => canvas().height - panelHeight() * 0.25;
 	const uiX = (ratioX: number) => panelX() + panelWidth() * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY() + panelHeight() * (ratioY - 0.5);
 	const smallButtonSize = () => Math.max(34, panelWidth() * (isPortrait() ? 0.078 : 0.06));
 	const spinButtonSize = () => Math.max(68, panelWidth() * (isPortrait() ? 0.18 : 0.13));
-	const smallButtonY = () => uiY(isPortrait() ? 0.36 : 0.34);
-	const spinButtonY = () => uiY(isPortrait() ? 0.3 : 0.27);
+	const smallButtonY = () => uiY(isPortrait() ? 0.36 : 0.23);
+	const spinButtonY = () => uiY(isPortrait() ? 0.3 : 0.17);
 	const betButtonY = () => uiY(0.7);
 	const hitAlpha = 0.001;
 
