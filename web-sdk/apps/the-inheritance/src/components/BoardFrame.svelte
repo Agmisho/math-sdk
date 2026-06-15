@@ -10,7 +10,6 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const BLEND_MODE = 'screen' as const;
 	const board = () => context.stateGameDerived.boardLayout();
 </script>
 
@@ -21,6 +20,4 @@
 	y={board().y}
 	width={board().frameWidth}
 	height={board().frameHeight}
-	alpha={0.96}
-	blendMode={BLEND_MODE}
 />
