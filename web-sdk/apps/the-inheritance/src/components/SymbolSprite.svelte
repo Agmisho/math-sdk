@@ -13,6 +13,7 @@
 	};
 
 	const props: Props = $props();
+	const SYMBOL_VISUAL_SCALE = 0.92;
 
 	onMount(() => {
 		props.oncomplete?.();
@@ -29,6 +30,6 @@
 	y={props.y}
 	anchor={0.5}
 	key={props.symbolInfo.assetKey}
-	width={SYMBOL_SIZE * props.symbolInfo.sizeRatios.width}
-	height={SYMBOL_SIZE * props.symbolInfo.sizeRatios.height}
+	width={SYMBOL_SIZE * SYMBOL_VISUAL_SCALE * props.symbolInfo.sizeRatios.width}
+	height={SYMBOL_SIZE * SYMBOL_VISUAL_SCALE * props.symbolInfo.sizeRatios.height}
 />
