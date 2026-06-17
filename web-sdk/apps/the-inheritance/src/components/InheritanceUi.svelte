@@ -8,14 +8,14 @@
 	const UI_RATIO = 1672 / 941;
 	const isPortrait = $derived(canvas.height > canvas.width * 1.05);
 	const boardLayout = $derived(context.stateGameDerived.boardLayout());
-	const panelWidth = $derived(Math.min(canvas.width * (isPortrait ? 0.74 : 0.52), canvas.height * 0.28 * UI_RATIO));
+	const panelWidth = $derived(Math.min(canvas.width * (isPortrait ? 0.82 : 0.60), canvas.height * 0.34 * UI_RATIO));
 	const panelHeight = $derived(panelWidth / UI_RATIO);
 	const panelX = $derived(canvas.width / 2);
 	const panelY = $derived(boardLayout.y + boardLayout.frameHeight / 2 + panelHeight * 0.36);
 	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
-	const smallButtonSize = $derived(panelWidth * 0.052);
-	const spinButtonSize = $derived(panelWidth * 0.112);
+	const smallButtonSize = $derived(panelWidth * 0.064);
+	const spinButtonSize = $derived(panelWidth * 0.136);
 	const BLEND_MODE = 'screen' as const;
 </script>
 
