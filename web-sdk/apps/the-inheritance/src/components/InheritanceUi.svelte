@@ -25,5 +25,5 @@
 <Sprite key="buttonSpeed" anchor={0.5} x={uiX(0.218)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
 <Sprite key="buttonVolume" anchor={0.5} x={uiX(0.329)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
 <Sprite key="buttonSpin" anchor={0.5} x={uiX(0.500)} y={uiY(0.398)} width={spinButtonSize} height={spinButtonSize} blendMode={BLEND_MODE} zIndex={22} />
-<Sprite key="buttonAuto" anchor={0.5} x={uiX(0.676)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
-<Sprite key="buttonBuy" anchor={0.5} x={uiX(0.784)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
+<Sprite key="buttonAuto" anchor={0.5} x={uiX(0.655)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
+<Sprite key="buttonBuy" anchor={0.5} x={uiX(0.760)} y={uiY(0.462)} width={smallButtonSize} height={smallButtonSize} blendMode={BLEND_MODE} zIndex={22} />
