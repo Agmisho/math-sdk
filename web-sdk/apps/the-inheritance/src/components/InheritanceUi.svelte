@@ -14,8 +14,8 @@
 	const panelY = $derived(boardLayout.y + boardLayout.frameHeight / 2 + panelHeight * 0.36);
 	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
-	const smallButtonSize = $derived(panelWidth * 0.074);
-	const spinButtonSize = $derived(panelWidth * 0.152);
+	const smallButtonSize = $derived(panelWidth * 0.084);
+	const spinButtonSize = $derived(panelWidth * 0.170);
 	const BLEND_MODE = 'screen' as const;
 </script>
 
