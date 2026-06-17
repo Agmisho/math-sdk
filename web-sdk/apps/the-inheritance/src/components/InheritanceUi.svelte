@@ -1,12 +1,17 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	import { Button } from 'components-pixi';
 	import { OnHotkey } from 'components-shared';
-	import { Rectangle, Sprite } from 'pixi-svelte';
+	import { Rectangle, Sprite, Text } from 'pixi-svelte';
 	import { stateBet, stateBetDerived, stateConfig, stateModal, stateSound } from 'state-shared';
 
 	import { getContext } from '../game/context';
 
 	const context = getContext();
+	const BET_AMOUNT_OPTIONS = [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 3, 5, 10, 20, 50, 100, 200, 300];
+	const MIN_BET = BET_AMOUNT_OPTIONS[0];
+	const MAX_BET = BET_AMOUNT_OPTIONS[BET_AMOUNT_OPTIONS.length - 1];
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
 	const isPortrait = $derived(canvas.height > canvas.width * 1.05);
@@ -23,9 +28,32 @@
 	const spinHitSize = $derived(spinButtonSize * 1.08);
 	const betHitWidth = $derived(panelWidth * 0.075);
 	const betHitHeight = $derived(panelHeight * 0.16);
+	const textStyle = $derived({
+		fontFamily: 'Georgia',
+		fontSize: panelWidth * 0.018,
+		fontWeight: '700',
+		fill: 0xffe6a2,
+		align: 'center',
+	});
+	const betTextStyle = $derived({
+		fontFamily: 'Georgia',
+		fontSize: panelWidth * 0.022,
+		fontWeight: '800',
+		fill: 0xffe6a2,
+		align: 'center',
+	});
 	const BLEND_MODE = 'screen' as const;
 
 	let stopDisabled = $state(false);
+
+	const formatMoney = (value: number) =>
+		`$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+	onMount(() => {
+		stateConfig.betAmountOptions = BET_AMOUNT_OPTIONS;
+		stateConfig.betMenuOptions = BET_AMOUNT_OPTIONS;
+		if (stateBet.betAmount < MIN_BET || stateBet.betAmount > MAX_BET) stateBet.betAmount = MIN_BET;
+	});
 
 	const spinDisabled = $derived.by(() => {
 		if (context.stateXstateDerived.isIdle()) return !stateBetDerived.isBetCostAvailable();
@@ -41,10 +69,8 @@
 	});
 	const buyDisabled = $derived(!context.stateXstateDerived.isIdle());
 	const speedDisabled = $derived(stateBet.isSpaceHold);
-	const smallestBet = $derived(stateConfig.betAmountOptions[0]);
-	const biggestBet = $derived(stateConfig.betAmountOptions[stateConfig.betAmountOptions.length - 1]);
-	const decreaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount === smallestBet);
-	const increaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount === biggestBet);
+	const decreaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount <= MIN_BET);
+	const increaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount >= MAX_BET);
 
 	const pressGeneral = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
 	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundPressBet' });
@@ -95,18 +121,14 @@
 
 	const pressDecrease = () => {
 		pressGeneral();
-		const nextSmaller = [...stateConfig.betAmountOptions]
-			.sort((a, b) => b - a)
-			.find((option) => option < stateBet.betAmount);
-		stateBetDerived.setBetAmount(nextSmaller || smallestBet);
+		const nextSmaller = [...BET_AMOUNT_OPTIONS].sort((a, b) => b - a).find((option) => option < stateBet.betAmount);
+		stateBet.betAmount = nextSmaller || MIN_BET;
 	};
 
 	const pressIncrease = () => {
 		pressGeneral();
-		const nextBigger = [...stateConfig.betAmountOptions]
-			.sort((a, b) => a - b)
-			.find((option) => option > stateBet.betAmount);
-		stateBetDerived.setBetAmount(nextBigger || biggestBet);
+		const nextBigger = [...BET_AMOUNT_OPTIONS].sort((a, b) => a - b).find((option) => option > stateBet.betAmount);
+		stateBet.betAmount = nextBigger || MAX_BET;
 	};
 
 	context.eventEmitter.subscribeOnMount({
@@ -123,6 +145,9 @@
 
 <Sprite key="inheritanceUiPanel" anchor={0.5} x={panelX} y={panelY} width={panelWidth} height={panelHeight} blendMode={BLEND_MODE} zIndex={20} />
 <OnHotkey hotkey="Space" disabled={spinDisabled} onpress={pressSpin} />
+
+<Text text={formatMoney(stateBet.balanceAmount)} anchor={0.5} x={uiX(0.891)} y={uiY(0.462)} style={textStyle} zIndex={24} />
+<Text text={formatMoney(stateBet.betAmount)} anchor={0.5} x={uiX(0.500)} y={uiY(0.735)} style={betTextStyle} zIndex={24} />
 
 <Button x={uiX(0.108)} y={uiY(0.462)} anchor={0.5} sizes={{ width: smallHitSize, height: smallHitSize }} onpress={pressInfo}>
 	{#snippet children({ center, hovered, pressed })}
