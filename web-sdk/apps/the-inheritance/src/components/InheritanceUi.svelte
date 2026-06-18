@@ -76,7 +76,7 @@
 	const increaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount >= MAX_BET);
 
 	const pressGeneral = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
-	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundBet' });
+	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundPressBet' });
 
 	const pressInfo = () => {
 		pressGeneral();
