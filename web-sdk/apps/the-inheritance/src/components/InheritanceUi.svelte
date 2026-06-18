@@ -26,8 +26,8 @@
 	const smallHitSize = $derived(smallButtonSize * 1.2);
 	const spinButtonSize = $derived(panelWidth * 0.170);
 	const spinHitSize = $derived(spinButtonSize * 1.08);
-	const betHitWidth = $derived(panelWidth * 0.075);
-	const betHitHeight = $derived(panelHeight * 0.16);
+	const betHitWidth = $derived(panelWidth * 0.115);
+	const betHitHeight = $derived(panelHeight * 0.22);
 	const textStyle = $derived({
 		fontFamily: 'Georgia',
 		fontSize: panelWidth * 0.018,
@@ -72,8 +72,8 @@
 	});
 	const buyDisabled = $derived(!context.stateXstateDerived.isIdle());
 	const speedDisabled = $derived(stateBet.isSpaceHold);
-	const decreaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount <= MIN_BET);
-	const increaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount >= MAX_BET);
+	const decreaseDisabled = $derived(stateBet.betAmount <= MIN_BET);
+	const increaseDisabled = $derived(stateBet.betAmount >= MAX_BET);
 
 	const pressGeneral = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
 	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundPressBet' });
@@ -188,14 +188,14 @@
 	{/snippet}
 </Button>
 
-<Button x={uiX(0.435)} y={uiY(0.735)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressDecrease} disabled={decreaseDisabled}>
+<Button x={uiX(0.430)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressDecrease} disabled={decreaseDisabled}>
 	{#snippet children({ center })}
-		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} alpha={0.001} backgroundColor={0xffffff} zIndex={24} />
+		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} backgroundColor={0xffffff} backgroundAlpha={0.01} zIndex={24} />
 	{/snippet}
 </Button>
 
-<Button x={uiX(0.565)} y={uiY(0.735)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressIncrease} disabled={increaseDisabled}>
+<Button x={uiX(0.570)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressIncrease} disabled={increaseDisabled}>
 	{#snippet children({ center })}
-		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} alpha={0.001} backgroundColor={0xffffff} zIndex={24} />
+		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} backgroundColor={0xffffff} backgroundAlpha={0.01} zIndex={24} />
 	{/snippet}
 </Button>
