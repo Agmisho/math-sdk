@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Sprite, type SpriteProps } from 'pixi-svelte';
+	import { Sprite } from 'pixi-svelte';
 
 	import { getSymbolInfo } from '../game/utils';
 	import { SYMBOL_SIZE } from '../game/constants';
@@ -13,7 +13,7 @@
 	};
 
 	const props: Props = $props();
-	const SYMBOL_VISUAL_SCALE = 0.92;
+	const SYMBOL_VISUAL_SCALE = 1.04;
 
 	onMount(() => {
 		props.oncomplete?.();
