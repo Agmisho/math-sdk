@@ -24,7 +24,7 @@
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
 	const smallButtonSize = $derived(panelWidth * 0.084);
 	const smallHitSize = $derived(smallButtonSize * 1.2);
-	const spinButtonSize = $derived(panelWidth * 0.170);
+	const spinButtonSize = $derived(panelWidth * 0.182);
 	const spinHitSize = $derived(spinButtonSize * 1.08);
 	const betHitWidth = $derived(panelWidth * 0.115);
 	const betHitHeight = $derived(panelHeight * 0.22);
