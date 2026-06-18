@@ -3,6 +3,41 @@ import { rgsFetcher } from 'rgs-fetcher';
 
 export * from './types';
 
+const mockReel = (names: string[]) => names.map((name) => ({ name }));
+
+const createMockPlayResponse = (options: { currency: string; amount: number; mode: string }) => ({
+	status: { statusCode: 'SUCCESS', statusMessage: 'Mock play response' },
+	balance: {
+		amount: 1000 * API_AMOUNT_MULTIPLIER,
+		currency: options.currency,
+	},
+	round: {
+		roundID: Date.now(),
+		amount: options.amount * API_AMOUNT_MULTIPLIER,
+		payout: 0,
+		payoutMultiplier: 0,
+		active: false,
+		mode: options.mode,
+		event: '0',
+		state: [
+			{
+				index: 0,
+				type: 'reveal',
+				gameType: 'basegame',
+				paddingPositions: [0, 0, 0, 0, 0],
+				anticipation: [0, 0, 0, 0, 0],
+				board: [
+					mockReel(['H1', 'H3', 'L2', 'H4']),
+					mockReel(['L2', 'H4', 'L3', 'H1']),
+					mockReel(['H3', 'L1', 'M5', 'H4']),
+					mockReel(['H4', 'L2', 'H2', 'H1']),
+					mockReel(['L5', 'H1', 'L3', 'H4']),
+				],
+			},
+		],
+	},
+});
+
 export const requestAuthenticate = async (options: {
 	sessionID: string;
 	rgsUrl: string;
@@ -24,6 +59,13 @@ export const requestEndRound = async (options: {
 	sessionID: string;
 	rgsUrl: string;
 }) => {
+	if (!options.rgsUrl) {
+		return {
+			status: { statusCode: 'SUCCESS', statusMessage: 'Mock end round response' },
+			balance: { amount: 1000 * API_AMOUNT_MULTIPLIER, currency: 'USD' },
+		};
+	}
+
 	const data = await rgsFetcher.post({
 		rgsUrl: options.rgsUrl,
 		url: '/wallet/end-round',
@@ -59,6 +101,10 @@ export const requestBet = async (options: {
 	mode: string;
 	rgsUrl: string;
 }) => {
+	if (!options.rgsUrl) {
+		return createMockPlayResponse(options);
+	}
+
 	const data = await rgsFetcher.post({
 		rgsUrl: options.rgsUrl,
 		url: '/wallet/play',
@@ -87,4 +133,4 @@ export const requestReplay = async (options: {
 	});
 
 	return data;
-}
+};
