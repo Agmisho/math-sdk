@@ -8,8 +8,8 @@
 </script>
 
 <script lang="ts">
-	import { Container } from 'pixi-svelte';
-	import { FadeContainer, WinCountUpProvider, ResponsiveBitmapText } from 'components-pixi';
+	import { Container, Text } from 'pixi-svelte';
+	import { FadeContainer, WinCountUpProvider } from 'components-pixi';
 	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
 	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
 	import { CanvasSizeRectangle, MainContainer } from 'components-layout';
@@ -28,6 +28,14 @@
 	let winLevelData = $state<WinLevelData>();
 	let oncomplete = $state(() => {});
 	let onCountUpComplete = $state(() => {});
+
+	const winTextStyle = $derived({
+		fontFamily: 'Georgia',
+		fontSize: winLevelData?.type === 'big' ? SYMBOL_SIZE * 1.8 : SYMBOL_SIZE * 1.15,
+		fontWeight: '900',
+		fill: 0xffe6a2,
+		align: 'center',
+	});
 
 	context.eventEmitter.subscribeOnMount({
 		winShow: () => (show = true),
@@ -65,32 +73,17 @@
 					>
 						{#if winLevelData?.animation}
 							<WinAnimation animationMap={winLevelData.animation}>
-								<ResponsiveBitmapText
+								<Text
 									anchor={0.5}
-									maxWidth={2130}
 									text={bookEventAmountToCurrencyString(countUpAmount)}
-									style={{
-										fontFamily: 'gold',
-										fontSize: SYMBOL_SIZE * 3.6,
-										align: 'center',
-										fontWeight: 'bold',
-										letterSpacing: 0,
-									}}
+									style={winTextStyle}
 								/>
 							</WinAnimation>
 						{:else}
-							<ResponsiveBitmapText
+							<Text
 								anchor={0.5}
-								maxWidth={context.stateLayoutDerived.canvasSizes().width /
-									context.stateLayoutDerived.mainLayout().scale}
 								text={bookEventAmountToCurrencyString(countUpAmount)}
-								style={{
-									fontFamily: 'gold',
-									fontSize: SYMBOL_SIZE,
-									align: 'center',
-									fontWeight: 'bold',
-									letterSpacing: 0,
-								}}
+								style={winTextStyle}
 							/>
 						{/if}
 					</Container>
