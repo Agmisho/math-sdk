@@ -90,7 +90,7 @@ const boardLayout = () => {
 	);
 	const frameHeight = frameWidth / FRAME_RATIO;
 	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
-	const scale = (frameWidth * 0.62) / BOARD_SIZES.width;
+	const scale = (frameWidth * 0.74) / BOARD_SIZES.width;
 
 	return {
 		x: canvas.width * 0.5,
