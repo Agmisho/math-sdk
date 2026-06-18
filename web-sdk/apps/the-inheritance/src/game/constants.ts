@@ -1,7 +1,7 @@
 import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 145;
-export const REEL_SPACING = 165;
+export const REEL_SPACING = 185;
 
 export const REEL_PADDING = 0.5;
 
