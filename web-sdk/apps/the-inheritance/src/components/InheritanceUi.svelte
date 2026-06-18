@@ -49,6 +49,9 @@
 	const formatMoney = (value: number) =>
 		`$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
+	const activeBetModeType = () => stateBetDerived.activeBetMode()?.type ?? null;
+	const canPayForBet = () => stateBet.balanceAmount <= 0 || stateBet.betAmount <= stateBet.balanceAmount;
+
 	onMount(() => {
 		stateConfig.betAmountOptions = BET_AMOUNT_OPTIONS;
 		stateConfig.betMenuOptions = BET_AMOUNT_OPTIONS;
@@ -56,7 +59,7 @@
 	});
 
 	const spinDisabled = $derived.by(() => {
-		if (context.stateXstateDerived.isIdle()) return !stateBetDerived.isBetCostAvailable();
+		if (context.stateXstateDerived.isIdle()) return !canPayForBet();
 		if (stopDisabled) return true;
 		if (stateBet.isTurbo && !stateBetDerived.hasAutoBetCounter()) return true;
 		return false;
@@ -64,7 +67,7 @@
 	const autoDisabled = $derived.by(() => {
 		if (stateBet.isSpaceHold) return true;
 		if (!context.stateXstateDerived.isIdle() && !stateBetDerived.hasAutoBetCounter()) return true;
-		if (!stateBetDerived.isBetCostAvailable()) return true;
+		if (!canPayForBet()) return true;
 		return false;
 	});
 	const buyDisabled = $derived(!context.stateXstateDerived.isIdle());
@@ -73,7 +76,7 @@
 	const increaseDisabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount >= MAX_BET);
 
 	const pressGeneral = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
-	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundPressBet' });
+	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundBet' });
 
 	const pressInfo = () => {
 		pressGeneral();
@@ -101,7 +104,7 @@
 
 	const pressBuy = () => {
 		pressGeneral();
-		if (stateBetDerived.activeBetMode()?.type === 'activate') {
+		if (activeBetModeType() === 'activate') {
 			stateBet.activeBetModeKey = 'BASE';
 		} else {
 			stateModal.modal = { name: 'buyBonus' };
@@ -111,7 +114,7 @@
 	const pressSpin = () => {
 		pressBetSound();
 		if (context.stateXstateDerived.isIdle()) {
-			if (stateBetDerived.activeBetMode()?.type === 'buy') stateBet.activeBetModeKey = 'BASE';
+			if (activeBetModeType() === 'buy') stateBet.activeBetModeKey = 'BASE';
 			context.eventEmitter.broadcast({ type: 'bet' });
 		} else if (!stopDisabled) {
 			if (stateBetDerived.hasAutoBetCounter()) stateBet.autoSpinsCounter = 0;
@@ -181,7 +184,7 @@
 
 <Button x={uiX(0.780)} y={uiY(0.462)} anchor={0.5} sizes={{ width: smallHitSize, height: smallHitSize }} onpress={pressBuy} disabled={buyDisabled}>
 	{#snippet children({ center, hovered, pressed })}
-		<Sprite key="buttonBuy" {...center} anchor={0.5} width={smallButtonSize} height={smallButtonSize} alpha={buyDisabled ? 0.45 : pressed ? 0.82 : hovered || stateBetDerived.activeBetMode()?.type === 'activate' ? 1 : 0.95} blendMode={BLEND_MODE} zIndex={22} />
+		<Sprite key="buttonBuy" {...center} anchor={0.5} width={smallButtonSize} height={smallButtonSize} alpha={buyDisabled ? 0.45 : pressed ? 0.82 : hovered || activeBetModeType() === 'activate' ? 1 : 0.95} blendMode={BLEND_MODE} zIndex={22} />
 	{/snippet}
 </Button>
 
