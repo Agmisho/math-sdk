@@ -188,13 +188,13 @@
 	{/snippet}
 </Button>
 
-<Button x={uiX(0.430)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressDecrease} disabled={decreaseDisabled}>
+<Button x={uiX(0.405)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressDecrease} disabled={decreaseDisabled}>
 	{#snippet children({ center })}
 		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} backgroundColor={0xffffff} backgroundAlpha={0.01} zIndex={24} />
 	{/snippet}
 </Button>
 
-<Button x={uiX(0.570)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressIncrease} disabled={increaseDisabled}>
+<Button x={uiX(0.595)} y={uiY(0.712)} anchor={0.5} sizes={{ width: betHitWidth, height: betHitHeight }} onpress={pressIncrease} disabled={increaseDisabled}>
 	{#snippet children({ center })}
 		<Rectangle {...center} anchor={0.5} width={betHitWidth} height={betHitHeight} backgroundColor={0xffffff} backgroundAlpha={0.01} zIndex={24} />
 	{/snippet}
