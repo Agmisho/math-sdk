@@ -9,17 +9,28 @@
 	const context = getContext();
 
 	onMount(() => {
-		const loadedAudio = $state.snapshot(
-			context.stateApp.loadedAssets['sound'],
-		) as LoadedAudio<SoundName>;
-		const { destroy } = sound.load(loadedAudio);
+		try {
+			const loadedAudio = $state.snapshot(
+				context.stateApp.loadedAssets['sound'],
+			) as LoadedAudio<SoundName> | undefined;
 
-		return () => {
-			// Equivalent to onDestroy(); Leave this comment for searching.
-			destroy();
-		};
+			if (!loadedAudio) return;
+
+			const { destroy } = sound.load(loadedAudio);
+
+			return () => {
+				// Equivalent to onDestroy(); Leave this comment for searching.
+				destroy();
+			};
+		} catch (error) {
+			console.warn('Sound loading disabled because audio assets are unavailable.', error);
+		}
 	});
 
-	sound.enableEffect();
-	sound.volumeEffect();
+	try {
+		sound.enableEffect();
+		sound.volumeEffect();
+	} catch (error) {
+		console.warn('Sound controls disabled because audio assets are unavailable.', error);
+	}
 </script>
