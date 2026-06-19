@@ -23,7 +23,7 @@ export default {
 	},
 	inheritanceFrame: {
 		type: 'sprite',
-		src: inheritanceAsset('ui/frame.png'),
+		src: inheritanceAsset('ui/frame.svg'),
 		preload: true,
 	},
 	inheritanceUiPanel: {
@@ -219,9 +219,4 @@ export default {
 		type: 'spriteSheet',
 		src: new URL('../../assets/sprites/coin/SD2_Coin.json', import.meta.url).href,
 	},
-	sound: {
-		type: 'audio',
-		src: new URL('../../assets/audio/sounds.json', import.meta.url).href,
-		preload: true,
-	},
-} as const;
+};
