@@ -23,7 +23,7 @@ export default {
 	},
 	inheritanceFrame: {
 		type: 'sprite',
-		src: inheritanceAsset('ui/frame.svg'),
+		src: inheritanceAsset('ui/Frame1.png'),
 		preload: true,
 	},
 	inheritanceUiPanel: {
