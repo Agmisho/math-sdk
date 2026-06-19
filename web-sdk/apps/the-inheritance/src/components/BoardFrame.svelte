@@ -11,14 +11,14 @@
 
 	const context = getContext();
 	const board = () => context.stateGameDerived.boardLayout();
-	const FRAME_DISPLAY_SCALE = 1.28;
+	const FRAME_DISPLAY_SCALE = 1;
 	const frameDisplayWidth = () => board().frameWidth * FRAME_DISPLAY_SCALE;
 	const frameDisplayHeight = () => board().frameHeight * FRAME_DISPLAY_SCALE;
 	const imageX = (ratioX: number) => board().x + frameDisplayWidth() * (ratioX - 0.5);
 	const imageY = (ratioY: number) => board().y + frameDisplayHeight() * (ratioY - 0.5);
 	const keyCounterStyle = () => ({
 		fontFamily: 'Georgia',
-		fontSize: frameDisplayWidth() * 0.020,
+		fontSize: frameDisplayWidth() * 0.018,
 		fontWeight: '800',
 		fill: 0xffe6a2,
 		align: 'center',
@@ -32,17 +32,16 @@
 	y={board().y}
 	width={frameDisplayWidth()}
 	height={frameDisplayHeight()}
-	blendMode="screen"
 />
 
 <Rectangle
 	anchor={0.5}
 	x={imageX(0.088)}
 	y={imageY(0.587)}
-	width={frameDisplayWidth() * 0.082}
-	height={frameDisplayHeight() * 0.045}
+	width={frameDisplayWidth() * 0.078}
+	height={frameDisplayHeight() * 0.042}
 	backgroundColor={0x04150c}
-	backgroundAlpha={0.92}
+	backgroundAlpha={0.96}
 	zIndex={24}
 />
 
