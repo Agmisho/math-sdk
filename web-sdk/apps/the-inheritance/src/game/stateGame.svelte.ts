@@ -16,6 +16,7 @@ const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()] });
 	}
+	if (rawSymbol.name === 'H4') stateGame.keyCounter += 1;
 	if (rawSymbol.name === 'W') eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
 };
 
@@ -50,6 +51,7 @@ export const stateGame = $state({
 	gameType: 'basegame' as GameType,
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
+	keyCounter: 0,
 });
 
 const boardLayout = () => {
@@ -58,10 +60,10 @@ const boardLayout = () => {
 	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.84 : 0.62), canvas.height * (isPortrait ? 0.45 : 0.58) * FRAME_RATIO);
 	const frameHeight = frameWidth / FRAME_RATIO;
 	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
-	const scale = Math.min((frameWidth * 0.68) / BOARD_SIZES.width, (frameHeight * 0.70) / BOARD_SIZES.height);
+	const scale = Math.min((frameWidth * 0.62) / BOARD_SIZES.width, (frameHeight * 0.62) / BOARD_SIZES.height);
 	return {
-		x: canvas.width * 0.5,
-		y: frameY + frameHeight * 0.065,
+		x: canvas.width * 0.5 + frameWidth * 0.03,
+		y: frameY + frameHeight * 0.04,
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
