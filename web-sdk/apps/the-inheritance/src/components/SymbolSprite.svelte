@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Sprite } from 'pixi-svelte';
-
-	import { getSymbolInfo } from '../game/utils';
-	import { SYMBOL_SIZE } from '../game/constants';
 	import { onMount } from 'svelte';
+
+	import { SYMBOL_SIZE } from '../game/constants';
+	import { getSymbolInfo } from '../game/utils';
 
 	type Props = {
 		x?: number;
@@ -13,11 +13,9 @@
 	};
 
 	const props: Props = $props();
-	const SYMBOL_VISUAL_SCALE = 0.92;
+	const SYMBOL_VISUAL_SCALE = 1.08;
 
-	onMount(() => {
-		props.oncomplete?.();
-	});
+	onMount(() => props.oncomplete?.());
 
 	$effect(() => {
 		props.symbolInfo;
