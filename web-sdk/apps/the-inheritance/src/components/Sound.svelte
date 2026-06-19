@@ -22,37 +22,41 @@
 
 	const context = getContext();
 
+	const playMusic = (name: MusicName) => sound.players?.music?.play?.({ name });
+	const playOnce = (name: SoundEffectName, forcePlay?: boolean) => sound.players?.once?.play?.({ name, forcePlay });
+	const playLoop = (name: SoundEffectName) => sound.players?.loop?.play?.({ name });
+
 	context.eventEmitter.subscribeOnMount({
 		// ui
 		soundBetMode: async ({ betModeKey }) => {
 			if (betModeKey === 'SUPERSPIN') {
 				// check if SUPERSPIN, when changing the bet mode.
-				sound.players.once.play({ name: 'sfx_winlevel_end' });
+				playOnce('sfx_winlevel_end');
 				await waitForTimeout(SECOND);
-				sound.players.music.play({ name: 'bgm_freespin' });
+				playMusic('bgm_freespin');
 			} else {
-				sound.players.music.play({ name: 'bgm_main' });
+				playMusic('bgm_main');
 			}
 		},
-		soundPressGeneral: () => sound.players.once.play({ name: 'sfx_btn_general' }),
-		soundPressBet: () => sound.players.once.play({ name: 'sfx_btn_spin' }),
+		soundPressGeneral: () => playOnce('sfx_btn_general'),
+		soundPressBet: () => playOnce('sfx_btn_spin'),
 		// scatterCounter
 		soundScatterCounterIncrease: () => (context.stateGame.scatterCounter = context.stateGame.scatterCounter + 1), // prettier-ignore
 		soundScatterCounterClear: () => (context.stateGame.scatterCounter = 0),
 		// game
-		soundMusic: ({ name }) => sound.players.music.play({ name }),
-		soundLoop: ({ name }) => sound.players.loop.play({ name }),
-		soundOnce: ({ name, forcePlay }) => sound.players.once.play({ name, forcePlay }),
-		soundStop: ({ name }) => sound.stop({ name }),
-		soundFade: async ({ name, duration, from, to }) => await sound.fade({ name, duration, from, to }), // prettier-ignore
+		soundMusic: ({ name }) => playMusic(name),
+		soundLoop: ({ name }) => playLoop(name),
+		soundOnce: ({ name, forcePlay }) => playOnce(name, forcePlay),
+		soundStop: ({ name }) => sound.stop?.({ name }),
+		soundFade: async ({ name, duration, from, to }) => await sound.fade?.({ name, duration, from, to }), // prettier-ignore
 	});
 
 	onMount(() => {
 		if (stateBet.activeBetModeKey === 'SUPERSPIN') {
 			// check if SUPERSPIN, when resume bet and the bet is a super spin.
-			sound.players.music.play({ name: 'bgm_freespin' });
+			playMusic('bgm_freespin');
 		} else {
-			sound.players.music.play({ name: 'bgm_main' });
+			playMusic('bgm_main');
 
 			//How to control volume per soundfile(use fade)
 			// sound.players.music.fade({ name: 'bgm_main', from: 0, to: 1, duration: 2000 });
