@@ -1,42 +1,22 @@
 import _ from 'lodash';
 import type { Tween } from 'svelte/motion';
-
 import { stateBet } from 'state-shared';
 import { createEnhanceBoard, createReelForSpinning } from 'utils-slots';
 import { createGetWinLevelDataByWinLevelAlias } from 'utils-shared/winLevel';
-
 import type { GameType, RawSymbol, SymbolState } from './types';
 import { stateLayoutDerived } from './stateLayout';
 import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
-import {
-	SYMBOL_SIZE,
-	BOARD_SIZES,
-	INITIAL_BOARD,
-	BOARD_DIMENSIONS,
-	SPIN_OPTIONS_DEFAULT,
-	SPIN_OPTIONS_FAST,
-	INITIAL_SYMBOL_STATE,
-	SCATTER_LAND_SOUND_MAP,
-} from './constants';
+import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
 
 const FRAME_RATIO = 1672 / 941;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
-		eventEmitter.broadcast({
-			type: 'soundOnce',
-			name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()],
-		});
+		eventEmitter.broadcast({ type: 'soundOnce', name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()] });
 	}
-
-	if (rawSymbol.name === 'W') {
-		eventEmitter.broadcast({
-			type: 'soundOnce',
-			name: 'sfx_multiplier_landing',
-		});
-	}
+	if (rawSymbol.name === 'W') eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
 };
 
 const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
@@ -45,19 +25,10 @@ const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
 		symbolHeight: SYMBOL_SIZE,
 		initialSymbols: INITIAL_BOARD[reelIndex],
 		initialSymbolState: INITIAL_SYMBOL_STATE,
-		onReelStopping: () => {
-			eventEmitter.broadcast({
-				type: 'soundOnce',
-				name: 'sfx_reel_stop_1',
-				forcePlay: !stateBet.isTurbo,
-			});
-		},
+		onReelStopping: () => eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_reel_stop_1', forcePlay: !stateBet.isTurbo }),
 		onSymbolLand,
 	});
-
-	reel.reelState.spinOptions = () =>
-		reel.reelState.spinType === 'fast' ? SPIN_OPTIONS_FAST : SPIN_OPTIONS_DEFAULT;
-
+	reel.reelState.spinOptions = () => reel.reelState.spinType === 'fast' ? SPIN_OPTIONS_FAST : SPIN_OPTIONS_DEFAULT;
 	return reel;
 });
 
@@ -84,17 +55,13 @@ export const stateGame = $state({
 const boardLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-	const frameWidth = Math.min(
-		canvas.width * (isPortrait ? 0.84 : 0.62),
-		canvas.height * (isPortrait ? 0.45 : 0.58) * FRAME_RATIO,
-	);
+	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.84 : 0.62), canvas.height * (isPortrait ? 0.45 : 0.58) * FRAME_RATIO);
 	const frameHeight = frameWidth / FRAME_RATIO;
 	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
-	const scale = (frameWidth * 0.70) / BOARD_SIZES.width;
-
+	const scale = Math.min((frameWidth * 0.68) / BOARD_SIZES.width, (frameHeight * 0.70) / BOARD_SIZES.height);
 	return {
 		x: canvas.width * 0.5,
-		y: frameY + frameHeight * 0.025,
+		y: frameY + frameHeight * 0.065,
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
@@ -106,8 +73,7 @@ const boardLayout = () => {
 	};
 };
 
-const boardRaw = () =>
-	board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
+const boardRaw = () => board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
 
 const scatterLandIndex = () => {
 	if (stateGame.scatterCounter > 5) return 5;
@@ -117,16 +83,6 @@ const scatterLandIndex = () => {
 
 const { enhanceBoard } = createEnhanceBoard();
 const enhancedBoard = enhanceBoard({ board: stateGame.board });
+export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({ winLevelMap });
 
-export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({
-	winLevelMap,
-});
-
-export const stateGameDerived = {
-	onSymbolLand,
-	boardLayout,
-	boardRaw,
-	scatterLandIndex,
-	enhancedBoard,
-	getWinLevelDataByWinLevelAlias,
-};
+export const stateGameDerived = { onSymbolLand, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, getWinLevelDataByWinLevelAlias };
