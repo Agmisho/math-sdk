@@ -9,7 +9,7 @@ import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
 
-const FRAME_RATIO = 1672 / 941;
+const FRAME_RATIO = 1358 / 804;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
@@ -57,13 +57,15 @@ export const stateGame = $state({
 const boardLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.84 : 0.62), canvas.height * (isPortrait ? 0.45 : 0.58) * FRAME_RATIO);
+	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.86 : 0.64), canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO);
 	const frameHeight = frameWidth / FRAME_RATIO;
 	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
-	const scale = Math.min((frameWidth * 0.65) / BOARD_SIZES.width, (frameHeight * 0.70) / BOARD_SIZES.height);
+	const frameX = canvas.width * 0.5;
+	const scale = Math.min((frameWidth * 0.68) / BOARD_SIZES.width, (frameHeight * 0.66) / BOARD_SIZES.height);
 	return {
-		x: canvas.width * 0.5,
-		y: frameY,
+		x: frameX + frameWidth * 0.115,
+		y: frameY + frameHeight * 0.015,
+		frameX,
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
