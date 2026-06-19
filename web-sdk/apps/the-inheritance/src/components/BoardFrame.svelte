@@ -11,10 +11,10 @@
 
 	const context = getContext();
 	const board = () => context.stateGameDerived.boardLayout();
-	const FRAME_DISPLAY_SCALE = 1;
-	const frameDisplayWidth = () => board().frameWidth * FRAME_DISPLAY_SCALE;
-	const frameDisplayHeight = () => board().frameHeight * FRAME_DISPLAY_SCALE;
-	const imageX = (ratioX: number) => board().x + frameDisplayWidth() * (ratioX - 0.5);
+	const frameX = () => board().frameX ?? board().x;
+	const frameDisplayWidth = () => board().frameWidth;
+	const frameDisplayHeight = () => board().frameHeight;
+	const imageX = (ratioX: number) => frameX() + frameDisplayWidth() * (ratioX - 0.5);
 	const imageY = (ratioY: number) => board().y + frameDisplayHeight() * (ratioY - 0.5);
 	const keyCounterStyle = () => ({
 		fontFamily: 'Georgia',
@@ -28,7 +28,7 @@
 <Sprite
 	key="inheritanceFrame"
 	anchor={0.5}
-	x={board().x}
+	x={frameX()}
 	y={board().y}
 	width={frameDisplayWidth()}
 	height={frameDisplayHeight()}
@@ -37,9 +37,9 @@
 <Rectangle
 	anchor={0.5}
 	x={imageX(0.088)}
-	y={imageY(0.587)}
+	y={imageY(0.592)}
 	width={frameDisplayWidth() * 0.078}
-	height={frameDisplayHeight() * 0.042}
+	height={frameDisplayHeight() * 0.043}
 	backgroundColor={0x04150c}
 	backgroundAlpha={0.96}
 	zIndex={24}
@@ -49,7 +49,7 @@
 	text={`${context.stateGame.keyCounter}`}
 	anchor={0.5}
 	x={imageX(0.088)}
-	y={imageY(0.587)}
+	y={imageY(0.592)}
 	style={keyCounterStyle()}
 	zIndex={25}
 />
