@@ -1,5 +1,5 @@
 const inheritanceAsset = (path: string) => `/assets/the-inheritance/${path.split('/').map(encodeURIComponent).join('/')}`;
-const symbol = (filename: string) => ({ type: 'sprite', src: inheritanceAsset(`symbols/${filename}`) });
+const symbol = (filename: string) => ({ type: 'sprite', src: inheritanceAsset(`symbols-cleaned/${filename}`) });
 
 export default {
 	loader: {
