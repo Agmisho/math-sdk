@@ -14,6 +14,7 @@ const GRID_WIDTH = 0.784;
 const GRID_HEIGHT = 0.709;
 const GRID_CENTER_X = 0.559;
 const GRID_CENTER_Y = 0.496;
+const FRAME_OFFSET_X = -0.03;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
@@ -63,7 +64,7 @@ const boardLayout = () => {
 	const isPortrait = canvas.height > canvas.width * 1.05;
 	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.86 : 0.64), canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO);
 	const frameHeight = frameWidth / FRAME_RATIO;
-	const frameX = canvas.width * 0.5;
+	const frameX = canvas.width * 0.5 + frameWidth * FRAME_OFFSET_X;
 	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
 	const scale = Math.min((frameWidth * GRID_WIDTH) / BOARD_SIZES.width, (frameHeight * GRID_HEIGHT) / BOARD_SIZES.height);
 
