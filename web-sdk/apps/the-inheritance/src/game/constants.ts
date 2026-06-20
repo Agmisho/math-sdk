@@ -1,7 +1,7 @@
 import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 215;
-export const REEL_SPACING = 306;
+export const REEL_SPACING = 326;
 export const REEL_PADDING = 0.5;
 
 const sym = (name: RawSymbol['name']) => ({ name });
@@ -16,7 +16,7 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
 export const BOARD_SIZES = {
-	width: SYMBOL_SIZE + REEL_SPACING * (BOARD_DIMENSIONS.x - 1),
+	width: REEL_SPACING * BOARD_DIMENSIONS.x,
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 

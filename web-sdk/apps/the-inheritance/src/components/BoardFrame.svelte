@@ -7,11 +7,11 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const board = () => context.stateGameDerived.boardLayout();
-	const frameX = () => board().frameX;
-	const frameY = () => board().frameY;
-	const frameWidth = () => board().frameWidth;
-	const frameHeight = () => board().frameHeight;
+	const frame = () => context.stateGameDerived.frameLayout();
+	const frameX = () => frame().x;
+	const frameY = () => frame().y;
+	const frameWidth = () => frame().width;
+	const frameHeight = () => frame().height;
 	const imageX = (ratio: number) => frameX() + frameWidth() * (ratio - 0.5);
 	const imageY = (ratio: number) => frameY() + frameHeight() * (ratio - 0.5);
 	const counterStyle = () => ({ fontFamily: 'Georgia', fontSize: frameWidth() * 0.020, fontWeight: '800', fill: 0xffe6a2, align: 'center' });
