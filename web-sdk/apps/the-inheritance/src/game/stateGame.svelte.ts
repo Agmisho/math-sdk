@@ -12,6 +12,7 @@ import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
 const FRAME_PLAYABLE_GRID = { left: 226, top: 44, width: 1079, height: 713 } as const;
+const FRAME_GROUP_LEFT_SHIFT = 0.035;
 
 const frameImageRatioX = (value: number) => value / FRAME_IMAGE_SIZES.width;
 const frameImageRatioY = (value: number) => value / FRAME_IMAGE_SIZES.height;
@@ -67,7 +68,7 @@ const frameLayout = () => {
         canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO,
     );
     const height = width / FRAME_RATIO;
-    const x = canvas.width * 0.5;
+    const x = canvas.width * 0.5 - width * FRAME_GROUP_LEFT_SHIFT;
     const y = canvas.height * (isPortrait ? 0.13 : 0.08) + height / 2;
     const grid = {
         x: x + width * (frameImageRatioX(FRAME_PLAYABLE_GRID.left) - 0.5),
