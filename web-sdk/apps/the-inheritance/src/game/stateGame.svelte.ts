@@ -62,27 +62,19 @@ export const stateGame = $state({
 const frameLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
-<<<<<<< HEAD
-	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.86 : 0.64), canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO);
-	const frameHeight = frameWidth / FRAME_RATIO;
-	const frameX = canvas.width * 0.5 + frameWidth * FRAME_OFFSET_X;
-	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
-	const scale = Math.min((frameWidth * GRID_WIDTH) / BOARD_SIZES.width, (frameHeight * GRID_HEIGHT) / BOARD_SIZES.height);
-=======
-	const width = Math.min(
-		canvas.width * (isPortrait ? 0.86 : 0.64),
-		canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO,
-	);
-	const height = width / FRAME_RATIO;
-	const x = canvas.width * 0.5;
-	const y = canvas.height * (isPortrait ? 0.13 : 0.08) + height / 2;
-	const grid = {
-		x: x + width * (frameImageRatioX(FRAME_PLAYABLE_GRID.left) - 0.5),
-		y: y + height * (frameImageRatioY(FRAME_PLAYABLE_GRID.top) - 0.5),
-		width: width * frameImageRatioX(FRAME_PLAYABLE_GRID.width),
-		height: height * frameImageRatioY(FRAME_PLAYABLE_GRID.height),
-	};
->>>>>>> 2fa38b0 (Rebuild Frame1 reel grid coordinates)
+    const width = Math.min(
+        canvas.width * (isPortrait ? 0.86 : 0.64),
+        canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO,
+    );
+    const height = width / FRAME_RATIO;
+    const x = canvas.width * 0.5;
+    const y = canvas.height * (isPortrait ? 0.13 : 0.08) + height / 2;
+    const grid = {
+        x: x + width * (frameImageRatioX(FRAME_PLAYABLE_GRID.left) - 0.5),
+        y: y + height * (frameImageRatioY(FRAME_PLAYABLE_GRID.top) - 0.5),
+        width: width * frameImageRatioX(FRAME_PLAYABLE_GRID.width),
+        height: height * frameImageRatioY(FRAME_PLAYABLE_GRID.height),
+    };
 
 	return {
 		x,
