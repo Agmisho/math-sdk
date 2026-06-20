@@ -13,7 +13,7 @@
 	};
 
 	const props: Props = $props();
-	const SYMBOL_VISUAL_SCALE = 1.08;
+	const SYMBOL_VISUAL_SCALE = 0.96;
 
 	onMount(() => props.oncomplete?.());
 
