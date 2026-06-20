@@ -47,20 +47,20 @@ export const MOTION_BLUR_VELOCITY = 31;
 export const zIndexes = { background: { backdrop: -3, normal: -2, feature: -1 } };
 
 const explosion = { type: 'spine', assetKey: 'explosion', animationName: 'explosion', sizeRatios: { width: 1, height: 1 } };
-const symbolSprite = (assetKey: RawSymbol['name'], width = 0.82, height = 0.82) => ({ type: 'sprite', assetKey, sizeRatios: { width, height } });
+const symbolSprite = (assetKey: RawSymbol['name'], width = 0.88, height = 0.88) => ({ type: 'sprite', assetKey, sizeRatios: { width, height } });
 const symbolInfo = (assetKey: RawSymbol['name'], width = 0.82, height = 0.82) => {
 	const sprite = symbolSprite(assetKey, width, height);
 	return { explosion, win: sprite, postWinStatic: sprite, static: sprite, spin: sprite, land: sprite };
 };
 
 export const SYMBOL_INFO_MAP = {
-	S: symbolInfo('S', 0.9, 0.9),
-	W: symbolInfo('W', 0.9, 0.9),
-	M2: symbolInfo('M2', 0.86, 0.86),
-	M5: symbolInfo('M5', 0.86, 0.86),
-	M10: symbolInfo('M10', 0.86, 0.86),
-	M20: symbolInfo('M20', 0.86, 0.86),
-	M100: symbolInfo('M100', 0.86, 0.86),
+	S: symbolInfo('S'),
+	W: symbolInfo('W'),
+	M2: symbolInfo('M2'),
+	M5: symbolInfo('M5'),
+	M10: symbolInfo('M10'),
+	M20: symbolInfo('M20'),
+	M100: symbolInfo('M100'),
 	H1: symbolInfo('H1'), H2: symbolInfo('H2'), H3: symbolInfo('H3'), H4: symbolInfo('H4'), H5: symbolInfo('H5'),
 	H6: symbolInfo('H6'), H7: symbolInfo('H7'), H8: symbolInfo('H8'), H9: symbolInfo('H9'),
 	L1: symbolInfo('L1'), L2: symbolInfo('L2'), L3: symbolInfo('L3'), L4: symbolInfo('L4'), L5: symbolInfo('L5'), L6: symbolInfo('L6'),
