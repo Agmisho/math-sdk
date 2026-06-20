@@ -10,8 +10,10 @@ import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
 
 const FRAME_RATIO = 1358 / 804;
-const GRID_WIDTH = 0.64;
-const GRID_HEIGHT = 0.76;
+const GRID_WIDTH = 0.784;
+const GRID_HEIGHT = 0.709;
+const GRID_CENTER_X = 0.559;
+const GRID_CENTER_Y = 0.496;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (rawSymbol.name === 'S') {
@@ -61,13 +63,15 @@ const boardLayout = () => {
 	const isPortrait = canvas.height > canvas.width * 1.05;
 	const frameWidth = Math.min(canvas.width * (isPortrait ? 0.86 : 0.64), canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO);
 	const frameHeight = frameWidth / FRAME_RATIO;
-	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
 	const frameX = canvas.width * 0.5;
+	const frameY = canvas.height * (isPortrait ? 0.13 : 0.08) + frameHeight / 2;
 	const scale = Math.min((frameWidth * GRID_WIDTH) / BOARD_SIZES.width, (frameHeight * GRID_HEIGHT) / BOARD_SIZES.height);
+
 	return {
-		x: frameX + frameWidth * 0.005,
-		y: frameY + frameHeight * 0.062,
+		x: frameX + frameWidth * (GRID_CENTER_X - 0.5),
+		y: frameY + frameHeight * (GRID_CENTER_Y - 0.5),
 		frameX,
+		frameY,
 		anchor: { x: 0.5, y: 0.5 },
 		pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 		scale,
