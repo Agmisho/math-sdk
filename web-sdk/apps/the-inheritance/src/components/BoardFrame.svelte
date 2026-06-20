@@ -1,55 +1,24 @@
 <script lang="ts" module>
-	export type EmitterEventBoardFrame =
-		| { type: 'boardFrameGlowShow' }
-		| { type: 'boardFrameGlowHide' };
+	export type EmitterEventBoardFrame = { type: 'boardFrameGlowShow' } | { type: 'boardFrameGlowHide' };
 </script>
 
 <script lang="ts">
 	import { Rectangle, Sprite, Text } from 'pixi-svelte';
-
 	import { getContext } from '../game/context';
 
 	const context = getContext();
 	const board = () => context.stateGameDerived.boardLayout();
-	const frameX = () => board().frameX ?? board().x;
-	const frameDisplayWidth = () => board().frameWidth;
-	const frameDisplayHeight = () => board().frameHeight;
-	const imageX = (ratioX: number) => frameX() + frameDisplayWidth() * (ratioX - 0.5);
-	const imageY = (ratioY: number) => board().y + frameDisplayHeight() * (ratioY - 0.5);
-	const keyCounterStyle = () => ({
-		fontFamily: 'Georgia',
-		fontSize: frameDisplayWidth() * 0.020,
-		fontWeight: '800',
-		fill: 0xffe6a2,
-		align: 'center',
-	});
+	const frameX = () => board().frameX;
+	const frameY = () => board().frameY;
+	const frameWidth = () => board().frameWidth;
+	const frameHeight = () => board().frameHeight;
+	const imageX = (ratio: number) => frameX() + frameWidth() * (ratio - 0.5);
+	const imageY = (ratio: number) => frameY() + frameHeight() * (ratio - 0.5);
+	const counterStyle = () => ({ fontFamily: 'Georgia', fontSize: frameWidth() * 0.020, fontWeight: '800', fill: 0xffe6a2, align: 'center' });
 </script>
 
-<Sprite
-	key="inheritanceFrame"
-	anchor={0.5}
-	x={frameX()}
-	y={board().y}
-	width={frameDisplayWidth()}
-	height={frameDisplayHeight()}
-/>
+<Sprite key="inheritanceFrame" anchor={0.5} x={frameX()} y={frameY()} width={frameWidth()} height={frameHeight()} />
 
-<Rectangle
-	anchor={0.5}
-	x={imageX(0.107)}
-	y={imageY(0.628)}
-	width={frameDisplayWidth() * 0.090}
-	height={frameDisplayHeight() * 0.060}
-	backgroundColor={0x04150c}
-	backgroundAlpha={1}
-	zIndex={24}
-/>
+<Rectangle anchor={0.5} x={imageX(0.069)} y={imageY(0.578)} width={frameWidth() * 0.102} height={frameHeight() * 0.075} backgroundColor={0x04150c} backgroundAlpha={1} zIndex={24} />
 
-<Text
-	text={`${context.stateGame.keyCounter}`}
-	anchor={0.5}
-	x={imageX(0.107)}
-	y={imageY(0.628)}
-	style={keyCounterStyle()}
-	zIndex={25}
-/>
+<Text text={`${context.stateGame.keyCounter}`} anchor={0.5} x={imageX(0.069)} y={imageY(0.578)} style={counterStyle()} zIndex={25} />
