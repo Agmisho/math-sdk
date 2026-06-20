@@ -37,11 +37,11 @@
 <Rectangle
 	anchor={0.5}
 	x={imageX(0.107)}
-	y={imageY(0.624)}
-	width={frameDisplayWidth() * 0.070}
-	height={frameDisplayHeight() * 0.040}
+	y={imageY(0.628)}
+	width={frameDisplayWidth() * 0.090}
+	height={frameDisplayHeight() * 0.060}
 	backgroundColor={0x04150c}
-	backgroundAlpha={0.98}
+	backgroundAlpha={1}
 	zIndex={24}
 />
 
@@ -49,7 +49,7 @@
 	text={`${context.stateGame.keyCounter}`}
 	anchor={0.5}
 	x={imageX(0.107)}
-	y={imageY(0.624)}
+	y={imageY(0.628)}
 	style={keyCounterStyle()}
 	zIndex={25}
 />
