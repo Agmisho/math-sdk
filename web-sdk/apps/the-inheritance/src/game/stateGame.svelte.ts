@@ -21,7 +21,6 @@ const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()] });
 	}
-	if (rawSymbol.name === 'H4') stateGame.keyCounter += 1;
 	if (rawSymbol.name === 'W') eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
 };
 
@@ -57,6 +56,7 @@ export const stateGame = $state({
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
 	keyCounter: 0,
+	countedLegacyKeyRevealIndexes: [] as number[],
 });
 
 const frameLayout = () => {
@@ -123,6 +123,21 @@ const boardLayout = () => {
 
 const boardRaw = () => board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
 
+
+const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
+	settledBoard.reduce(
+		(total, reel) =>
+			total + reel.slice(0, BOARD_DIMENSIONS.y).filter((rawSymbol) => rawSymbol.name === 'H4').length,
+		0,
+	);
+
+const collectLegacyKeys = ({ board, index }: { board: RawSymbol[][]; index: number }) => {
+	if (stateGame.countedLegacyKeyRevealIndexes.includes(index)) return;
+
+	stateGame.countedLegacyKeyRevealIndexes.push(index);
+	stateGame.keyCounter += countLegacyKeys(board);
+};
+
 const scatterLandIndex = () => {
 	if (stateGame.scatterCounter > 5) return 5;
 	if (stateGame.scatterCounter < 1) return 1;
@@ -133,4 +148,4 @@ const { enhanceBoard } = createEnhanceBoard();
 const enhancedBoard = enhanceBoard({ board: stateGame.board });
 export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({ winLevelMap });
 
-export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, getWinLevelDataByWinLevelAlias };
+export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, collectLegacyKeys, getWinLevelDataByWinLevelAlias };
