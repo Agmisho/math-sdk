@@ -24,6 +24,8 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import InheritanceUi from './InheritanceUi.svelte';
+	import InheritanceBuyModal from './InheritanceBuyModal.svelte';
+	import InheritanceInfoModal from './InheritanceInfoModal.svelte';
 
 	const context = getContext();
 
@@ -70,3 +72,5 @@
 		<GameVersion version="0.0.0" />
 	{/snippet}
 </Modals>
+<InheritanceBuyModal />
+<InheritanceInfoModal />

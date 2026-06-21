@@ -7,11 +7,15 @@
 	import { stateBet, stateBetDerived, stateConfig, stateModal, stateSound } from 'state-shared';
 
 	import { getContext } from '../game/context';
+	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
 
 	const context = getContext();
 	const BET_AMOUNT_OPTIONS = [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 3, 5, 10, 20, 50, 100, 200, 300];
 	const MIN_BET = BET_AMOUNT_OPTIONS[0];
 	const MAX_BET = BET_AMOUNT_OPTIONS[BET_AMOUNT_OPTIONS.length - 1];
+	const BONUS_MODE_KEY = 'BONUS';
+	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
+	const UI_VERTICAL_OFFSET = 0.48;
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
 	const isPortrait = $derived(canvas.height > canvas.width * 1.05);
@@ -19,7 +23,7 @@
 	const panelWidth = $derived(Math.min(canvas.width * (isPortrait ? 0.90 : 0.68), canvas.height * 0.40 * UI_RATIO));
 	const panelHeight = $derived(panelWidth / UI_RATIO);
 	const panelX = $derived(canvas.width / 2);
-	const panelY = $derived(boardLayout.y + boardLayout.frameHeight / 2 + panelHeight * 0.36);
+	const panelY = $derived(boardLayout.y + boardLayout.frameHeight / 2 + panelHeight * UI_VERTICAL_OFFSET);
 	const uiX = (ratioX: number) => panelX + panelWidth * (ratioX - 0.5);
 	const uiY = (ratioY: number) => panelY + panelHeight * (ratioY - 0.5);
 	const smallButtonSize = $derived(panelWidth * 0.084);
@@ -49,7 +53,15 @@
 	const formatMoney = (value: number) =>
 		`$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-	const activeBetModeType = () => stateBetDerived.activeBetMode()?.type ?? null;
+	const normalizedModeKey = () => stateBet.activeBetModeKey.toUpperCase();
+	const isScatterBoostActive = () => normalizedModeKey() === SCATTER_BOOST_MODE_KEY;
+	const activeBetModeType = () => {
+		const activeMode = stateBetDerived.activeBetMode();
+		if (activeMode?.type) return activeMode.type;
+		if (isScatterBoostActive()) return 'activate';
+		if (normalizedModeKey() === BONUS_MODE_KEY) return 'buy';
+		return null;
+	};
 	const canPayForBet = () => stateBet.balanceAmount <= 0 || stateBet.betAmount <= stateBet.balanceAmount;
 
 	onMount(() => {
@@ -80,7 +92,7 @@
 
 	const pressInfo = () => {
 		pressGeneral();
-		stateModal.modal = { name: 'gameRules' };
+		stateInheritanceUi.modal = 'info';
 	};
 
 	const pressSpeed = () => {
@@ -107,7 +119,7 @@
 		if (activeBetModeType() === 'activate') {
 			stateBet.activeBetModeKey = 'BASE';
 		} else {
-			stateModal.modal = { name: 'buyBonus' };
+			stateInheritanceUi.modal = 'buy';
 		}
 	};
 
