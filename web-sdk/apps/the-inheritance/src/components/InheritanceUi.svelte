@@ -4,7 +4,7 @@
 	import { Button } from 'components-pixi';
 	import { OnHotkey } from 'components-shared';
 	import { Rectangle, Sprite, Text } from 'pixi-svelte';
-	import { stateBet, stateBetDerived, stateConfig, stateModal, stateSound } from 'state-shared';
+	import { stateBet, stateBetDerived, stateConfig, stateMeta, stateModal, stateSound, type BetModeData } from 'state-shared';
 
 	import { getContext } from '../game/context';
 	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
@@ -15,6 +15,8 @@
 	const MAX_BET = BET_AMOUNT_OPTIONS[BET_AMOUNT_OPTIONS.length - 1];
 	const BONUS_MODE_KEY = 'BONUS';
 	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
+	const BUY_BONUS_MULTIPLIER = 100;
+	const SCATTER_BOOST_MULTIPLIER = 2;
 	const UI_VERTICAL_OFFSET = 0.48;
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
@@ -47,6 +49,62 @@
 		align: 'center',
 	});
 	const BLEND_MODE = 'screen' as const;
+	const betModeAssets: BetModeData['assets'] = {
+		icon: '',
+		volatility: '',
+		button: '',
+		dialogImage: '',
+		dialogVolatility: '',
+	};
+	const inheritanceBetModeMeta: Record<string, BetModeData> = {
+		BASE: {
+			mode: 'BASE',
+			costMultiplier: 1,
+			type: 'default',
+			parent: '',
+			children: '',
+			assets: betModeAssets,
+			text: {
+				title: 'Base Game',
+				dialog: 'Play the base game.',
+				button: 'Play',
+				tickerIdle: '',
+				tickerSpin: '',
+			},
+		},
+		SCATTER_BOOST: {
+			mode: SCATTER_BOOST_MODE_KEY,
+			costMultiplier: SCATTER_BOOST_MULTIPLIER,
+			type: 'activate',
+			parent: 'BASE',
+			children: '',
+			assets: betModeAssets,
+			text: {
+				title: 'Scatter Boost',
+				description: 'Increases the chance of landing a scatter/free-spin trigger.',
+				dialog: 'Scatter Boost costs 2x the selected bet per spin and increases the chance of landing a scatter/free-spin trigger while active.',
+				button: 'Activate',
+				tickerIdle: '',
+				tickerSpin: '',
+			},
+		},
+		BONUS: {
+			mode: BONUS_MODE_KEY,
+			costMultiplier: BUY_BONUS_MULTIPLIER,
+			type: 'buy',
+			parent: 'BASE',
+			children: '',
+			assets: betModeAssets,
+			text: {
+				title: 'Buy Bonus',
+				description: 'Start 10 free spins immediately.',
+				dialog: 'Buy Bonus costs 100x the selected bet and starts 10 free spins immediately.',
+				button: 'Buy',
+				tickerIdle: '',
+				tickerSpin: '',
+			},
+		},
+	};
 
 	let stopDisabled = $state(false);
 
@@ -62,9 +120,11 @@
 		if (normalizedModeKey() === BONUS_MODE_KEY) return 'buy';
 		return null;
 	};
-	const canPayForBet = () => stateBet.balanceAmount <= 0 || stateBet.betAmount <= stateBet.balanceAmount;
+	const currentBetCost = () => activeBetModeType() === 'activate' ? stateBet.betAmount * SCATTER_BOOST_MULTIPLIER : stateBet.betAmount;
+	const canPayForBet = () => stateBet.balanceAmount <= 0 || currentBetCost() <= stateBet.balanceAmount;
 
 	onMount(() => {
+		stateMeta.betModeMeta = { ...stateMeta.betModeMeta, ...inheritanceBetModeMeta };
 		stateConfig.betAmountOptions = BET_AMOUNT_OPTIONS;
 		stateConfig.betMenuOptions = BET_AMOUNT_OPTIONS;
 		if (stateBet.betAmount < MIN_BET || stateBet.betAmount > MAX_BET) stateBet.betAmount = MIN_BET;
