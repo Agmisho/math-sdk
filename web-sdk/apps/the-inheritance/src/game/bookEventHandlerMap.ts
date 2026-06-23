@@ -62,6 +62,9 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			revealEvent: bookEvent,
 			paddingBoard: config.paddingReels[bookEvent.gameType],
 		});
+		if (bookEvent.gameType === 'freegame') {
+			stateGame.freeSpinsRemaining = Math.max(stateGame.freeSpinsRemaining - 1, 0);
+		}
 		stateGameDerived.collectLegacyKeys({
 			board: bookEvent.board,
 			gameType: bookEvent.gameType,

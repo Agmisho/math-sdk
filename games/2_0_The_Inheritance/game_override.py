@@ -148,8 +148,12 @@ class GameStateOverride(GameExecutables):
         if self.legacy_scatter_credit_used:
             self.emit_legacy_scatter_credit_event(natural_scatters, effective_scatters, used=True)
 
-        trigger_scatters = self.get_trigger_scatter_count(effective_scatters)
-        self.tot_fs = self.config.freespin_triggers[self.gametype][trigger_scatters]
+        if self.gametype == self.config.basegame_type and self.betmode == "bonus":
+            self.tot_fs = self.config.bonus_buy_free_spins
+        else:
+            trigger_scatters = self.get_trigger_scatter_count(effective_scatters)
+            self.tot_fs = self.config.freespin_triggers[self.gametype][trigger_scatters]
+
         if self.gametype == self.config.basegame_type:
             basegame_trigger, freegame_trigger = True, False
         else:

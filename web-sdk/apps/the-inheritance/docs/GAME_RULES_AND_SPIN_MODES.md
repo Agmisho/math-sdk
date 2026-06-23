@@ -24,14 +24,18 @@ This document maps the existing The Inheritance implementation before gameplay c
 ### Not Found In Code
 
 - No math spin mode named `boot`, `bootstrap`, `initial`, `startup`, or `demo` was found.
-- No explicit frontend state field named `spinMode` currently exists.
-- No current code path implements Bonus Buy as exactly `10` free spins. Current math buy mode forces a free-spin trigger that awards `8`, `12`, or `15` spins depending on scatter count.
+
+### Implemented After Phase 3
+
+- Frontend game state now has explicit `spinMode: 'base' | 'boot' | 'bought' | 'free'`.
+- Frontend game state now tracks `freeSpinsRemaining`, `freeSpinsAwarded`, `freeSpinsTotalWin`, and `isBonusBuy`.
+- Math config now defines `bonus_buy_free_spins = 10`, and the math override uses that value for bought basegame triggers.
 
 ### Needs Business Decision
 
 - The math Legacy Key target is `10`; the current frontend placeholder target is `20`.
 - The math `scatter_boost` cost is `3x`; current frontend copy/config says `2x`.
-- Current requested Bonus Buy behavior says exactly `10` free spins; current math config says `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`.
+- Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
 
 ## 2. Exact Spin-Mode Table
 
@@ -40,7 +44,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 | Base Spin | Player spin using math mode `base`; frontend mode key usually `BASE` | Config cost `1.0x` underlying bet | Base reveal uses `BR0.csv`; free spins use `FR0.csv`; wincap free spins can weight `FR0` and `FRWCAP` | Can trigger Free Spins with effective scatter count `3`, `4`, or `5`; can collect Legacy Keys in basegame; Legacy scatter credit can apply | Pays line wins, can enter Free Spins, emits final win | Returns to `basegame` unless Free Spins are triggered |
 | Scatter Boost Spin | Player activates `scatter_boost`; frontend mode key currently `SCATTER_BOOST` | Math cost `3.0x`; frontend currently says `2.0x` | Same active reel strips as base (`BR0` for basegame, `FR0` for freegame); distribution quota raises forced-freegame selection from `0.100` to `0.108` | Can trigger Free Spins; can collect Legacy Keys; Legacy scatter credit can apply | Same result types as base, with higher free-game distribution quota | Remains in basegame after result unless Free Spins are triggered |
 | Boot / Initial Board | Frontend creates `INITIAL_BOARD` in `web-sdk/apps/the-inheritance/src/game/constants.ts` before the first paid result | No debit found | Static frontend display board only; not a math spin | Should not trigger Free Spins or collect Legacy Keys | Shows initial symbols only | First real spin is a paid mode |
-| Bought Spin / Bonus Buy | Player chooses buy mode `bonus`; frontend key currently `BONUS` | Config cost `100.0x` underlying bet | Initial trigger reveal uses `BR0` with forced scatter count; Free Spins use `FR0`, or `FR0` plus `FRWCAP` for wincap condition | Current math forces a free-spin trigger, but awards `8`, `12`, or `15` based on scatter count; Legacy Key collection is blocked in `bonus` | Enters Free Spins immediately after the forced trigger reveal | Free Spins, then basegame |
+| Bought Spin / Bonus Buy | Player chooses buy mode `bonus`; frontend key currently `BONUS` | Config cost `100.0x` underlying bet | Initial trigger reveal uses `BR0` with forced scatter count; Free Spins use `FR0`, or `FR0` plus `FRWCAP` for wincap condition | Math now awards exactly `10` initial free spins through `bonus_buy_free_spins`; Legacy Key collection is blocked in `bonus` | Enters Free Spins immediately after the forced trigger reveal | Free Spins, then basegame |
 | Free Spin | Started by `run_freespin_from_base()` after base/scatter boost/buy trigger | No additional debit in math | Uses `FR0`; wincap condition can select `FR0` or `FRWCAP` with weights `{FR0: 1, WCAP: 8}` | Can retrigger on natural scatters: `2 -> 3`, `3 -> 5`, `4 -> 8`, `5 -> 12`; Legacy Keys are not collected in freegame | Accumulates freegame wins and emits `freeSpinEnd` | Returns to `basegame` after all free spins are complete |
 
 ## 3. Base Spin Flow
@@ -105,20 +109,25 @@ This document maps the existing The Inheritance implementation before gameplay c
   - freegame reel weights: `{FR0: 1}`
   - scatter trigger weights: `{3: 50, 4: 20, 5: 5}`
   - `force_freegame: True`
-- Current math therefore forces a free-spin trigger but does not guarantee exactly `10` free spins.
+- Math now forces a free-spin trigger and overrides the initial Bonus Buy award to `bonus_buy_free_spins = 10`.
 - Legacy Key collection is blocked when `self.betmode == "bonus"`.
 
-### Current Frontend Behavior
+### Current Frontend And Local Behavior
 
-- `InheritanceBuyModal.svelte` sets `stateBet.activeBetModeKey = 'BONUS'`, closes the modal, and broadcasts `{ type: 'bet' }`.
+- `InheritanceBuyModal.svelte` blocks confirmation if `stateBet.balanceAmount < stateBet.betAmount * gameConfig.betModes.bonus.cost`.
+- On confirmation, `InheritanceBuyModal.svelte` calls `stateGameDerived.startBonusBuy()`, sets `stateBet.activeBetModeKey = 'BONUS'`, closes the modal, and broadcasts `{ type: 'bet' }`.
 - The shared xstate request path sends `mode: stateBet.activeBetModeKey` to `requestBet()`.
 - `InheritanceUi.svelte` avoids starting a buy mode from the normal Spin button by resetting active buy mode back to `BASE` before broadcasting a normal bet.
-- The current local mock in `web-sdk/packages/rgs-requests/src/rgs-requests.ts` ignores real buy-mode math and creates hand-authored mock boards/wins.
+- The current local mock in `web-sdk/packages/rgs-requests/src/rgs-requests.ts` deducts the `100x` buy price once, emits exactly `10` free-spin updates for Bonus Buy, evaluates line wins from the documented paytable/paylines, and credits the total free-spin payout.
 
-### Required Implementation Delta
+### Implemented Phase 3 Delta
 
-- Business rule now requires Bonus Buy to deduct the buy amount exactly once and immediately award exactly `10` Free Spins.
-- This differs from current math config, which awards `8`, `12`, or `15` based on forced scatters.
+- Bonus Buy deducts the configured `100x` buy amount once.
+- Bonus Buy starts in explicit frontend mode `bought`.
+- Bonus Buy transitions into explicit frontend mode `free`.
+- The initial Bonus Buy award is exactly `10` free spins in math, frontend state, and local no-backend responses.
+- Free Spins do not send additional paid requests; free-spin payouts are accumulated in `freeSpinsTotalWin`.
+- At `freeSpinEnd`, the frontend returns to base state and clears `isBonusBuy`.
 
 ### Source Files
 
@@ -341,7 +350,7 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - `stateGame.svelte.ts` currently counts visible final `H4` symbols in the settled `reveal` board and prevents duplicate board-signature counting.
 - It currently uses target `20`, not the math target `10`.
-- `typesBookEvent.ts` and `bookEventHandlerMap.ts` do not currently type or handle math custom events `collectionUpdate`, `legacyScatterCredit`, or `multiplierUpdate`.
+- `typesBookEvent.ts` and `bookEventHandlerMap.ts` now type and handle math custom events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
 
 ### Source Files
 
@@ -362,8 +371,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 | Paytable | `game_config.py` | `config.ts`, `InheritanceInfoModal.svelte` | Mostly mirrored; frontend `L4` and `L6` payout values differ from math config. |
 | Symbols/assets | `game_config.py` symbols | `assets.ts` and static assets | Asset mapping exists for all math symbols. `L6` asset filename says Wild, but math treats it as low. |
 | Reels/probabilities | CSV strips under `games/2_0_The_Inheritance/reels` | Frontend only has padding reels in `config.ts` | Frontend does not contain the active full reel strips. |
-| Bet request | publish library / RGS play endpoint | `utils-xstate/createPrimaryMachines.ts` sends active mode key to `rgs-requests` | Real backend path can receive mode. Local mock ignores real math. |
-| Book events | `src/events/events.py` plus custom events in `game_executables.py`/`game_override.py` | `typesBookEvent.ts`, `bookEventHandlerMap.ts` | Standard events are typed; custom collection/multiplier events are not typed/handled. |
+| Bet request | publish library / RGS play endpoint | `utils-xstate/createPrimaryMachines.ts` sends active mode key to `rgs-requests` | Real backend path can receive mode. Local mock handles base, scatter boost, and Bonus Buy without no-backend wallet errors. |
+| Book events | `src/events/events.py` plus custom events in `game_executables.py`/`game_override.py` | `typesBookEvent.ts`, `bookEventHandlerMap.ts` | Standard events and custom collection/multiplier events are typed/handled. |
 | Initial board | Not a math spin mode | `constants.ts` | Frontend-only display board. |
 | Story data | Generated TS under `src/stories/data` | Storybook/local data | Appears stale: story data includes Wild multiplier attributes not present in current math rules. |
 
@@ -373,19 +382,17 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - `FR100.csv` exists but is not loaded by active math config.
 - `FRWCAP.csv` is loaded as `WCAP` and used only through wincap freegame conditions.
-- Local mock responses in `rgs-requests.ts` are hand-authored and do not use active math reels, paytable, distribution quotas, or generated publish library results.
-- Current frontend state has no explicit `spinMode: 'base' | 'boot' | 'bought' | 'free'`.
+- Local mock responses in `rgs-requests.ts` are hand-authored and still do not use active math reel strips, distribution quotas, or generated publish library results; they now mirror the documented paytable/paylines and Bonus Buy count.
+- Current frontend state has explicit `spinMode: 'base' | 'boot' | 'bought' | 'free'`.
 
 ### Not Found In Code
 
-- No explicit bought-spin state field separate from active bet mode.
-- No existing free-spin state fields named `freeSpinsRemaining`, `freeSpinsAwarded`, `freeSpinsTotalWin`, or `isBonusBuy`.
-- No code that makes Bonus Buy award exactly `10` free spins.
-- No custom frontend handling for math events `collectionUpdate`, `legacyScatterCredit`, or `multiplierUpdate`.
+- No generated publish-library refresh was found after the Bonus Buy rule change.
+- No frontend visual use of `multiplierUpdate` positions is implemented yet; the event is consumed safely to prevent missing-handler errors.
 
 ### Needs Business Decision
 
-- Whether to change math Bonus Buy config to exactly `10` free spins, or implement exactly `10` only in local/frontend integration while later regenerating math/library outputs.
+- Whether to regenerate publish-library/story outputs from the updated math Bonus Buy rule.
 - Whether Scatter Boost should follow math cost `3x` or user-facing earlier requirement `2x`.
 - Whether Legacy Key target should follow math target `10` or current frontend placeholder `20`.
 - Whether stale story data should be regenerated from current math before being used for local mock play.

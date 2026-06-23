@@ -112,6 +112,7 @@ class GameConfig(Config):
             self.basegame_type: {3: 8, 4: 12, 5: 15},
             self.freegame_type: {2: 3, 3: 5, 4: 8, 5: 12},
         }
+        self.bonus_buy_free_spins = 10
         self.anticipation_triggers = {
             self.basegame_type: min(self.freespin_triggers[self.basegame_type].keys()) - 1,
             self.freegame_type: min(self.freespin_triggers[self.freegame_type].keys()) - 1,
