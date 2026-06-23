@@ -18,10 +18,13 @@
 	import WinCoins from './WinCoins.svelte';
 	import WinAnimation from './WinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
-	import { SYMBOL_SIZE } from '../game/constants';
 	import { getContext } from '../game/context';
 
 	const context = getContext();
+	const UI_RATIO = 1672 / 941;
+	const UI_VERTICAL_OFFSET = 0.48;
+	const UI_SCALE = 0.94;
+	const UI_HORIZONTAL_OFFSET = -0.035;
 
 	let show = $state(false);
 	let amount = $state(0);
@@ -29,9 +32,33 @@
 	let oncomplete = $state(() => {});
 	let onCountUpComplete = $state(() => {});
 
+	const winTextLayout = $derived.by(() => {
+		const canvas = context.stateLayoutDerived.canvasSizes();
+		const boardLayout = context.stateGameDerived.boardLayout();
+		const isPortrait = canvas.height > canvas.width * 1.05;
+		const basePanelWidth = Math.min(canvas.width * (isPortrait ? 0.90 : 0.68), canvas.height * 0.40 * UI_RATIO);
+		const basePanelHeight = basePanelWidth / UI_RATIO;
+		const panelWidth = basePanelWidth * UI_SCALE;
+		const panelHeight = panelWidth / UI_RATIO;
+		const panelX = canvas.width / 2 + basePanelWidth * UI_HORIZONTAL_OFFSET;
+		const panelY = boardLayout.y + boardLayout.frameHeight / 2 + basePanelHeight * UI_VERTICAL_OFFSET;
+		const frameBottom = boardLayout.frameY + boardLayout.frameHeight / 2;
+		const uiTop = panelY - panelHeight / 2;
+		const availableGap = Math.max(uiTop - frameBottom, panelHeight * 0.12);
+
+		return {
+			x: (boardLayout.frameX + panelX) / 2,
+			y: frameBottom + availableGap * 0.5,
+			gap: availableGap,
+		};
+	});
+
 	const winTextStyle = $derived({
 		fontFamily: 'Georgia',
-		fontSize: winLevelData?.type === 'big' ? SYMBOL_SIZE * 1.8 : SYMBOL_SIZE * 1.15,
+		fontSize: Math.max(
+			winLevelData?.type === 'big' ? 38 : 26,
+			Math.min(winTextLayout.gap * (winLevelData?.type === 'big' ? 0.72 : 0.55), winLevelData?.type === 'big' ? 70 : 48),
+		),
 		fontWeight: '900',
 		fill: 0xffe6a2,
 		align: 'center',
@@ -68,8 +95,8 @@
 
 				<MainContainer>
 					<Container
-						x={context.stateGameDerived.boardLayout().x}
-						y={context.stateGameDerived.boardLayout().y}
+						x={winTextLayout.x}
+						y={winTextLayout.y}
 					>
 						{#if winLevelData?.animation}
 							<WinAnimation animationMap={winLevelData.animation}>
