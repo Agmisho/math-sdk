@@ -3,73 +3,25 @@
 
 	import config from '../game/config';
 	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
+	import { SYMBOL_ASSET_FILES, SYMBOL_DISPLAY_NAMES } from '../game/symbolRoles';
+	import type { SymbolName } from '../game/types';
 
 	type PaytableEntry = Record<string, number>;
 	type SymbolConfig = { paytable?: PaytableEntry[]; special_properties?: string[] };
 
 	const rows = [0, 1, 2, 3, 4];
 	const columns = [0, 1, 2, 3, 4];
-	const symbolConfigs = config.symbols as Record<string, SymbolConfig>;
+	const symbolConfigs = config.symbols as Record<SymbolName, SymbolConfig>;
 	const paylinePatterns = Object.entries(config.paylines).map(([id, pattern]) => ({ id, pattern }));
-	const symbolOrder = ['W', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
+	const symbolOrder: SymbolName[] = ['W', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
 	const paytableSymbols = symbolOrder
 		.map((name) => ({ name, data: symbolConfigs[name] }))
 		.filter((symbol) => Boolean(symbol.data?.paytable));
-	const specialSymbols = ['S', 'W', 'H4', 'M2', 'M5', 'M10', 'M20', 'M100'];
-
-	const symbolLabels: Record<string, string> = {
-		S: 'Vault Scatter',
-		W: 'Wild',
-		M2: '2x Multiplier',
-		M5: '5x Multiplier',
-		M10: '10x Multiplier',
-		M20: '20x Multiplier',
-		M100: '100x Multiplier',
-		H1: 'Heiress',
-		H2: 'Covered Portrait',
-		H3: 'Treasure Chest',
-		H4: 'Legacy Key',
-		H5: 'Diamond Brooch',
-		H6: 'Pocket Watch',
-		H7: 'Magnifying Glass',
-		H8: 'Will',
-		H9: 'Old Letter',
-		L1: 'A',
-		L2: 'K',
-		L3: 'Q',
-		L4: 'J',
-		L5: '10',
-		L6: 'Family Crest',
-	};
-
-	const symbolFiles: Record<string, string> = {
-		S: 'Vault Scatter.png',
-		W: 'Wild.png',
-		M2: 'Diamond Seal Multiplier 2.png',
-		M5: 'Diamond Seal Multiplier 5.png',
-		M10: 'Diamond Seal Multiplier 10.png',
-		M20: 'Diamond Seal Multiplier 20.png',
-		M100: 'Diamond Seal Multiplier 100.png',
-		H1: 'Heiress.png',
-		H2: 'Covered Portrait Mystery.png',
-		H3: 'Treasure Chest.png',
-		H4: 'Legacy Key.png',
-		H5: 'Diamond Brooch.png',
-		H6: 'Antique Pocket Watch.png',
-		H7: 'Magnifying Glass.png',
-		H8: 'will.png',
-		H9: 'Old Letter.png',
-		L1: 'A.png',
-		L2: 'K.png',
-		L3: 'Q.png',
-		L4: 'J.png',
-		L5: '10.png',
-		L6: 'Family Crest Wild.png',
-	};
+	const specialSymbols: SymbolName[] = ['S', 'W', 'H4', 'M2', 'M5', 'M10', 'M20', 'M100'];
 
 	const close = () => (stateInheritanceUi.modal = null);
-	const symbolAsset = (name: string) =>
-		`/assets/the-inheritance/symbols-cleaned/${symbolFiles[name].split('/').map(encodeURIComponent).join('/')}`;
+	const symbolAsset = (name: SymbolName) =>
+		`/assets/the-inheritance/symbols-cleaned/${SYMBOL_ASSET_FILES[name].split('/').map(encodeURIComponent).join('/')}`;
 	const payFor = (data: SymbolConfig, kind: '3' | '4' | '5') =>
 		data.paytable?.find((entry) => entry[kind] !== undefined)?.[kind];
 	const formatMultiplier = (value?: number) => (value === undefined ? '-' : `${value}x`);
@@ -119,7 +71,7 @@
 							<tr>
 								<td>
 									<img src={symbolAsset(symbol.name)} alt="" />
-									<span>{symbolLabels[symbol.name]}</span>
+									<span>{SYMBOL_DISPLAY_NAMES[symbol.name]}</span>
 								</td>
 								<td>{formatMultiplier(payFor(symbol.data, '3'))}</td>
 								<td>{formatMultiplier(payFor(symbol.data, '4'))}</td>
@@ -137,7 +89,7 @@
 						<article>
 							<img src={symbolAsset(symbolName)} alt="" />
 							<div>
-								<strong>{symbolLabels[symbolName]}</strong>
+								<strong>{SYMBOL_DISPLAY_NAMES[symbolName]}</strong>
 								{#if symbolName === 'S'}
 									<p>Scatter symbol. Landing enough scatters awards the free-spin bonus.</p>
 								{:else if symbolName === 'W'}

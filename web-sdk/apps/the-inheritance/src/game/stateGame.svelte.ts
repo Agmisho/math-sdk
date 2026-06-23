@@ -9,6 +9,7 @@ import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
 import { stateInheritanceUi } from './stateInheritanceUi.svelte';
+import { SYMBOL_ROLE_KEY, SYMBOL_ROLE_VAULT_TRIGGER, SYMBOL_ROLE_WILD, symbolHasRole } from './symbolRoles';
 
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
@@ -22,11 +23,11 @@ const frameImageRatioX = (value: number) => value / FRAME_IMAGE_SIZES.width;
 const frameImageRatioY = (value: number) => value / FRAME_IMAGE_SIZES.height;
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
-	if (rawSymbol.name === 'S') {
+	if (symbolHasRole(rawSymbol.name, SYMBOL_ROLE_VAULT_TRIGGER)) {
 		eventEmitter.broadcast({ type: 'soundScatterCounterIncrease' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()] });
 	}
-	if (rawSymbol.name === 'W') eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
+	if (symbolHasRole(rawSymbol.name, SYMBOL_ROLE_WILD)) eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
 };
 
 const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
@@ -137,7 +138,7 @@ const legacyKeyBoardSignature = (settledBoard: RawSymbol[][]) =>
 const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
 	settledBoard.reduce(
 		(total, reel) =>
-			total + reel.slice(0, BOARD_DIMENSIONS.y).filter((rawSymbol) => rawSymbol.name === 'H4').length,
+			total + reel.slice(0, BOARD_DIMENSIONS.y).filter((rawSymbol) => symbolHasRole(rawSymbol.name, SYMBOL_ROLE_KEY)).length,
 		0,
 	);
 
