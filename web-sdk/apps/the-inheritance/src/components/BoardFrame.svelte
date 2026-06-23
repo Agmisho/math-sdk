@@ -8,7 +8,9 @@
 
 	const context = getContext();
 	const COUNTER_X_RATIO = 0.069;
-	const COUNTER_Y_RATIO = 0.548;
+	const COUNTER_Y_RATIO = 0.565;
+	const COUNTER_WIDTH_RATIO = 0.082;
+	const COUNTER_HEIGHT_RATIO = 0.052;
 	const frame = () => context.stateGameDerived.frameLayout();
 	const frameX = () => frame().x;
 	const frameY = () => frame().y;
@@ -32,10 +34,10 @@
 	anchor={0.5}
 	x={imageX(COUNTER_X_RATIO)}
 	y={imageY(COUNTER_Y_RATIO)}
-	width={frameWidth() * 0.102}
-	height={frameHeight() * 0.075}
-	backgroundColor={0x04150c}
-	backgroundAlpha={0}
+	width={frameWidth() * COUNTER_WIDTH_RATIO}
+	height={frameHeight() * COUNTER_HEIGHT_RATIO}
+	backgroundColor={0x061f13}
+	backgroundAlpha={0.88}
 	zIndex={24}
 />
 
