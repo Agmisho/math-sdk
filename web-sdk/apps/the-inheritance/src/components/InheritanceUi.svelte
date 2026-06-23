@@ -8,6 +8,8 @@
 
 	import { getContext } from '../game/context';
 	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
+	import { stateGameDerived } from '../game/stateGame.svelte';
+	import gameConfig from '../game/config';
 
 	const context = getContext();
 	const BET_AMOUNT_OPTIONS = [0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 3, 5, 10, 20, 50, 100, 200, 300];
@@ -15,7 +17,7 @@
 	const MAX_BET = BET_AMOUNT_OPTIONS[BET_AMOUNT_OPTIONS.length - 1];
 	const BONUS_MODE_KEY = 'BONUS';
 	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
-	const BUY_BONUS_MULTIPLIER = 100;
+	const BUY_BONUS_MULTIPLIER = gameConfig.betModes.bonus.cost;
 	const SCATTER_BOOST_MULTIPLIER = 2;
 	const UI_VERTICAL_OFFSET = 0.48;
 	const UI_SCALE = 0.94;
@@ -191,6 +193,7 @@
 		pressBetSound();
 		if (context.stateXstateDerived.isIdle()) {
 			if (activeBetModeType() === 'buy') stateBet.activeBetModeKey = 'BASE';
+			stateGameDerived.startBaseSpin();
 			context.eventEmitter.broadcast({ type: 'bet' });
 		} else if (!stopDisabled) {
 			if (stateBetDerived.hasAutoBetCounter()) stateBet.autoSpinsCounter = 0;

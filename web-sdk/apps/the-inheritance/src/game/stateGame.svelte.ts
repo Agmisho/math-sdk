@@ -15,6 +15,8 @@ const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
 const FRAME_PLAYABLE_GRID = { left: 226, top: 44, width: 1079, height: 713 } as const;
 const FRAME_GROUP_LEFT_SHIFT = 0.08;
 export const LEGACY_KEY_TARGET = 20;
+export const BONUS_BUY_FREE_SPINS = 10;
+export type SpinMode = 'base' | 'boot' | 'bought' | 'free';
 
 const frameImageRatioX = (value: number) => value / FRAME_IMAGE_SIZES.width;
 const frameImageRatioY = (value: number) => value / FRAME_IMAGE_SIZES.height;
@@ -56,6 +58,11 @@ export type MultiplierSymbol = {
 export const stateGame = $state({
 	board,
 	gameType: 'basegame' as GameType,
+	spinMode: 'boot' as SpinMode,
+	freeSpinsRemaining: 0,
+	freeSpinsAwarded: 0,
+	freeSpinsTotalWin: 0,
+	isBonusBuy: false,
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
 	keyCounter: 0,
@@ -134,7 +141,9 @@ const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
 		0,
 	);
 
-const collectLegacyKeys = ({ board }: { board: RawSymbol[][] }) => {
+const collectLegacyKeys = ({ board, gameType, betMode }: { board: RawSymbol[][]; gameType: GameType; betMode: string }) => {
+	if (gameType !== 'basegame' || betMode.toUpperCase() === 'BONUS') return;
+
 	const boardSignature = legacyKeyBoardSignature(board);
 	if (!boardSignature || stateGame.countedLegacyKeyBoardSignatures.includes(boardSignature)) return;
 
@@ -156,6 +165,22 @@ const collectLegacyKeys = ({ board }: { board: RawSymbol[][] }) => {
 	}
 };
 
+const startBonusBuy = () => {
+	stateGame.spinMode = 'bought';
+	stateGame.freeSpinsAwarded = BONUS_BUY_FREE_SPINS;
+	stateGame.freeSpinsRemaining = BONUS_BUY_FREE_SPINS;
+	stateGame.freeSpinsTotalWin = 0;
+	stateGame.isBonusBuy = true;
+};
+
+const startBaseSpin = () => {
+	stateGame.spinMode = 'base';
+	stateGame.freeSpinsRemaining = 0;
+	stateGame.freeSpinsAwarded = 0;
+	stateGame.freeSpinsTotalWin = 0;
+	stateGame.isBonusBuy = false;
+};
+
 const scatterLandIndex = () => {
 	if (stateGame.scatterCounter > 5) return 5;
 	if (stateGame.scatterCounter < 1) return 1;
@@ -166,4 +191,4 @@ const { enhanceBoard } = createEnhanceBoard();
 const enhancedBoard = enhanceBoard({ board: stateGame.board });
 export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({ winLevelMap });
 
-export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, collectLegacyKeys, getWinLevelDataByWinLevelAlias };
+export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, collectLegacyKeys, startBonusBuy, startBaseSpin, getWinLevelDataByWinLevelAlias };

@@ -4,19 +4,21 @@
 
 	import { getContext } from '../game/context';
 	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
+	import { stateGameDerived } from '../game/stateGame.svelte';
+	import gameConfig from '../game/config';
 
 	const context = getContext();
 	const BASE_MODE_KEY = 'BASE';
 	const BONUS_MODE_KEY = 'BONUS';
 	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
-	const BUY_BONUS_MULTIPLIER = 100;
+	const BUY_BONUS_MULTIPLIER = gameConfig.betModes.bonus.cost;
 	const SCATTER_BOOST_MULTIPLIER = 2;
 
 	const close = () => (stateInheritanceUi.modal = null);
 	const formatMoney = (value: number) =>
 		`$${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 	const featureCost = (multiplier: number) => stateBet.betAmount * multiplier;
-	const canAfford = (multiplier: number) => stateBet.balanceAmount <= 0 || stateBet.balanceAmount >= featureCost(multiplier);
+	const canAfford = (multiplier: number) => stateBet.balanceAmount >= featureCost(multiplier);
 	const isScatterBoostActive = () => stateBet.activeBetModeKey.toUpperCase() === SCATTER_BOOST_MODE_KEY;
 
 	const activateScatterBoost = () => {
@@ -32,6 +34,8 @@
 	};
 
 	const buyBonus = () => {
+		if (!canAfford(BUY_BONUS_MULTIPLIER)) return;
+		stateGameDerived.startBonusBuy();
 		stateBet.activeBetModeKey = BONUS_MODE_KEY;
 		context.eventEmitter.broadcast({ type: 'soundPressBet' });
 		close();

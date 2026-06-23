@@ -53,11 +53,20 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		}
 
 		stateGame.gameType = bookEvent.gameType;
+		if (bookEvent.gameType === 'freegame') {
+			stateGame.spinMode = 'free';
+		} else if (!stateGame.isBonusBuy) {
+			stateGame.spinMode = 'base';
+		}
 		await stateGameDerived.enhancedBoard.spin({
 			revealEvent: bookEvent,
 			paddingBoard: config.paddingReels[bookEvent.gameType],
 		});
-		stateGameDerived.collectLegacyKeys({ board: bookEvent.board });
+		stateGameDerived.collectLegacyKeys({
+			board: bookEvent.board,
+			gameType: bookEvent.gameType,
+			betMode: stateBet.activeBetModeKey,
+		});
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
@@ -68,8 +77,14 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	setTotalWin: async (bookEvent: BookEventOfType<'setTotalWin'>) => {
 		stateBet.winBookEventAmount = bookEvent.amount;
+		if (stateGame.spinMode === 'free') stateGame.freeSpinsTotalWin = bookEvent.amount;
 	},
 	freeSpinTrigger: async (bookEvent: BookEventOfType<'freeSpinTrigger'>) => {
+		const totalFreeSpins = stateGame.isBonusBuy ? stateGame.freeSpinsAwarded || bookEvent.totalFs : bookEvent.totalFs;
+		stateGame.freeSpinsAwarded = totalFreeSpins;
+		stateGame.freeSpinsRemaining = totalFreeSpins;
+		stateGame.freeSpinsTotalWin = 0;
+
 		// animate scatters
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
 		await animateSymbols({ positions: bookEvent.positions });
@@ -82,9 +97,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinIntroUpdate',
-			totalFreeSpins: bookEvent.totalFs,
+			totalFreeSpins,
 		});
 		stateGame.gameType = 'freegame';
+		stateGame.spinMode = 'free';
 		eventEmitter.broadcast({ type: 'freeSpinIntroHide' });
 		eventEmitter.broadcast({ type: 'boardFrameGlowShow' });
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
@@ -92,14 +108,29 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({
 			type: 'freeSpinCounterUpdate',
 			current: undefined,
-			total: bookEvent.totalFs,
+			total: totalFreeSpins,
 		});
-		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
+		stateUi.freeSpinCounterTotal = totalFreeSpins;
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerButtonShow' });
 		eventEmitter.broadcast({ type: 'drawerFold' });
 	},
+	freeSpinRetrigger: async (bookEvent: BookEventOfType<'freeSpinRetrigger'>) => {
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
+		await animateSymbols({ positions: bookEvent.positions });
+		stateGame.freeSpinsAwarded = bookEvent.totalFs;
+		stateGame.freeSpinsRemaining = Math.max(bookEvent.totalFs - (stateUi.freeSpinCounterCurrent || 0), 0);
+		eventEmitter.broadcast({
+			type: 'freeSpinCounterUpdate',
+			current: stateUi.freeSpinCounterCurrent,
+			total: bookEvent.totalFs,
+		});
+		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
+	},
 	updateFreeSpin: async (bookEvent: BookEventOfType<'updateFreeSpin'>) => {
+		stateGame.spinMode = 'free';
+		stateGame.freeSpinsAwarded = bookEvent.total;
+		stateGame.freeSpinsRemaining = Math.max(bookEvent.total - bookEvent.amount, 0);
 		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
 		stateUi.freeSpinCounterShow = true;
 		eventEmitter.broadcast({
@@ -112,6 +143,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
 		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
+		const wasBonusBuy = stateGame.isBonusBuy;
+
+		stateGame.freeSpinsRemaining = 0;
+		stateGame.freeSpinsTotalWin = bookEvent.amount;
 
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
 		stateGame.gameType = 'basegame';
@@ -132,6 +167,9 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerUnfold' });
 		eventEmitter.broadcast({ type: 'drawerButtonHide' });
+		stateGame.spinMode = 'base';
+		stateGame.isBonusBuy = false;
+		if (wasBonusBuy) stateBet.activeBetModeKey = 'BASE';
 	},
 	setWin: async (bookEvent: BookEventOfType<'setWin'>) => {
 		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
@@ -148,6 +186,21 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
 		// Do nothing
+	},
+	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
+		if (bookEvent.gameType === 'basegame' && stateBet.activeBetModeKey.toUpperCase() !== 'BONUS') {
+			stateGame.keyCounter = Math.max(stateGame.keyCounter, bookEvent.collected);
+		}
+	},
+	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
+		if (bookEvent.used) {
+			stateGame.keyCounter = 0;
+			stateGame.countedLegacyKeyBoardSignatures = [];
+			stateGame.legacyFeatureUnlockedShown = false;
+		}
+	},
+	multiplierUpdate: async (bookEvent: BookEventOfType<'multiplierUpdate'>) => {
+		// The current visual multiplier treatment is symbol-board based; consume the event to avoid missing-handler errors.
 	},
 	// customised
 	createBonusSnapshot: async (bookEvent: BookEventOfType<'createBonusSnapshot'>) => {

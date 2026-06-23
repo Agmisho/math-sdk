@@ -31,6 +31,13 @@ type BookEventFreeSpinTrigger = {
 	positions: Position[];
 };
 
+type BookEventFreeSpinRetrigger = {
+	index: number;
+	type: 'freeSpinRetrigger';
+	totalFs: number;
+	positions: Position[];
+};
+
 type BookEventUpdateFreeSpin = {
 	index: number;
 	type: 'updateFreeSpin';
@@ -71,6 +78,39 @@ type BookEventWinInfo = {
 	}[];
 };
 
+type BookEventCollectionUpdate = {
+	index: number;
+	type: 'collectionUpdate';
+	collected: number;
+	target: number;
+	displayMultiplier?: number;
+	mansionLevel?: number;
+	positions: Position[];
+	gameType: GameType;
+};
+
+type BookEventLegacyScatterCredit = {
+	index: number;
+	type: 'legacyScatterCredit';
+	collected: number;
+	target: number;
+	virtualScatters: number;
+	naturalScatters: number;
+	effectiveScatters: number;
+	used: boolean;
+	gameType: GameType;
+};
+
+type BookEventMultiplierUpdate = {
+	index: number;
+	type: 'multiplierUpdate';
+	multiplier: number;
+	appliedMultiplier: number;
+	landedMultiplier: number;
+	positions: Position[];
+	gameType: GameType;
+};
+
 // customised
 type BookEventCreateBonusSnapshot = {
 	index: number;
@@ -83,11 +123,15 @@ export type BookEvent =
 	| BookEventWinInfo
 	| BookEventSetTotalWin
 	| BookEventFreeSpinTrigger
+	| BookEventFreeSpinRetrigger
 	| BookEventUpdateFreeSpin
 	| BookEventCreateBonusSnapshot
 	| BookEventFinalWin
 	| BookEventSetWin
 	| BookEventFreeSpinEnd
+	| BookEventCollectionUpdate
+	| BookEventLegacyScatterCredit
+	| BookEventMultiplierUpdate
 	// customised
 	| BookEventCreateBonusSnapshot;
 
