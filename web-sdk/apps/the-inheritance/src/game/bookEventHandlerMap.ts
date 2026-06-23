@@ -55,6 +55,12 @@ const uniquePositions = (positions: Position[]) => {
 	});
 };
 
+const getPaylineDisplayPositions = (lineIndex: number): Position[] => {
+	const payline = config.paylines[String(lineIndex) as keyof typeof config.paylines];
+	if (!payline) return [];
+	return payline.map((row, reel) => ({ reel, row: row + 1 }));
+};
+
 const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) => {
 	const board = stateGameDerived.boardRaw().map((reel) => reel.map((symbol) => ({ ...symbol }))) as RawSymbol[][];
 	const wildSymbol = { name: bookEvent.wildSymbolId, wild: true } as RawSymbol;
@@ -98,6 +104,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			await Promise.all([
 				eventEmitter.broadcastAsync({
 					type: 'boardHighlightWinLine',
+					linePositions: getPaylineDisplayPositions(win.meta.lineIndex),
 					symbolPositions: win.positions,
 				}),
 				animateSymbols({ positions: win.positions }),

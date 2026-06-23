@@ -20,8 +20,8 @@
 	const BUY_BONUS_MULTIPLIER = gameConfig.betModes.bonus.cost;
 	const SCATTER_BOOST_MULTIPLIER = 2;
 	const UI_VERTICAL_OFFSET = 0.48;
-	const UI_SCALE = 0.94;
-	const UI_HORIZONTAL_OFFSET = -0.035;
+	const UI_SCALE = 0.9;
+	const UI_HORIZONTAL_OFFSET = 0.012;
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
 	const UI_RATIO = 1672 / 941;
 	const isPortrait = $derived(canvas.height > canvas.width * 1.05);

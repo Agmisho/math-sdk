@@ -8,6 +8,7 @@
 		| { type: 'boardClearWinLine' }
 		| {
 				type: 'boardHighlightWinLine';
+				linePositions: Position[];
 				symbolPositions: Position[];
 		  }
 		| {
@@ -19,7 +20,7 @@
 <script lang="ts">
 	import { cubicOut, sineOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
-	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
+	import { waitForTimeout } from 'utils-shared/wait';
 	import { BoardContext } from 'components-shared';
 
 	import { getContext } from '../game/context';
@@ -32,8 +33,10 @@
 
 	let show = $state(true);
 	let activeWinLinePositions = $state<Position[]>([]);
+	let activeWinningPositions = $state<Position[]>([]);
 	const winLineProgress = new Tween(0);
 	const winLineAlpha = new Tween(0);
+	const WIN_SYMBOL_PRESENTATION_MS = 780;
 
 	const uniquePositions = (positions: Position[]) => {
 		const seen = new Set<string>();
@@ -47,6 +50,7 @@
 
 	const clearWinLine = () => {
 		activeWinLinePositions = [];
+		activeWinningPositions = [];
 		winLineProgress.set(0, { duration: 0 });
 		winLineAlpha.set(0, { duration: 0 });
 	};
@@ -57,28 +61,32 @@
 		boardShow: () => (show = true),
 		boardHide: () => (show = false),
 		boardClearWinLine: clearWinLine,
-		boardHighlightWinLine: async ({ symbolPositions }) => {
-			const positions = uniquePositions(symbolPositions);
+		boardHighlightWinLine: async ({ linePositions, symbolPositions }) => {
+			const positions = uniquePositions(linePositions);
 			if (positions.length < 2) return;
 
 			activeWinLinePositions = positions;
+			activeWinningPositions = uniquePositions(symbolPositions);
 			winLineProgress.set(0, { duration: 0 });
 			winLineAlpha.set(1, { duration: 0 });
 			await winLineProgress.set(1, { duration: 520, easing: cubicOut });
 			await waitForTimeout(520);
 			await winLineAlpha.set(0, { duration: 260, easing: sineOut });
 			activeWinLinePositions = [];
+			activeWinningPositions = [];
 		},
 		boardWithAnimateSymbols: async ({ symbolPositions }) => {
-			const getPromises = () =>
-				symbolPositions.map(async (position) => {
-					const reelSymbol = context.stateGame.board[position.reel].reelState.symbols[position.row];
-					reelSymbol.symbolState = 'win';
-					await waitForResolve((resolve) => (reelSymbol.oncomplete = resolve));
-					reelSymbol.symbolState = 'postWinStatic';
-				});
+			const winningSymbols = uniquePositions(symbolPositions).flatMap((position) => {
+				const reelSymbol =
+					context.stateGame.board[position.reel]?.reelState.symbols[position.row];
+				return reelSymbol ? [reelSymbol] : [];
+			});
 
-			await Promise.all(getPromises());
+			winningSymbols.forEach((reelSymbol) => (reelSymbol.symbolState = 'win'));
+			await waitForTimeout(WIN_SYMBOL_PRESENTATION_MS);
+			winningSymbols.forEach((reelSymbol) => {
+				if (reelSymbol.symbolState === 'win') reelSymbol.symbolState = 'postWinStatic';
+			});
 		},
 	});
 
@@ -99,6 +107,7 @@
 			{#if activeWinLinePositions.length > 1}
 				<WinLineOverlay
 					positions={activeWinLinePositions}
+					winningPositions={activeWinningPositions}
 					progress={winLineProgress.current}
 					alpha={winLineAlpha.current}
 				/>

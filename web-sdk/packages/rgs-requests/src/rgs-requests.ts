@@ -14,6 +14,7 @@ const LEGACY_KEY_TARGET = 20;
 const LEGACY_KEY_SYMBOL = 'H4';
 const VAULT_SCATTER_SYMBOL = 'S';
 const VISIBLE_ROWS = 5;
+const TOP_PADDING_ROWS = 1;
 
 const MULTIPLIER_SYMBOL_VALUES: Record<string, number> = {
 	M2: 2,
@@ -121,17 +122,24 @@ const getEndFeatureWinLevel = (winMultiplier: number) => {
 	return 10;
 };
 
+const getVisibleSymbols = (reel: MockSymbol[]) =>
+	reel.slice(TOP_PADDING_ROWS, TOP_PADDING_ROWS + VISIBLE_ROWS);
+
 const getGlobalMultiplier = (board: MockBoard) =>
 	Math.max(
 		1,
-		...board.flatMap((reel) => reel.map((symbol) => MULTIPLIER_SYMBOL_VALUES[symbol.name] || 1)),
+		...board.flatMap((reel) =>
+			getVisibleSymbols(reel).map((symbol) => MULTIPLIER_SYMBOL_VALUES[symbol.name] || 1),
+		),
 	);
 
 const getVisiblePositions = (board: MockBoard, symbolName: string) =>
 	board.flatMap((reel, reelIndex) =>
-		reel
-			.slice(0, VISIBLE_ROWS)
-			.flatMap((symbol, rowIndex) => symbol.name === symbolName ? [{ reel: reelIndex, row: rowIndex }] : []),
+		getVisibleSymbols(reel).flatMap((symbol, rowIndex) =>
+			symbol.name === symbolName
+				? [{ reel: reelIndex, row: rowIndex + TOP_PADDING_ROWS }]
+				: [],
+		),
 	);
 
 const calculateMansionLevel = (collected: number) => {
@@ -196,7 +204,9 @@ const evaluateBoardWins = (board: MockBoard) => {
 	const globalMultiplier = getGlobalMultiplier(board);
 
 	const wins = PAYLINES.flatMap((line, lineIndex) => {
-		const names = line.map((row, reel) => board[reel]?.[row]?.name || '');
+		const names = line.map(
+			(row, reel) => board[reel]?.[row + TOP_PADDING_ROWS]?.name || '',
+		);
 		const targetSymbol = names.find((name) => name !== 'W') || 'W';
 		const symbolPaytable = PAYTABLE[targetSymbol];
 		if (!symbolPaytable) return [];
@@ -219,7 +229,9 @@ const evaluateBoardWins = (board: MockBoard) => {
 				symbol: targetSymbol,
 				kind: count,
 				win: toBookAmount(winMultiplier),
-				positions: line.slice(0, count).map((row, reel) => ({ reel, row })),
+				positions: line
+					.slice(0, count)
+					.map((row, reel) => ({ reel, row: row + TOP_PADDING_ROWS })),
 				meta: {
 					lineIndex: lineIndex + 1,
 					multiplier: globalMultiplier,

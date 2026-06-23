@@ -13,7 +13,7 @@
 	import { FadeContainer, WinCountUpProvider } from 'components-pixi';
 	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
 	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
-	import { CanvasSizeRectangle, MainContainer } from 'components-layout';
+	import { CanvasSizeRectangle } from 'components-layout';
 	import { OnMount } from 'components-shared';
 
 	import WinCoins from './WinCoins.svelte';
@@ -24,8 +24,8 @@
 	const context = getContext();
 	const UI_RATIO = 1672 / 941;
 	const UI_VERTICAL_OFFSET = 0.48;
-	const UI_SCALE = 0.94;
-	const UI_HORIZONTAL_OFFSET = -0.035;
+	const UI_SCALE = 0.9;
+	const UI_HORIZONTAL_OFFSET = 0.012;
 
 	let show = $state(false);
 	let amount = $state(0);
@@ -50,7 +50,7 @@
 
 		return {
 			x: (boardLayout.frameX + panelX) / 2,
-			y: frameBottom + availableGap * 0.62,
+			y: frameBottom + availableGap * 0.88,
 			gap: availableGap,
 		};
 	});
@@ -74,12 +74,17 @@
 			amount = 0;
 			winLevelData = undefined;
 			countUpFinished = false;
+			oncomplete = () => {};
 		},
 		winUpdate: async (emitterEvent) => {
 			amount = emitterEvent.amount;
 			winLevelData = emitterEvent.winLevelData;
 			countUpFinished = false;
-			await waitForResolve((resolve) => (oncomplete = resolve));
+			const presentationComplete = waitForResolve((resolve) => (oncomplete = resolve));
+			const fallbackMs = Math.max(emitterEvent.winLevelData.presentDuration + 1000, 2500);
+			await Promise.race([presentationComplete, waitForTimeout(fallbackMs)]);
+			oncomplete = () => {};
+			countUpFinished = true;
 		},
 	});
 </script>
@@ -103,32 +108,31 @@
 					}}
 				/>
 
-				<MainContainer>
-					<Container
-						x={winTextLayout.x}
-						y={winTextLayout.y}
-					>
-						{#if winLevelData?.animation}
-							<WinAnimation animationMap={winLevelData.animation}>
-								<Text
-									anchor={0.5}
-									text={bookEventAmountToCurrencyString(countUpAmount)}
-									style={winTextStyle}
-								/>
-							</WinAnimation>
-						{:else}
+				<Container
+					x={winTextLayout.x}
+					y={winTextLayout.y}
+				>
+					{#if winLevelData?.animation && !countUpFinished}
+						<WinAnimation animationMap={winLevelData.animation}>
 							<Text
 								anchor={0.5}
 								text={bookEventAmountToCurrencyString(countUpAmount)}
 								style={winTextStyle}
 							/>
-						{/if}
-					</Container>
-				</MainContainer>
+						</WinAnimation>
+					{:else}
+						<Text
+							anchor={0.5}
+							text={bookEventAmountToCurrencyString(countUpAmount)}
+							style={winTextStyle}
+						/>
+					{/if}
+				</Container>
 
-				<WinCoins emit={!countUpCompleted && !countUpFinished} levelAlias={winLevelData?.alias} />
-
-				<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />
+				{#if !countUpFinished}
+					<WinCoins emit={!countUpCompleted} levelAlias={winLevelData?.alias} />
+					<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />
+				{/if}
 			{/snippet}
 		</WinCountUpProvider>
 	{/if}

@@ -3,27 +3,41 @@
 
 	import { SYMBOL_SIZE } from '../game/constants';
 	import type { Position } from '../game/types';
-	import { getSymbolX, getSymbolY } from '../game/utils';
+	import { getContext } from '../game/context';
+	import { getSymbolX } from '../game/utils';
 
 	type Point = { x: number; y: number };
 
 	type Props = {
 		positions: Position[];
+		winningPositions: Position[];
 		progress: number;
 		alpha: number;
 	};
 
 	const props: Props = $props();
+	const context = getContext();
 
 	const clamp = (value: number) => Math.max(0, Math.min(1, value));
 	const distance = (start: Point, end: Point) => Math.hypot(end.x - start.x, end.y - start.y);
+	const getPositionPoint = (position: Position) => ({
+		x: getSymbolX(position.reel),
+		y:
+			context.stateGame.board[position.reel]?.reelState.symbols[position.row]?.symbolY() ??
+			SYMBOL_SIZE * (position.row - 0.5),
+	});
 
 	const points = $derived(
 		[...props.positions]
 			.sort((a, b) => a.reel - b.reel || a.row - b.row)
+			.map(getPositionPoint),
+	);
+	const winningPoints = $derived(
+		[...props.winningPositions]
+			.sort((a, b) => a.reel - b.reel || a.row - b.row)
 			.map((position) => ({
-				x: getSymbolX(position.reel),
-				y: getSymbolY(position.row),
+				reel: position.reel,
+				...getPositionPoint(position),
 			})),
 	);
 
@@ -73,8 +87,8 @@
 		drawStroke(8, 0x1f7b4c, 0.58);
 		drawStroke(4, 0xffe6a2, 0.92);
 
-		const reachedCount = Math.max(1, Math.ceil(points.length * clamp(props.progress)));
-		for (const point of points.slice(0, reachedCount)) {
+		const reachedReel = Math.floor((points.length - 1) * clamp(props.progress));
+		for (const point of winningPoints.filter((point) => point.reel <= reachedReel)) {
 			graphics.circle(point.x, point.y, SYMBOL_SIZE * 0.34);
 			graphics.fill({ color: 0x062a1a, alpha: 0.2 * alpha });
 			graphics.stroke({ width: 4, color: 0x2fa66c, alpha: 0.72 * alpha });
