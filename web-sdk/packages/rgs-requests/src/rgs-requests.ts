@@ -6,9 +6,14 @@ export * from './types';
 const mockReel = (names: string[]) => names.map((name) => ({ name }));
 let mockBalanceAmount = 1000 * API_AMOUNT_MULTIPLIER;
 let mockSpinIndex = 0;
+let mockLegacyKeyCount = 0;
 const BONUS_BUY_COST_MULTIPLIER = 100;
 const BONUS_BUY_FREE_SPINS = 10;
 const SCATTER_BOOST_COST_MULTIPLIER = 2;
+const LEGACY_KEY_TARGET = 20;
+const LEGACY_KEY_SYMBOL = 'H4';
+const VAULT_SCATTER_SYMBOL = 'S';
+const VISIBLE_ROWS = 5;
 
 const MULTIPLIER_SYMBOL_VALUES: Record<string, number> = {
 	M2: 2,
@@ -121,6 +126,71 @@ const getGlobalMultiplier = (board: MockBoard) =>
 		1,
 		...board.flatMap((reel) => reel.map((symbol) => MULTIPLIER_SYMBOL_VALUES[symbol.name] || 1)),
 	);
+
+const getVisiblePositions = (board: MockBoard, symbolName: string) =>
+	board.flatMap((reel, reelIndex) =>
+		reel
+			.slice(0, VISIBLE_ROWS)
+			.flatMap((symbol, rowIndex) => symbol.name === symbolName ? [{ reel: reelIndex, row: rowIndex }] : []),
+	);
+
+const calculateMansionLevel = (collected: number) => {
+	if (collected >= 20) return 5;
+	if (collected >= 15) return 4;
+	if (collected >= 10) return 3;
+	if (collected >= 5) return 2;
+	return 1;
+};
+
+const calculateDisplayMultiplier = (collected: number) => {
+	if (collected >= 20) return 10;
+	if (collected >= 18) return 7;
+	if (collected >= 14) return 5;
+	if (collected >= 10) return 4;
+	if (collected >= 6) return 3;
+	if (collected >= 1) return 2;
+	return 1;
+};
+
+const createCollectionUpdateEvent = ({
+	index,
+	board,
+	gameType,
+	mode,
+}: {
+	index: number;
+	board: MockBoard;
+	gameType: 'basegame' | 'freegame';
+	mode: string;
+}) => {
+	const positions = gameType === 'basegame' && normalizeMode(mode) !== 'bonus' ? getVisiblePositions(board, LEGACY_KEY_SYMBOL) : [];
+	if (positions.length > 0) mockLegacyKeyCount = Math.min(LEGACY_KEY_TARGET, mockLegacyKeyCount + positions.length);
+
+	return {
+		index,
+		type: 'collectionUpdate',
+		collected: mockLegacyKeyCount,
+		target: LEGACY_KEY_TARGET,
+		mansionLevel: calculateMansionLevel(mockLegacyKeyCount),
+		displayMultiplier: calculateDisplayMultiplier(mockLegacyKeyCount),
+		positions,
+		gameType,
+	};
+};
+
+const createCollectionResetEvent = (index: number) => {
+	mockLegacyKeyCount = 0;
+	return {
+		index,
+		type: 'collectionUpdate',
+		collected: mockLegacyKeyCount,
+		target: LEGACY_KEY_TARGET,
+		mansionLevel: calculateMansionLevel(mockLegacyKeyCount),
+		displayMultiplier: calculateDisplayMultiplier(mockLegacyKeyCount),
+		positions: [],
+		gameType: 'basegame',
+	};
+};
 
 const evaluateBoardWins = (board: MockBoard) => {
 	const globalMultiplier = getGlobalMultiplier(board);
@@ -326,15 +396,15 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 
 	const spinIndex = mockSpinIndex;
 	const board = decorateBoard(mockBoards[spinIndex % mockBoards.length]);
+	const legacyCreditAvailable = mockLegacyKeyCount >= LEGACY_KEY_TARGET;
 	const { wins, totalWinMultiplier, totalWinBookAmount } = evaluateBoardWins(board);
-	const payoutAmount = options.amount * totalWinMultiplier;
-	const payoutApiAmount = Math.round(payoutAmount * API_AMOUNT_MULTIPLIER);
-	mockSpinIndex += 1;
-	mockBalanceAmount = Math.max(0, mockBalanceAmount - costApiAmount + payoutApiAmount);
+	let cumulativeWinMultiplier = totalWinMultiplier;
+	let cumulativeWinBookAmount = totalWinBookAmount;
+	let index = 0;
 
 	const state: any[] = [
 		{
-			index: 0,
+			index: index++,
 			type: 'reveal',
 			gameType: 'basegame',
 			paddingPositions: [0, 0, 0, 0, 0],
@@ -342,21 +412,83 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 			board,
 		},
 	];
+	state.push(createCollectionUpdateEvent({ index: index++, board, gameType: 'basegame', mode: normalizedMode }));
 
 	if (wins.length > 0) {
 		state.push({
-			index: 1,
+			index: index++,
 			type: 'winInfo',
 			totalWin: totalWinBookAmount,
 			wins,
 		});
-		state.push({ index: 2, type: 'setWin', amount: totalWinBookAmount, winLevel: getWinLevel(totalWinMultiplier) });
-		state.push({ index: 3, type: 'setTotalWin', amount: totalWinBookAmount });
-		state.push({ index: 4, type: 'finalWin', amount: totalWinBookAmount });
-	} else {
-		state.push({ index: 1, type: 'setTotalWin', amount: 0 });
-		state.push({ index: 2, type: 'finalWin', amount: 0 });
+		state.push({ index: index++, type: 'setWin', amount: totalWinBookAmount, winLevel: getWinLevel(totalWinMultiplier) });
 	}
+	state.push({ index: index++, type: 'setTotalWin', amount: totalWinBookAmount });
+
+	const naturalScatterPositions = getVisiblePositions(board, VAULT_SCATTER_SYMBOL);
+	const usesLegacyScatterCredit = legacyCreditAvailable && naturalScatterPositions.length === 2;
+	if (usesLegacyScatterCredit) {
+		state.push({
+			index: index++,
+			type: 'legacyScatterCredit',
+			collected: LEGACY_KEY_TARGET,
+			target: LEGACY_KEY_TARGET,
+			virtualScatters: 1,
+			naturalScatters: naturalScatterPositions.length,
+			effectiveScatters: naturalScatterPositions.length + 1,
+			used: true,
+			gameType: 'basegame',
+		});
+		state.push({
+			index: index++,
+			type: 'freeSpinTrigger',
+			totalFs: 8,
+			positions: naturalScatterPositions,
+		});
+		state.push(createCollectionResetEvent(index++));
+
+		for (let freeSpinIndex = 0; freeSpinIndex < 8; freeSpinIndex += 1) {
+			const freeSpinBoard = decorateBoard(mockBonusBoards[(spinIndex + freeSpinIndex) % mockBonusBoards.length]);
+			state.push({
+				index: index++,
+				type: 'updateFreeSpin',
+				amount: freeSpinIndex,
+				total: 8,
+			});
+			state.push({
+				index: index++,
+				type: 'reveal',
+				gameType: 'freegame',
+				paddingPositions: [0, 0, 0, 0, 0],
+				anticipation: [0, 0, 0, 0, 0],
+				board: freeSpinBoard,
+			});
+			state.push(createCollectionUpdateEvent({ index: index++, board: freeSpinBoard, gameType: 'freegame', mode: normalizedMode }));
+			const evaluated = pushEvaluatedBoardEvents({
+				state,
+				board: freeSpinBoard,
+				startIndex: index,
+				cumulativeWinMultiplier,
+			});
+			index = evaluated.index;
+			cumulativeWinMultiplier = evaluated.cumulativeWinMultiplier;
+			cumulativeWinBookAmount = toBookAmount(cumulativeWinMultiplier);
+		}
+
+		state.push({
+			index: index++,
+			type: 'freeSpinEnd',
+			amount: cumulativeWinBookAmount,
+			winLevel: getEndFeatureWinLevel(cumulativeWinMultiplier),
+		});
+	}
+
+	state.push({ index: index++, type: 'finalWin', amount: cumulativeWinBookAmount });
+
+	const payoutAmount = options.amount * cumulativeWinMultiplier;
+	const payoutApiAmount = Math.round(payoutAmount * API_AMOUNT_MULTIPLIER);
+	mockSpinIndex += 1;
+	mockBalanceAmount = Math.max(0, mockBalanceAmount - costApiAmount + payoutApiAmount);
 
 	return {
 		status: { statusCode: 'SUCCESS', statusMessage: 'Mock play response' },
@@ -365,7 +497,7 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 			roundID: Date.now(),
 			amount: costApiAmount,
 			payout: payoutAmount,
-			payoutMultiplier: totalWinMultiplier,
+			payoutMultiplier: cumulativeWinMultiplier,
 			active: false,
 			mode: options.mode,
 			event: '0',

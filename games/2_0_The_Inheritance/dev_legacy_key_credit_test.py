@@ -14,14 +14,16 @@ if str(GAME_DIR) not in sys.path:
 from game_config import GameConfig  # noqa: E402
 from gamestate import GameState  # noqa: E402
 
+LEGACY_KEY_TARGET = 20
 
-def make_game(mode="base", criteria="freegame", collected_count=10):
+
+def make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET):
     config = GameConfig()
     game = GameState(config)
     game.betmode = mode
     game.criteria = criteria
     game.collected_count = collected_count
-    game.collection_target = 10
+    game.collection_target = LEGACY_KEY_TARGET
     game.reset_book()
     return game
 
@@ -45,10 +47,10 @@ def get_events(game, event_type):
 
 
 def validate_base_credit_trigger():
-    game = make_game(mode="base", criteria="freegame", collected_count=10)
+    game = make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
 
-    assert game.collected_count == 10
+    assert game.collected_count == LEGACY_KEY_TARGET
     assert game.count_special_symbols("scatter") == 2
     assert game.get_effective_scatter_count("scatter") == 3
     assert game.check_fs_condition("scatter") is True
@@ -60,8 +62,8 @@ def validate_base_credit_trigger():
     collection_events = get_events(game, "collectionUpdate")
 
     assert len(legacy_events) == 1
-    assert legacy_events[0]["collected"] == 10
-    assert legacy_events[0]["target"] == 10
+    assert legacy_events[0]["collected"] == LEGACY_KEY_TARGET
+    assert legacy_events[0]["target"] == LEGACY_KEY_TARGET
     assert legacy_events[0]["virtualScatters"] == 1
     assert legacy_events[0]["naturalScatters"] == 2
     assert legacy_events[0]["effectiveScatters"] == 3
@@ -85,7 +87,7 @@ def validate_base_credit_trigger():
 
 
 def validate_scatter_boost_credit_trigger():
-    game = make_game(mode="scatter_boost", criteria="freegame", collected_count=10)
+    game = make_game(mode="scatter_boost", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
 
     assert game.count_special_symbols("scatter") == 2
@@ -99,8 +101,8 @@ def validate_scatter_boost_credit_trigger():
     assert game.collected_count == 0
 
 
-def validate_no_credit_without_ten_keys():
-    game = make_game(mode="base", criteria="freegame", collected_count=9)
+def validate_no_credit_without_target_keys():
+    game = make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET - 1)
     inject_two_scatter_board(game)
 
     assert game.count_special_symbols("scatter") == 2
@@ -110,7 +112,7 @@ def validate_no_credit_without_ten_keys():
 
 
 def validate_bonus_does_not_use_credit():
-    game = make_game(mode="bonus", criteria="freegame", collected_count=10)
+    game = make_game(mode="bonus", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
 
     assert game.count_special_symbols("scatter") == 2
@@ -119,7 +121,7 @@ def validate_bonus_does_not_use_credit():
 
 
 def validate_freegame_does_not_use_credit():
-    game = make_game(mode="base", criteria="freegame", collected_count=10)
+    game = make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
     game.gametype = game.config.freegame_type
 
@@ -132,7 +134,7 @@ def validate_freegame_does_not_use_credit():
 def main():
     validate_base_credit_trigger()
     validate_scatter_boost_credit_trigger()
-    validate_no_credit_without_ten_keys()
+    validate_no_credit_without_target_keys()
     validate_bonus_does_not_use_credit()
     validate_freegame_does_not_use_credit()
     print("Legacy Key virtual scatter credit validation: OK")

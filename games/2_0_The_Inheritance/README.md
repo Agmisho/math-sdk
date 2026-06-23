@@ -189,8 +189,8 @@ Rules:
 - Legacy Keys are not collected during free spins.
 - Legacy Keys are not collected during Bonus Buy.
 - Key collection persists between paid spins and must be stored by the frontend/server player state.
-- Collection target is 10 keys.
-- When the player starts an eligible paid spin with 10 keys, one virtual scatter credit is available.
+- Collection target is 20 keys.
+- When the player starts an eligible paid spin with 20 keys, one virtual scatter credit is available.
 - If that spin lands exactly 2 natural scatters, the virtual credit makes it 3 effective scatters.
 - 3 effective scatters trigger 8 free spins.
 - After the virtual scatter credit is used and the free game is won/triggered, collection resets to 0.

@@ -9,7 +9,7 @@ class GameStateOverride(GameExecutables):
     def reset_book(self):
         super().reset_book()
         if not hasattr(self, "collection_target"):
-            self.collection_target = 10
+            self.collection_target = self.config.legacy_key_collection_target
         if not hasattr(self, "collected_count"):
             self.collected_count = 0
 

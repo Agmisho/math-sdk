@@ -7,7 +7,7 @@ import { sequence } from 'utils-shared/sequence';
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
 import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
-import { stateGame, stateGameDerived } from './stateGame.svelte';
+import { LEGACY_KEY_TARGET, stateGame, stateGameDerived } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position, RawSymbol } from './types';
 import config from './config';
@@ -66,6 +66,8 @@ const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) =
 	eventEmitter.broadcast({ type: 'boardSettle', board });
 };
 
+const normalizeLegacyKeyCount = (collected: number) => Math.max(0, Math.min(LEGACY_KEY_TARGET, collected));
+
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
 		const isBonusGame = checkIsMultipleRevealEvents({ bookEvents });
@@ -87,11 +89,6 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		if (bookEvent.gameType === 'freegame') {
 			stateGame.freeSpinsRemaining = Math.max(stateGame.freeSpinsRemaining - 1, 0);
 		}
-		stateGameDerived.collectLegacyKeys({
-			board: bookEvent.board,
-			gameType: bookEvent.gameType,
-			betMode: stateBet.activeBetModeKey,
-		});
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
@@ -213,15 +210,11 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// Do nothing
 	},
 	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
-		if (bookEvent.gameType === 'basegame' && stateBet.activeBetModeKey.toUpperCase() !== 'BONUS') {
-			stateGame.keyCounter = Math.max(stateGame.keyCounter, bookEvent.collected);
-		}
+		stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected);
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
 		if (bookEvent.used) {
 			stateGame.keyCounter = 0;
-			stateGame.countedLegacyKeyBoardSignatures = [];
-			stateGame.legacyFeatureUnlockedShown = false;
 		}
 	},
 	multiplierUpdate: async (bookEvent: BookEventOfType<'multiplierUpdate'>) => {

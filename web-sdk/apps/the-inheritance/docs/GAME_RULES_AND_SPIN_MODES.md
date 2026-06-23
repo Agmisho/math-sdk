@@ -33,7 +33,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 
 ### Needs Business Decision
 
-- The math Legacy Key target is `10`; the current frontend placeholder target is `20`.
+- Legacy Key collection now uses the shared target `20` in math and frontend display.
 - The math `scatter_boost` cost is `3x`; current frontend copy/config says `2x`.
 - Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
 
@@ -323,8 +323,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 - Displayed name: Legacy Key.
 - Frontend asset: `Legacy Key.png`.
 - Math collection symbol: `collection_symbol = "H4"`.
-- Math target: `10`.
-- Current frontend placeholder target: `20`.
+- Math target: `20`.
+- Frontend counter target: `20`.
 - Math collection is part of the game math, not frontend-only.
 - Keys can appear on active base and free strips, but only collect when `can_collect_legacy_keys()` returns true.
 - `can_collect_legacy_keys()` returns true only when:
@@ -346,11 +346,10 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
   - base free-spin trigger can proceed with `8` free spins
 - In freegame, natural `2` scatters can retrigger, but Legacy scatter credit is not applied.
 
-### Current Frontend Difference
+### Current Frontend Integration
 
-- `stateGame.svelte.ts` currently counts visible final `H4` symbols in the settled `reveal` board and prevents duplicate board-signature counting.
-- It currently uses target `20`, not the math target `10`.
-- `typesBookEvent.ts` and `bookEventHandlerMap.ts` now type and handle math custom events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
+- `typesBookEvent.ts` and `bookEventHandlerMap.ts` type and handle math custom events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
+- The frontend counter displays the Math SDK `collectionUpdate.collected` value and no longer performs separate reveal-board key counting.
 
 ### Source Files
 
@@ -394,7 +393,6 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - Whether to regenerate publish-library/story outputs from the updated math Bonus Buy rule.
 - Whether Scatter Boost should follow math cost `3x` or user-facing earlier requirement `2x`.
-- Whether Legacy Key target should follow math target `10` or current frontend placeholder `20`.
 - Whether stale story data should be regenerated from current math before being used for local mock play.
 
 ## 13. Exact Source Files Used

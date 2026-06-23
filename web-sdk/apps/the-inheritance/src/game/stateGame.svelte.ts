@@ -8,8 +8,7 @@ import { stateLayoutDerived } from './stateLayout';
 import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
-import { stateInheritanceUi } from './stateInheritanceUi.svelte';
-import { SYMBOL_ROLE_KEY, SYMBOL_ROLE_VAULT_TRIGGER, SYMBOL_ROLE_WILD, symbolHasRole } from './symbolRoles';
+import { SYMBOL_ROLE_VAULT_TRIGGER, SYMBOL_ROLE_WILD, symbolHasRole } from './symbolRoles';
 import type { BookEventOfType } from './typesBookEvent';
 
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
@@ -68,8 +67,6 @@ export const stateGame = $state({
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
 	keyCounter: 0,
-	countedLegacyKeyBoardSignatures: [] as string[],
-	legacyFeatureUnlockedShown: false,
 	vaultReelResolutions: [] as BookEventOfType<'vaultReelResolved'>[],
 });
 
@@ -129,45 +126,6 @@ const boardLayout = () => {
 
 const boardRaw = () => board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
 
-const visibleBoard = (settledBoard: RawSymbol[][]) =>
-	settledBoard.map((reel) => reel.slice(0, BOARD_DIMENSIONS.y));
-
-const legacyKeyBoardSignature = (settledBoard: RawSymbol[][]) =>
-	visibleBoard(settledBoard)
-		.map((reel) => reel.map((rawSymbol) => rawSymbol.name).join(','))
-		.join('|');
-
-const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
-	settledBoard.reduce(
-		(total, reel) =>
-			total + reel.slice(0, BOARD_DIMENSIONS.y).filter((rawSymbol) => symbolHasRole(rawSymbol.name, SYMBOL_ROLE_KEY)).length,
-		0,
-	);
-
-const collectLegacyKeys = ({ board, gameType, betMode }: { board: RawSymbol[][]; gameType: GameType; betMode: string }) => {
-	if (gameType !== 'basegame' || betMode.toUpperCase() === 'BONUS') return;
-
-	const boardSignature = legacyKeyBoardSignature(board);
-	if (!boardSignature || stateGame.countedLegacyKeyBoardSignatures.includes(boardSignature)) return;
-
-	const keysOnBoard = countLegacyKeys(board);
-	if (keysOnBoard <= 0) return;
-
-	stateGame.countedLegacyKeyBoardSignatures.push(boardSignature);
-
-	const previousKeyCounter = stateGame.keyCounter;
-	stateGame.keyCounter = Math.min(LEGACY_KEY_TARGET, stateGame.keyCounter + keysOnBoard);
-
-	if (
-		previousKeyCounter < LEGACY_KEY_TARGET &&
-		stateGame.keyCounter >= LEGACY_KEY_TARGET &&
-		!stateGame.legacyFeatureUnlockedShown
-	) {
-		stateGame.legacyFeatureUnlockedShown = true;
-		stateInheritanceUi.modal = 'legacyFeatureUnlocked';
-	}
-};
-
 const startBonusBuy = () => {
 	stateGame.spinMode = 'bought';
 	stateGame.freeSpinsAwarded = BONUS_BUY_FREE_SPINS;
@@ -194,4 +152,4 @@ const { enhanceBoard } = createEnhanceBoard();
 const enhancedBoard = enhanceBoard({ board: stateGame.board });
 export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({ winLevelMap });
 
-export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, collectLegacyKeys, startBonusBuy, startBaseSpin, getWinLevelDataByWinLevelAlias };
+export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, startBonusBuy, startBaseSpin, getWinLevelDataByWinLevelAlias };
