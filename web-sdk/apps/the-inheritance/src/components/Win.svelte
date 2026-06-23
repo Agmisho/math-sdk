@@ -3,6 +3,7 @@
 
 	export type EmitterEventWin =
 		| { type: 'winShow' }
+		| { type: 'winClear' }
 		| { type: 'winHide' }
 		| { type: 'winUpdate'; amount: number; winLevelData: WinLevelData };
 </script>
@@ -29,6 +30,7 @@
 	let show = $state(false);
 	let amount = $state(0);
 	let winLevelData = $state<WinLevelData>();
+	let countUpFinished = $state(false);
 	let oncomplete = $state(() => {});
 	let onCountUpComplete = $state(() => {});
 
@@ -48,7 +50,7 @@
 
 		return {
 			x: (boardLayout.frameX + panelX) / 2,
-			y: frameBottom + availableGap * 0.5,
+			y: frameBottom + availableGap * 0.62,
 			gap: availableGap,
 		};
 	});
@@ -56,8 +58,8 @@
 	const winTextStyle = $derived({
 		fontFamily: 'Georgia',
 		fontSize: Math.max(
-			winLevelData?.type === 'big' ? 38 : 26,
-			Math.min(winTextLayout.gap * (winLevelData?.type === 'big' ? 0.72 : 0.55), winLevelData?.type === 'big' ? 70 : 48),
+			winLevelData?.type === 'big' ? 34 : 24,
+			Math.min(winTextLayout.gap * (winLevelData?.type === 'big' ? 0.62 : 0.48), winLevelData?.type === 'big' ? 58 : 40),
 		),
 		fontWeight: '900',
 		fill: 0xffe6a2,
@@ -66,10 +68,17 @@
 
 	context.eventEmitter.subscribeOnMount({
 		winShow: () => (show = true),
-		winHide: () => (show = false),
+		winHide: () => (countUpFinished = true),
+		winClear: () => {
+			show = false;
+			amount = 0;
+			winLevelData = undefined;
+			countUpFinished = false;
+		},
 		winUpdate: async (emitterEvent) => {
 			amount = emitterEvent.amount;
 			winLevelData = emitterEvent.winLevelData;
+			countUpFinished = false;
 			await waitForResolve((resolve) => (oncomplete = resolve));
 		},
 	});
@@ -81,7 +90,7 @@
 		{@const duration = winLevelData.presentDuration}
 		<WinCountUpProvider {amount} {duration} oncomplete={() => onCountUpComplete()}>
 			{#snippet children({ countUpAmount, startCountUp, finishCountUp, countUpCompleted })}
-				{#if isBigWin}
+				{#if isBigWin && !countUpFinished}
 					<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
 				{/if}
 
@@ -89,6 +98,7 @@
 					onmount={async () => {
 						await startCountUp();
 						await waitForTimeout(300);
+						countUpFinished = true;
 						oncomplete();
 					}}
 				/>
@@ -116,7 +126,7 @@
 					</Container>
 				</MainContainer>
 
-				<WinCoins emit={!countUpCompleted} levelAlias={winLevelData?.alias} />
+				<WinCoins emit={!countUpCompleted && !countUpFinished} levelAlias={winLevelData?.alias} />
 
 				<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />
 			{/snippet}

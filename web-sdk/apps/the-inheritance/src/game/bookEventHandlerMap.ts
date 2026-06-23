@@ -8,6 +8,7 @@ import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
 import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
 import { LEGACY_KEY_TARGET, stateGame, stateGameDerived } from './stateGame.svelte';
+import { stateInheritanceUi } from './stateInheritanceUi.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position, RawSymbol } from './types';
 import config from './config';
@@ -94,7 +95,13 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_winlevel_small' });
 		await sequence(bookEvent.wins, async (win) => {
-			await animateSymbols({ positions: win.positions });
+			await Promise.all([
+				eventEmitter.broadcastAsync({
+					type: 'boardHighlightWinLine',
+					symbolPositions: win.positions,
+				}),
+				animateSymbols({ positions: win.positions }),
+			]);
 		});
 	},
 	setTotalWin: async (bookEvent: BookEventOfType<'setTotalWin'>) => {
@@ -204,13 +211,16 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			winLevelData,
 		});
 		winLevelSoundsStop();
-		eventEmitter.broadcast({ type: 'winHide' });
 	},
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
 		// Do nothing
 	},
 	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
+		const wasBelowTarget = stateGame.keyCounter < LEGACY_KEY_TARGET;
 		stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected);
+		if (wasBelowTarget && stateGame.keyCounter >= LEGACY_KEY_TARGET) {
+			stateInheritanceUi.modal = 'legacyFeatureUnlocked';
+		}
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
 		if (bookEvent.used) {

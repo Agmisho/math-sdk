@@ -85,7 +85,7 @@ Frontend `BUY` opens a Buy menu.
 | Option | Internal mode | Cost | Behavior |
 |---|---|---:|---|
 | Scatter Boost | `scatter_boost` | 3x base bet per spin | 8% relative higher 3-scatter trigger chance |
-| Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
+| Bonus Buy | `bonus` | 100x base bet | Starts a bought 3-, 4-, or 5-scatter entry state and awards 10 free spins |
 
 Scatter chance enhancer target:
 
@@ -106,7 +106,7 @@ Enhancer target reference: about 1 in 236 before final tuning
   - 3 scatters = +5 free spins
   - 4 scatters = +8 free spins
   - 5 scatters = +12 free spins
-- Bonus Buy entry can start as 3-, 4-, or 5-scatter entry according to configured entry weights
+- Bonus Buy entry can start as 3-, 4-, or 5-scatter entry according to configured entry weights and awards 10 free spins
 - Multiplier values: x2, x5, x10, x20, x100
 - Multiplier implementation: natural reel-strip Diamond Seal symbols in base and free-spin strips
 - Base multipliers remain possible, including x100, at lower frequency than free/bought spins

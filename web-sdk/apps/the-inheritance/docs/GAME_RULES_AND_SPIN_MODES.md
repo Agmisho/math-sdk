@@ -36,6 +36,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 - Legacy Key collection now uses the shared target `20` in math and frontend display.
 - The math `scatter_boost` cost is `3x`; current frontend copy/config says `2x`.
 - Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
+- Current $1 paytable values were updated in math, frontend config, and local mock for `W`, `H1`-`H6`, and `L1`-`L5`; `H7`-`H9` and `L6` remain secondary configured symbols.
 
 ## 2. Exact Spin-Mode Table
 
@@ -218,34 +219,34 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 | Symbol ID | Displayed Name | Frontend Asset | Classification | Payout Behavior | Special Behavior / Feature Interaction |
 | --- | --- | --- | --- | --- | --- |
 | `S` | Vault Scatter | `Vault Scatter.png` | Special | No line pay | Triggers/retriggers Free Spins; no independent scatter pay found. |
-| `W` | Wild | `Wild.png` | Special paying symbol | 3=`10x`, 4=`20x`, 5=`50x` | Substitutes for paying symbols. All-wild lines can pay as Wild. Does not substitute Scatter. |
+| `W` | Wild | `Wild.png` | Special paying symbol | 5=`$20.00` on a $1 bet | Substitutes for paying symbols. Wild has no configured 3- or 4-of-kind pay. All-wild 5-of-kind can pay as Wild. Does not substitute Scatter. |
 | `M2` | Diamond Seal Multiplier 2 | `Diamond Seal Multiplier 2.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `2`. |
 | `M5` | Diamond Seal Multiplier 5 | `Diamond Seal Multiplier 5.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `5`. |
 | `M10` | Diamond Seal Multiplier 10 | `Diamond Seal Multiplier 10.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `10`. |
 | `M20` | Diamond Seal Multiplier 20 | `Diamond Seal Multiplier 20.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `20`. |
 | `M100` | Diamond Seal Multiplier 100 | `Diamond Seal Multiplier 100.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `100`. |
-| `H1` | Heiress | `Heiress.png` | High | 3=`12x`, 4=`25x`, 5=`80x` | Normal line-pay symbol. |
-| `H2` | Covered Portrait / Mystery | `Covered Portrait Mystery.png` | High | 3=`10x`, 4=`20x`, 5=`60x` | Normal line-pay symbol; no mystery transform found. |
-| `H3` | Treasure Chest | `Treasure Chest.png` | High | 3=`8x`, 4=`15x`, 5=`45x` | Normal line-pay symbol. |
-| `H4` | Legacy Key | `Legacy Key.png` | High and collection symbol | 3=`6x`, 4=`12x`, 5=`35x` | Counts toward Legacy Key meter in eligible basegame spins; can also pay lines. |
-| `H5` | Diamond Brooch | `Diamond Brooch.png` | High | 3=`5x`, 4=`10x`, 5=`25x` | Normal line-pay symbol. |
-| `H6` | Pocket Watch | `Antique Pocket Watch.png` | High | 3=`4x`, 4=`8x`, 5=`20x` | Normal line-pay symbol. |
-| `H7` | Magnifying Glass | `Magnifying Glass.png` | High | 3=`3x`, 4=`6x`, 5=`15x` | Normal line-pay symbol. |
-| `H8` | Will | `will.png` | High | 3=`2x`, 4=`5x`, 5=`12x` | Normal line-pay symbol. |
-| `H9` | Old Letter | `Old Letter.png` | High | 3=`1.5x`, 4=`4x`, 5=`10x` | Normal line-pay symbol. |
-| `L1` | A | `A.png` | Low | 3=`0.5x`, 4=`1x`, 5=`5x` | Normal line-pay symbol. |
-| `L2` | K | `K.png` | Low | 3=`0.4x`, 4=`0.8x`, 5=`4x` | Normal line-pay symbol. |
-| `L3` | Q | `Q.png` | Low | 3=`0.3x`, 4=`0.7x`, 5=`3x` | Normal line-pay symbol. |
-| `L4` | J | `J.png` | Low | 3=`0.3x`, 4=`0.6x`, 5=`2.5x` | Normal line-pay symbol. |
-| `L5` | 10 | `10.png` | Low | 3=`0.2x`, 4=`0.5x`, 5=`2x` | Normal line-pay symbol. |
-| `L6` | Family Crest | `Family Crest Wild.png` | Low | 3=`0.1x`, 4=`0.4x`, 5=`1.5x` | Math treats this as a normal low symbol, despite the asset filename including `Wild`. |
+| `H1` | Heiress | `Heiress.png` | High | 3=`$0.50`, 4=`$2.50`, 5=`$5.00` on a $1 bet | Normal line-pay symbol. |
+| `H2` | Covered Portrait / Mystery | `Covered Portrait Mystery.png` | High | 3=`$0.50`, 4=`$2.50`, 5=`$5.00` on a $1 bet | Normal line-pay symbol; no mystery transform found. |
+| `H3` | Treasure Chest | `Treasure Chest.png` | High | 3=`$1.00`, 4=`$5.00`, 5=`$10.00` on a $1 bet | Normal line-pay symbol. |
+| `H4` | Legacy Key | `Legacy Key.png` | High and collection symbol | 3=`$1.00`, 4=`$5.00`, 5=`$10.00` on a $1 bet | Counts toward Legacy Key meter in eligible basegame spins; can also pay lines. |
+| `H5` | Diamond Brooch | `Diamond Brooch.png` | High | 3=`$2.00`, 4=`$1.00`, 5=`$20.00` on a $1 bet | Normal line-pay symbol. |
+| `H6` | Pocket Watch | `Antique Pocket Watch.png` | High | 3=`$2.00`, 4=`$1.00`, 5=`$20.00` on a $1 bet | Normal line-pay symbol. |
+| `H7` | Magnifying Glass | `Magnifying Glass.png` | High | 3=`$3.00`, 4=`$6.00`, 5=`$15.00` on a $1 bet | Secondary configured symbol; normal line-pay behavior. |
+| `H8` | Will | `will.png` | High | 3=`$2.00`, 4=`$5.00`, 5=`$12.00` on a $1 bet | Secondary configured symbol; normal line-pay behavior. |
+| `H9` | Old Letter | `Old Letter.png` | High | 3=`$1.50`, 4=`$4.00`, 5=`$10.00` on a $1 bet | Secondary configured symbol; normal line-pay behavior. |
+| `L1` | A | `A.png` | Low | 3=`$0.10`, 4=`$0.50`, 5=`$1.00` on a $1 bet | Normal line-pay symbol. |
+| `L2` | K | `K.png` | Low | 3=`$0.10`, 4=`$0.50`, 5=`$1.00` on a $1 bet | Normal line-pay symbol. |
+| `L3` | Q | `Q.png` | Low | 3=`$0.10`, 4=`$0.50`, 5=`$1.00` on a $1 bet | Normal line-pay symbol. |
+| `L4` | J | `J.png` | Low | 3=`$0.10`, 4=`$0.50`, 5=`$1.00` on a $1 bet | Normal line-pay symbol. |
+| `L5` | 10 | `10.png` | Low | 3=`$0.10`, 4=`$0.50`, 5=`$1.00` on a $1 bet | Normal line-pay symbol. |
+| `L6` | Family Crest | `Family Crest Wild.png` | Low | 3=`$0.10`, 4=`$0.40`, 5=`$1.50` on a $1 bet | Math treats this as a normal low symbol, despite the asset filename including `Wild`. |
 
 ### Multiplier Symbol Behavior
 
 - Available values: `2`, `5`, `10`, `20`, `100`.
 - The highest visible multiplier symbol on the current board is used.
 - The multiplier is applied globally to line wins for the current reveal only.
-- Total win is the sum of multiplied line wins.
+- Total win is the sum of line wins after applying the highest displayed Diamond Seal multiplier value.
 - No persistence, collection, movement, or carry-over behavior was found for multiplier symbols.
 - In freegame, a multiplier update can emit even if no multiplier symbol is visible; in that case the applied multiplier is `1`.
 
@@ -273,11 +274,11 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - Number of paylines: `15`.
 - Win direction: left-to-right starting from reel `0`.
-- Minimum match count: `3`, because paytable entries start at 3 of a kind.
+- Minimum match count: `3` for normal paying symbols; Wild direct pay is configured for `5` Wilds only.
 - Wins are line-based; multiple paylines can pay in the same reveal.
 - Wild substitution:
   - Wild substitutes paying symbols.
-  - All-wild lines can pay as Wild.
+  - All-wild 5-of-kind lines can pay as Wild.
   - The line calculator compares the wild-only payout against the substituted-symbol payout and uses the better paying result.
 - Scatter payout rules:
   - Scatter has no paytable entry.
@@ -367,7 +368,7 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 | Area | Math / Library Source | Frontend Source | Current Status |
 | --- | --- | --- | --- |
 | Mode costs | `game_config.py`, `publish_files/index.json` | `config.ts`, `InheritanceUi.svelte`, `InheritanceBuyModal.svelte` | Base and bonus match; scatter boost mismatches (`3x` math vs `2x` frontend). |
-| Paytable | `game_config.py` | `config.ts`, `InheritanceInfoModal.svelte` | Mostly mirrored; frontend `L4` and `L6` payout values differ from math config. |
+| Paytable | `game_config.py` | `config.ts`, `InheritanceInfoModal.svelte` | Mirrored for current configured symbols and displayed as $1 bet values in the info modal. |
 | Symbols/assets | `game_config.py` symbols | `assets.ts` and static assets | Asset mapping exists for all math symbols. `L6` asset filename says Wild, but math treats it as low. |
 | Reels/probabilities | CSV strips under `games/2_0_The_Inheritance/reels` | Frontend only has padding reels in `config.ts` | Frontend does not contain the active full reel strips. |
 | Bet request | publish library / RGS play endpoint | `utils-xstate/createPrimaryMachines.ts` sends active mode key to `rgs-requests` | Real backend path can receive mode. Local mock handles base, scatter boost, and Bonus Buy without no-backend wallet errors. |

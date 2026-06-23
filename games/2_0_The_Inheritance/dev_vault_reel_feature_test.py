@@ -90,16 +90,16 @@ def validate_vault_reel_activation() -> None:
     affected_line = next(line for line in event["affectedPaylines"] if line["lineIndex"] == 1)
     assert affected_line["lineIndex"] == 1
     assert affected_line["lineWinBeforeTransform"] == 0
-    assert affected_line["lineWinBeforeMultiplier"] == 80
+    assert affected_line["lineWinBeforeMultiplier"] == 5
     assert affected_line["multiplierStackResult"] == 20
-    assert affected_line["finalLineWin"] == 1600
+    assert affected_line["finalLineWin"] == 100
     assert sorted(line["lineIndex"] for line in event["affectedPaylines"]) == [1, 7, 8]
     assert event["totalSpinWinBefore"] == 0
-    assert event["totalSpinWinAfter"] == 1852
+    assert event["totalSpinWinAfter"] == 120
     assert event["capStatus"]["isCapped"] is False
 
     game.evaluate_lines_board()
-    assert game.win_data["totalWin"] == 1852
+    assert game.win_data["totalWin"] == 120
     assert get_events(game, "multiplierUpdate")[-1]["appliedMultiplier"] == 20
 
 
@@ -112,7 +112,7 @@ def validate_no_activation_without_improved_payline() -> None:
     assert game.board[1][0].name == "H4"
 
     game.evaluate_lines_board()
-    assert game.win_data["totalWin"] == 0.6
+    assert game.win_data["totalWin"] == 0.5
 
 
 def main() -> int:

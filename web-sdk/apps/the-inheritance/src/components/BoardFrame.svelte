@@ -39,7 +39,7 @@
 	width={frameWidth() * COUNTER_WIDTH_RATIO}
 	height={frameHeight() * COUNTER_HEIGHT_RATIO}
 	backgroundColor={0x061f13}
-	backgroundAlpha={0.88}
+	backgroundAlpha={0}
 	zIndex={24}
 />
 

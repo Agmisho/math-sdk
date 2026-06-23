@@ -24,7 +24,7 @@
 		`/assets/the-inheritance/symbols-cleaned/${SYMBOL_ASSET_FILES[name].split('/').map(encodeURIComponent).join('/')}`;
 	const payFor = (data: SymbolConfig, kind: '3' | '4' | '5') =>
 		data.paytable?.find((entry) => entry[kind] !== undefined)?.[kind];
-	const formatMultiplier = (value?: number) => (value === undefined ? '-' : `${value}x`);
+	const formatPayout = (value?: number) => (value === undefined ? '-' : `$${value.toFixed(2)}`);
 </script>
 
 {#if stateInheritanceUi.modal === 'info'}
@@ -62,6 +62,7 @@
 
 			<section class="info-section">
 				<h3>Symbols Payout</h3>
+				<p class="table-note">Payout values shown for a $1 bet. Diamond Seal multiplier symbols multiply the settled line-win total by the displayed value.</p>
 				<table>
 					<thead>
 						<tr><th>Symbol</th><th>3</th><th>4</th><th>5</th></tr>
@@ -73,9 +74,9 @@
 									<img src={symbolAsset(symbol.name)} alt="" />
 									<span>{SYMBOL_DISPLAY_NAMES[symbol.name]}</span>
 								</td>
-								<td>{formatMultiplier(payFor(symbol.data, '3'))}</td>
-								<td>{formatMultiplier(payFor(symbol.data, '4'))}</td>
-								<td>{formatMultiplier(payFor(symbol.data, '5'))}</td>
+								<td>{formatPayout(payFor(symbol.data, '3'))}</td>
+								<td>{formatPayout(payFor(symbol.data, '4'))}</td>
+								<td>{formatPayout(payFor(symbol.data, '5'))}</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -91,13 +92,13 @@
 							<div>
 								<strong>{SYMBOL_DISPLAY_NAMES[symbolName]}</strong>
 								{#if symbolName === 'S'}
-									<p>Scatter symbol. Landing enough scatters awards the free-spin bonus.</p>
+									<p>ID S. Vault Scatter / bonus symbol. Asset: Vault Scatter.png. It can land on all reels and rows from the active base/free reel strips. 3+ effective Vaults trigger base free spins; 2+ natural Vaults can retrigger in free spins. It does not pay independently.</p>
 								{:else if symbolName === 'W'}
-									<p>Wild symbol. Substitutes for regular paying symbols.</p>
+									<p>ID W. Wild symbol. Substitutes for regular paying symbols and pays directly only as five Wilds.</p>
 								{:else if symbolName === 'H4'}
-									<p>Legacy Key. Each landed key increases the key counter.</p>
+									<p>ID H4. Legacy Key. Collected by math only on settled paid base/scatter-boost boards, never opening boards, bonus buy trigger boards, or free spins. The counter uses final visible H4 positions from collectionUpdate events and resets when the 20-key Vault support credit is used.</p>
 								{:else}
-									<p>Free-spin multiplier symbol with the displayed multiplier value.</p>
+									<p>Diamond Seal multiplier. The displayed value applies globally to the settled line-win total for the result.</p>
 								{/if}
 							</div>
 						</article>
@@ -196,6 +197,13 @@
 	.info-section {
 		padding: 1rem;
 		margin-bottom: 1rem;
+	}
+
+	.table-note {
+		margin: 0 0 0.65rem;
+		font-size: 0.82rem;
+		line-height: 1.35;
+		color: rgba(255, 244, 203, 0.9);
 	}
 
 	.paylines {

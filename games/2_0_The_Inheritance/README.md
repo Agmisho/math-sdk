@@ -29,7 +29,7 @@ The frontend `BUY` button opens a Buy menu with two options:
 | Buy menu option | Internal mode | Cost | Behavior |
 |---|---|---:|---|
 | Scatter Boost | `scatter_boost` | 3x base bet per spin | Base spin with 8% relative higher 3-scatter trigger chance |
-| Bonus Buy | `bonus` | 100x base bet | Starts bought free spins with a random 3-, 4-, or 5-scatter entry state |
+| Bonus Buy | `bonus` | 100x base bet | Starts a bought 3-, 4-, or 5-scatter entry state and awards 10 free spins |
 
 Scatter chance enhancer target:
 
@@ -41,7 +41,7 @@ Scatter boost target reference: about 8% relative higher chance, around 1 in 222
 Bonus Buy entry behavior:
 
 ```text
-Bonus Buy can start as if triggered by 3, 4, or 5 scatters.
+Bonus Buy can start as if triggered by 3, 4, or 5 scatters and awards 10 free spins.
 The configured scatter entry weights are defined in game_config.py under freegame_condition.scatter_triggers.
 ```
 
@@ -130,21 +130,21 @@ Total symbols: 22
 
 | Symbol | 5-of-a-kind | 4-of-a-kind | 3-of-a-kind |
 |---|---:|---:|---:|
-| `W` | 50 | 20 | 10 |
-| `H1` | 80 | 25 | 12 |
-| `H2` | 60 | 20 | 10 |
-| `H3` | 45 | 15 | 8 |
-| `H4` | 35 | 12 | 6 |
-| `H5` | 25 | 10 | 5 |
-| `H6` | 20 | 8 | 4 |
+| `W` | 20 | - | - |
+| `H1` | 5 | 2.5 | 0.5 |
+| `H2` | 5 | 2.5 | 0.5 |
+| `H3` | 10 | 5 | 1 |
+| `H4` | 10 | 5 | 1 |
+| `H5` | 20 | 1 | 2 |
+| `H6` | 20 | 1 | 2 |
 | `H7` | 15 | 6 | 3 |
 | `H8` | 12 | 5 | 2 |
 | `H9` | 10 | 4 | 1.5 |
-| `L1` | 5 | 1 | 0.5 |
-| `L2` | 4 | 0.8 | 0.4 |
-| `L3` | 3 | 0.7 | 0.3 |
-| `L4` | 2.5 | 0.6 | 0.3 |
-| `L5` | 2 | 0.5 | 0.2 |
+| `L1` | 1 | 0.5 | 0.1 |
+| `L2` | 1 | 0.5 | 0.1 |
+| `L3` | 1 | 0.5 | 0.1 |
+| `L4` | 1 | 0.5 | 0.1 |
+| `L5` | 1 | 0.5 | 0.1 |
 | `L6` | 1.5 | 0.4 | 0.1 |
 
 Multiplier symbols do not have direct paytable payouts.
