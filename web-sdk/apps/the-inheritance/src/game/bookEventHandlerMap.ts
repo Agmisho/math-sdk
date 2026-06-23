@@ -57,7 +57,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			revealEvent: bookEvent,
 			paddingBoard: config.paddingReels[bookEvent.gameType],
 		});
-		stateGameDerived.collectLegacyKeys({ board: bookEvent.board, index: bookEvent.index });
+		stateGameDerived.collectLegacyKeys({ board: bookEvent.board });
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {

@@ -8,11 +8,13 @@ import { stateLayoutDerived } from './stateLayout';
 import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
+import { stateInheritanceUi } from './stateInheritanceUi.svelte';
 
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
 const FRAME_PLAYABLE_GRID = { left: 226, top: 44, width: 1079, height: 713 } as const;
 const FRAME_GROUP_LEFT_SHIFT = 0.08;
+export const LEGACY_KEY_TARGET = 20;
 
 const frameImageRatioX = (value: number) => value / FRAME_IMAGE_SIZES.width;
 const frameImageRatioY = (value: number) => value / FRAME_IMAGE_SIZES.height;
@@ -57,7 +59,8 @@ export const stateGame = $state({
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
 	keyCounter: 0,
-	countedLegacyKeyRevealIndexes: [] as number[],
+	countedLegacyKeyBoardSignatures: [] as string[],
+	legacyFeatureUnlockedShown: false,
 });
 
 const frameLayout = () => {
@@ -116,6 +119,14 @@ const boardLayout = () => {
 
 const boardRaw = () => board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
 
+const visibleBoard = (settledBoard: RawSymbol[][]) =>
+	settledBoard.map((reel) => reel.slice(0, BOARD_DIMENSIONS.y));
+
+const legacyKeyBoardSignature = (settledBoard: RawSymbol[][]) =>
+	visibleBoard(settledBoard)
+		.map((reel) => reel.map((rawSymbol) => rawSymbol.name).join(','))
+		.join('|');
+
 const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
 	settledBoard.reduce(
 		(total, reel) =>
@@ -123,11 +134,26 @@ const countLegacyKeys = (settledBoard: RawSymbol[][]) =>
 		0,
 	);
 
-const collectLegacyKeys = ({ board, index }: { board: RawSymbol[][]; index: number }) => {
-	if (stateGame.countedLegacyKeyRevealIndexes.includes(index)) return;
+const collectLegacyKeys = ({ board }: { board: RawSymbol[][] }) => {
+	const boardSignature = legacyKeyBoardSignature(board);
+	if (!boardSignature || stateGame.countedLegacyKeyBoardSignatures.includes(boardSignature)) return;
 
-	stateGame.countedLegacyKeyRevealIndexes.push(index);
-	stateGame.keyCounter += countLegacyKeys(board);
+	const keysOnBoard = countLegacyKeys(board);
+	if (keysOnBoard <= 0) return;
+
+	stateGame.countedLegacyKeyBoardSignatures.push(boardSignature);
+
+	const previousKeyCounter = stateGame.keyCounter;
+	stateGame.keyCounter = Math.min(LEGACY_KEY_TARGET, stateGame.keyCounter + keysOnBoard);
+
+	if (
+		previousKeyCounter < LEGACY_KEY_TARGET &&
+		stateGame.keyCounter >= LEGACY_KEY_TARGET &&
+		!stateGame.legacyFeatureUnlockedShown
+	) {
+		stateGame.legacyFeatureUnlockedShown = true;
+		stateInheritanceUi.modal = 'legacyFeatureUnlocked';
+	}
 };
 
 const scatterLandIndex = () => {

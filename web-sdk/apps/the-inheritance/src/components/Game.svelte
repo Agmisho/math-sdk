@@ -26,6 +26,7 @@
 	import InheritanceUi from './InheritanceUi.svelte';
 	import InheritanceBuyModal from './InheritanceBuyModal.svelte';
 	import InheritanceInfoModal from './InheritanceInfoModal.svelte';
+	import LegacyFeatureUnlockedModal from './LegacyFeatureUnlockedModal.svelte';
 
 	const context = getContext();
 
@@ -74,3 +75,4 @@
 </Modals>
 <InheritanceBuyModal />
 <InheritanceInfoModal />
+<LegacyFeatureUnlockedModal />

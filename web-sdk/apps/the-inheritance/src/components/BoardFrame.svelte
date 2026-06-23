@@ -5,6 +5,7 @@
 <script lang="ts">
 	import { Rectangle, Sprite, Text } from 'pixi-svelte';
 	import { getContext } from '../game/context';
+	import { LEGACY_KEY_TARGET } from '../game/stateGame.svelte';
 
 	const context = getContext();
 	const COUNTER_X_RATIO = 0.069;
@@ -20,12 +21,13 @@
 	const imageY = (ratio: number) => frameY() + frameHeight() * (ratio - 0.5);
 	const counterStyle = () => ({
 		fontFamily: 'Georgia',
-		fontSize: frameWidth() * 0.021,
+		fontSize: frameWidth() * 0.014,
 		fontWeight: '800',
 		fill: 0xffe6a2,
 		align: 'center',
 		stroke: { color: 0x201106, width: 3 },
 	});
+	const keyProgress = () => `${Math.min(context.stateGame.keyCounter, LEGACY_KEY_TARGET)} / ${LEGACY_KEY_TARGET}`;
 </script>
 
 <Sprite key="inheritanceFrame" anchor={0.5} x={frameX()} y={frameY()} width={frameWidth()} height={frameHeight()} />
@@ -42,7 +44,7 @@
 />
 
 <Text
-	text={`${context.stateGame.keyCounter}`}
+	text={keyProgress()}
 	anchor={0.5}
 	x={imageX(COUNTER_X_RATIO)}
 	y={imageY(COUNTER_Y_RATIO)}
