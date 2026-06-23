@@ -1,4 +1,5 @@
 from game_executables import GameExecutables
+from inheritance_symbol_roles import MULTIPLIER_SYMBOL_VALUES
 from src.events.events import fs_trigger_event
 
 
@@ -20,6 +21,7 @@ class GameStateOverride(GameExecutables):
         self.legacy_scatter_credit_event_emitted = False
         self.mansion_level = self.calculate_mansion_level(self.collected_count)
         self.display_multiplier = self.calculate_display_multiplier(self.collected_count)
+        self.reset_vault_reel_state()
 
     def assign_special_sym_function(self):
         self.special_symbol_functions = {
@@ -31,14 +33,7 @@ class GameStateOverride(GameExecutables):
         }
 
     def assign_fixed_mult_property(self, symbol) -> dict:
-        multiplier_values = {
-            "M2": 2,
-            "M5": 5,
-            "M10": 10,
-            "M20": 20,
-            "M100": 100,
-        }
-        symbol.assign_attribute({"multiplier": multiplier_values.get(symbol.name, 1)})
+        symbol.assign_attribute({"multiplier": MULTIPLIER_SYMBOL_VALUES.get(symbol.name, 1)})
 
     def is_legacy_scatter_credit_eligible(self, scatter_key: str = "scatter") -> bool:
         """Return whether the persistent key credit can help trigger free spins."""

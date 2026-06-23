@@ -111,6 +111,54 @@ type BookEventMultiplierUpdate = {
 	gameType: GameType;
 };
 
+type VaultMultiplierSource = Position & {
+	symbol: SymbolName;
+	multiplier: number;
+	source?: string;
+};
+
+type BookEventVaultReelResolved = {
+	index: number;
+	type: 'vaultReelResolved';
+	gameType: GameType;
+	sourceKeySymbol: SymbolName;
+	sourceKeyPosition: Position;
+	sourceKeyDisplayPosition: Position;
+	targetReel: number;
+	originalSymbols: (Position & { symbol: SymbolName })[];
+	transformedPositions: (Position & { symbol: SymbolName })[];
+	transformedDisplayPositions: Position[];
+	wildSymbolId: SymbolName;
+	multiplierSymbolId: SymbolName | null;
+	multiplierValue: number;
+	multiplierSourcePosition: Position | null;
+	multiplierSourceDisplayPosition: Position | null;
+	multiplierStack: {
+		stackingRule: 'highest';
+		naturalSources: VaultMultiplierSource[];
+		vaultSources: VaultMultiplierSource[];
+		combinedMultiplier: number;
+		appliedGlobalMultiplier: number;
+	};
+	affectedPaylines: {
+		lineIndex: number;
+		symbol: SymbolName;
+		kind: number;
+		positions: Position[];
+		displayPositions: Position[];
+		lineWinBeforeTransform: number;
+		lineWinBeforeMultiplier: number;
+		multiplierStackResult: number;
+		finalLineWin: number;
+	}[];
+	totalSpinWinBefore: number;
+	totalSpinWinAfter: number;
+	capStatus: {
+		isCapped: boolean;
+		winCap: number;
+	};
+};
+
 // customised
 type BookEventCreateBonusSnapshot = {
 	index: number;
@@ -132,6 +180,7 @@ export type BookEvent =
 	| BookEventCollectionUpdate
 	| BookEventLegacyScatterCredit
 	| BookEventMultiplierUpdate
+	| BookEventVaultReelResolved
 	// customised
 	| BookEventCreateBonusSnapshot;
 

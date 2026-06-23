@@ -4,6 +4,7 @@ import os
 from src.config.config import Config
 from src.config.distributions import Distribution
 from src.config.betmode import BetMode
+from inheritance_feature_config import build_inheritance_feature_config
 
 
 class GameConfig(Config):
@@ -133,6 +134,7 @@ class GameConfig(Config):
             "M20": {"multiplier": {20: 1}},
             "M100": {"multiplier": {100: 1}},
         }
+        self.inheritance_feature_config = build_inheritance_feature_config(self)
 
         freegame_condition = {
             "reel_weights": {

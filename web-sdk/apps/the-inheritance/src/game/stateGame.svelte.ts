@@ -10,6 +10,7 @@ import { eventEmitter } from './eventEmitter';
 import { SYMBOL_SIZE, BOARD_SIZES, INITIAL_BOARD, BOARD_DIMENSIONS, SPIN_OPTIONS_DEFAULT, SPIN_OPTIONS_FAST, INITIAL_SYMBOL_STATE, SCATTER_LAND_SOUND_MAP } from './constants';
 import { stateInheritanceUi } from './stateInheritanceUi.svelte';
 import { SYMBOL_ROLE_KEY, SYMBOL_ROLE_VAULT_TRIGGER, SYMBOL_ROLE_WILD, symbolHasRole } from './symbolRoles';
+import type { BookEventOfType } from './typesBookEvent';
 
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
@@ -69,6 +70,7 @@ export const stateGame = $state({
 	keyCounter: 0,
 	countedLegacyKeyBoardSignatures: [] as string[],
 	legacyFeatureUnlockedShown: false,
+	vaultReelResolutions: [] as BookEventOfType<'vaultReelResolved'>[],
 });
 
 const frameLayout = () => {

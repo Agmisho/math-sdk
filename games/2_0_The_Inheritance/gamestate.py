@@ -11,6 +11,7 @@ class GameState(GameStateOverride):
             self.reset_book()
             self.draw_board()
             self.update_collection_state()
+            self.resolve_vault_reels_before_line_evaluation()
 
             # Base game: evaluate line wins and emit default line-win events.
             self.evaluate_lines_board()
@@ -29,6 +30,7 @@ class GameState(GameStateOverride):
             self.update_freespin()
             self.draw_board()
             self.update_collection_state()
+            self.resolve_vault_reels_before_line_evaluation()
 
             # Free spins: line wins use the highest visible Diamond Seal multiplier for this spin.
             self.evaluate_lines_board()

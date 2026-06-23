@@ -9,7 +9,7 @@ import { playBookEvent } from './utils';
 import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
 import { stateGame, stateGameDerived } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
-import type { Position } from './types';
+import type { Position, RawSymbol } from './types';
 import config from './config';
 
 const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) => {
@@ -42,6 +42,28 @@ const animateSymbols = async ({ positions }: { positions: Position[] }) => {
 		type: 'boardWithAnimateSymbols',
 		symbolPositions: positions,
 	});
+};
+
+const uniquePositions = (positions: Position[]) => {
+	const seen = new Set<string>();
+	return positions.filter((position) => {
+		const key = `${position.reel}:${position.row}`;
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+};
+
+const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) => {
+	const board = stateGameDerived.boardRaw().map((reel) => reel.map((symbol) => ({ ...symbol }))) as RawSymbol[][];
+	const wildSymbol = { name: bookEvent.wildSymbolId, wild: true } as RawSymbol;
+
+	for (const position of bookEvent.transformedDisplayPositions) {
+		if (!board[position.reel]?.[position.row]) continue;
+		board[position.reel][position.row] = { ...wildSymbol };
+	}
+
+	eventEmitter.broadcast({ type: 'boardSettle', board });
 };
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
@@ -204,6 +226,18 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	multiplierUpdate: async (bookEvent: BookEventOfType<'multiplierUpdate'>) => {
 		// The current visual multiplier treatment is symbol-board based; consume the event to avoid missing-handler errors.
+	},
+	vaultReelResolved: async (bookEvent: BookEventOfType<'vaultReelResolved'>) => {
+		stateGame.vaultReelResolutions.push(bookEvent);
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_landing' });
+		settleVaultReelBoard(bookEvent);
+		await animateSymbols({
+			positions: uniquePositions([
+				bookEvent.sourceKeyDisplayPosition,
+				...bookEvent.transformedDisplayPositions,
+				...bookEvent.affectedPaylines.flatMap((line) => line.displayPositions),
+			]),
+		});
 	},
 	// customised
 	createBonusSnapshot: async (bookEvent: BookEventOfType<'createBonusSnapshot'>) => {

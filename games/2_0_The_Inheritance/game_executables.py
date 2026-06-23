@@ -1,29 +1,21 @@
 from game_calculations import GameCalculations
+from inheritance_symbol_roles import MULTIPLIER_SYMBOL_VALUES, SYMBOL_ROLE_KEY, role_symbol
+from inheritance_vault_reels import VaultReelFeatureMixin
 from src.calculations.lines import Lines
 
 
-class GameExecutables(GameCalculations):
+class GameExecutables(VaultReelFeatureMixin, GameCalculations):
 
-    multiplier_symbol_values = {
-        "M2": 2,
-        "M5": 5,
-        "M10": 10,
-        "M20": 20,
-        "M100": 100,
-    }
+    multiplier_symbol_values = MULTIPLIER_SYMBOL_VALUES
 
-    collection_symbol = "H4"  # Legacy Key
+    collection_symbol = role_symbol(SYMBOL_ROLE_KEY)
 
     def get_landed_multiplier(self) -> int:
         """Return the highest visible Diamond Seal multiplier for this spin."""
-        landed_values = []
-        for reel in self.board:
-            for symbol in reel:
-                if symbol.name in self.multiplier_symbol_values:
-                    landed_values.append(self.multiplier_symbol_values[symbol.name])
+        landed_values = [position["multiplier"] for position in self.get_landed_multiplier_positions()]
         return max(landed_values) if landed_values else 1
 
-    def get_landed_multiplier_positions(self) -> list:
+    def get_natural_multiplier_positions(self) -> list:
         """Return all visible Diamond Seal multiplier positions on the current board."""
         positions = []
         for reel_index, reel in enumerate(self.board):
@@ -38,6 +30,10 @@ class GameExecutables(GameCalculations):
                         }
                     )
         return positions
+
+    def get_landed_multiplier_positions(self) -> list:
+        """Return natural and Vault Reel multiplier sources for this spin."""
+        return self.get_natural_multiplier_positions() + self.get_vault_reel_multiplier_positions()
 
     def emit_multiplier_update_event(
         self,
