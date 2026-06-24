@@ -1,5 +1,9 @@
 # The Inheritance Design Notes
 
+The canonical cross-SDK product design is maintained in
+`web-sdk/apps/the-inheritance/docs/GAME_DESIGN_DESCRIPTION.md`. This math-side
+file records the currently implemented numeric and feature rules.
+
 ## Game identity
 
 - Public game name: The Inheritance

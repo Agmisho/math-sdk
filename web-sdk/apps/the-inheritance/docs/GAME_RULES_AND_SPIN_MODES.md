@@ -1,6 +1,9 @@
 # The Inheritance Game Rules And Spin Modes
 
-This document maps the existing The Inheritance implementation before gameplay changes. It separates code-confirmed facts from gaps and business decisions so future work does not invent slot behavior that already exists in the math package.
+This document maps the current The Inheritance implementation. Product identity
+and protected visual direction live in `GAME_DESIGN_DESCRIPTION.md`. This file
+separates code-confirmed facts from gaps and business decisions so future work
+does not invent slot behavior that already exists in the math package.
 
 ## 1. Game Overview
 
@@ -10,7 +13,8 @@ This document maps the existing The Inheritance implementation before gameplay c
 - Frontend package: `web-sdk/apps/the-inheritance`.
 - Game id: `2_0_The_Inheritance`.
 - Game name: `The Inheritance`.
-- Math RTP: `0.9700`.
+- Validated RTP editions: `0.92`, `0.93`, `0.94`, `0.95`, `0.96`, and `0.97`.
+- Default development/submission edition: `0.97`.
 - Max win / win cap: `5000x`.
 - Grid: `5` reels by `5` visible rows.
 - Win type: fixed paylines, not ways.
@@ -31,12 +35,14 @@ This document maps the existing The Inheritance implementation before gameplay c
 - Frontend game state now tracks `freeSpinsRemaining`, `freeSpinsAwarded`, `freeSpinsTotalWin`, and `isBonusBuy`.
 - Math config now defines `bonus_buy_free_spins = 10`, and the math override uses that value for bought basegame triggers.
 
-### Needs Business Decision
+### Current Resolved Rules
 
-- Legacy Key collection now uses the shared target `10` in math and frontend display.
+- Legacy Key collection uses the shared target `10` in math and frontend display.
 - Math and frontend both use the configured `scatter_boost` cost of `3x`.
-- Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
-- Current $1 paytable values were updated in math, frontend config, and local mock for `W`, `H1`-`H6`, and `L1`-`L5`; `H7`-`H9` and `L6` remain secondary configured symbols.
+- Normal base trigger awards are `3 scatters = 8`, `4 scatters = 12`, and
+  `5 scatters = 15`; Bonus Buy overrides the initial award to exactly `10`.
+- The current $1 paytable is defined for `W`, `H1`-`H9`, and `L1`-`L6` in math
+  and mirrored by the frontend.
 
 ## 2. Exact Spin-Mode Table
 
@@ -182,8 +188,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 | Source | Reel 1 | Reel 2 | Reel 3 | Reel 4 | Reel 5 | Notes |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `BR0.csv` | `1 / 800` | `1 / 800` | `1 / 800` | `1 / 800` | `1 / 800` | Base reveal strip. Legacy Keys are deliberately super rare. Natural non-force basegame redraws if `3+` visible scatters land. |
-| `FR0.csv` | `1 / 1200` | `1 / 1200` | `1 / 1200` | `1 / 1200` | `1 / 1200` | Freegame strip. Used for Free Spins; Legacy Keys remain visual paying symbols but are not collected. |
+| `BR0.csv` | `10 / 800` | `10 / 800` | `10 / 800` | `10 / 800` | `10 / 800` | Scatter stop counts on each base reel. H4 has `1 / 800` stop on each reel. Natural non-force basegame redraws if `3+` visible scatters land. |
+| `FR0.csv` | `10 / 1200` | `10 / 1200` | `10 / 1200` | `10 / 1200` | `10 / 1200` | Scatter stop counts on each free reel. H4 has `1 / 1200` stop on each reel but is not collected in current Free Spin math. |
 | `FRWCAP.csv` | `0 / 120` | `0 / 120` | `0 / 120` | `0 / 120` | `0 / 120` | Wincap-support freegame strip. |
 | `FR100.csv` | `0 / 30` | `0 / 30` | `0 / 30` | `0 / 30` | `0 / 30` | File exists, but is not loaded in active `game_config.py`. |
 
@@ -200,7 +206,9 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - Basegame trigger: effective `3`, `4`, or `5` scatters.
 - Freegame retrigger: natural `2`, `3`, `4`, or `5` scatters.
-- Legacy scatter credit can add one virtual scatter in basegame only when the key meter is full and exactly two natural scatters land under a forced-freegame distribution.
+- Legacy scatter credit can add one virtual scatter in an eligible paid
+  base/scatter-boost result when the key meter was already full before the spin
+  and at least two natural Vaults land.
 
 ### Source Files
 
@@ -338,8 +346,7 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
   - current `gametype` is `basegame`
   - bet mode is not `bonus`
   - key meter is full
-  - current distribution has `force_freegame`
-  - natural scatter count is exactly `2`
+  - natural scatter count is at least `2`
 - When Legacy scatter credit is used:
   - event type `legacyScatterCredit` is emitted
   - key count resets to `0`
@@ -349,8 +356,12 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 ### Current Frontend Integration
 
-- `typesBookEvent.ts` and `bookEventHandlerMap.ts` type and handle math custom events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
-- The frontend counter displays the Math SDK `collectionUpdate.collected` value and no longer performs separate reveal-board key counting.
+- `typesBookEvent.ts` and `bookEventHandlerMap.ts` type and handle math custom
+  events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
+- After the awaited reel-settle animation, the frontend counts visible H4
+  symbols from the final reveal board exactly once. `collectionUpdate` supplies
+  the target and deterministic event metadata; `legacyScatterCredit.used`
+  resets the visible counter.
 
 ### Source Files
 
@@ -393,16 +404,21 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 - Local play is supplied by the separate Python Math SDK bridge. `rgs-requests.ts` contains transport selection only and no game reels, payout evaluation, or feature probability logic.
 - Current frontend state has explicit `spinMode: 'base' | 'boot' | 'bought' | 'free'`.
 
-### Not Found In Code
+### Current Validation Status
 
-- No generated publish-library refresh was found after the Bonus Buy rule change.
-- No frontend visual use of `multiplierUpdate` positions is implemented yet; the event is consumed safely to prevent missing-handler errors.
+- Books and lookup tables were regenerated after the Legacy Vault rule update.
+- RTP editions from 92% through 97% are validated in
+  `games/2_0_The_Inheritance/docs/RTP_PROFILE_VALIDATION.json`.
+- Scatter Boost follows the resolved math cost of `3x`.
+- The local Python RGS bridge reads generated books and keeps Legacy Key session
+  state without moving outcome calculation into the frontend.
 
-### Needs Business Decision
+### Remaining Gaps
 
-- Whether to regenerate publish-library/story outputs from the updated math Bonus Buy rule.
-- Whether Scatter Boost should follow math cost `3x` or user-facing earlier requirement `2x`.
-- Whether stale story data should be regenerated from current math before being used for local mock play.
+- Disabled feature scaffolds in `inheritance_feature_config.py` are not playable
+  rules and require separate math/RTP/frontend approval work before activation.
+- Generated Storybook fixtures should be refreshed whenever they are used as
+  acceptance data for a newly enabled feature.
 
 ## 13. Exact Source Files Used
 

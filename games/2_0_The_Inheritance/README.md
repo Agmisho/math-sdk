@@ -2,6 +2,12 @@
 
 Internal SDK folder: `games/2_0_The_Inheritance`.
 
+Canonical product design:
+`web-sdk/apps/the-inheritance/docs/GAME_DESIGN_DESCRIPTION.md`.
+
+Detailed implementation map:
+`web-sdk/apps/the-inheritance/docs/GAME_RULES_AND_SPIN_MODES.md`.
+
 ## Direction
 
 The Inheritance is a premium mystery mansion slot game using a dark mansion / hidden legacy theme with antique gold, black, dark green, and warm mansion lighting.
