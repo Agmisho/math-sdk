@@ -8,9 +8,9 @@
 
 	const context = getContext();
 	const COUNTER_X_RATIO = 0.069;
-	const COUNTER_Y_RATIO = 0.565;
-	const COUNTER_MASK_WIDTH_RATIO = 0.037;
-	const COUNTER_MASK_HEIGHT_RATIO = 0.045;
+	const COUNTER_Y_RATIO = 0.576;
+	const COUNTER_MASK_WIDTH_RATIO = 0.090;
+	const COUNTER_MASK_HEIGHT_RATIO = 0.060;
 	const frame = () => context.stateGameDerived.frameLayout();
 	const frameX = () => frame().x;
 	const frameY = () => frame().y;

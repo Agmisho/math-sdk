@@ -32,6 +32,8 @@
 	const spinHitSize = $derived(spinButtonSize * 1.08);
 	const betHitWidth = $derived(panelWidth * 0.115);
 	const betHitHeight = $derived(panelHeight * 0.22);
+	const balanceBackgroundWidth = $derived(panelWidth * 0.105);
+	const balanceBackgroundHeight = $derived(panelHeight * 0.075);
 	const balanceTextStyle = $derived({
 		fontFamily: 'Georgia',
 		fontSize: panelWidth * 0.014,
@@ -220,8 +222,18 @@
 <Sprite key="inheritanceUiPanel" anchor={0.5} x={panelX} y={panelY} width={panelWidth} height={panelHeight} blendMode={BLEND_MODE} zIndex={20} />
 <OnHotkey hotkey="Space" disabled={spinDisabled} onpress={pressSpin} />
 
+<Rectangle
+	anchor={0.5}
+	x={uiX(0.891)}
+	y={uiY(0.462)}
+	width={balanceBackgroundWidth}
+	height={balanceBackgroundHeight}
+	backgroundColor={0x02130c}
+	backgroundAlpha={0.94}
+	zIndex={23}
+/>
 <Text text={formatMoney(stateBet.balanceAmount)} anchor={0.5} x={uiX(0.891)} y={uiY(0.462)} style={balanceTextStyle} zIndex={24} />
-<Text text={formatMoney(stateBet.betAmount)} anchor={0.5} x={uiX(0.500)} y={uiY(0.735)} style={betTextStyle} zIndex={24} />
+<Text text={formatMoney(stateBet.betAmount)} anchor={0.5} x={uiX(0.500)} y={uiY(0.721)} style={betTextStyle} zIndex={24} />
 
 <Button x={uiX(0.108)} y={uiY(0.462)} anchor={0.5} sizes={{ width: smallHitSize, height: smallHitSize }} onpress={pressInfo}>
 	{#snippet children({ center, hovered, pressed })}

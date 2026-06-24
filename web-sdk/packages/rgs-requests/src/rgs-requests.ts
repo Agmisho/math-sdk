@@ -1,13 +1,21 @@
 import { API_AMOUNT_MULTIPLIER, BOOK_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
 import { rgsFetcher } from 'rgs-fetcher';
+import {
+	BASE_FREE_SPIN_AWARDS,
+	FREE_SPIN_RETRIGGER_AWARDS,
+	MAX_LOCAL_FREE_SPINS,
+	drawBaseMathBoard,
+	drawBonusTriggerBoard,
+	drawFreeMathBoard,
+	getTriggerAward,
+} from './local-inheritance-math';
 
 export * from './types';
 
-const mockReel = (names: string[]) => names.map((name) => ({ name }));
 let mockBalanceAmount = 1000 * API_AMOUNT_MULTIPLIER;
 let mockSpinIndex = 0;
-let mockLegacyEligibleSpinIndex = 0;
 let mockLegacyKeyCount = 0;
+const mockModeSpinCounts = { base: 0, scatter_boost: 0 };
 const BONUS_BUY_COST_MULTIPLIER = 100;
 const BONUS_BUY_FREE_SPINS = 10;
 const SCATTER_BOOST_COST_MULTIPLIER = 2;
@@ -70,6 +78,7 @@ type MockSymbol = {
 };
 
 type MockBoard = MockSymbol[][];
+type MockMode = 'base' | 'scatter_boost' | 'bonus';
 
 const decorateSymbol = ({ name }: { name: string }): MockSymbol => ({
 	name,
@@ -81,24 +90,9 @@ const decorateSymbol = ({ name }: { name: string }): MockSymbol => ({
 const decorateBoard = (board: { name: string }[][]): MockBoard =>
 	board.map((reel) => reel.map((symbol) => decorateSymbol(symbol)));
 
-const withoutLegacyKeys = (board: { name: string }[][]) =>
-	board.map((reel) =>
-		reel.map((symbol) => ({ name: symbol.name === LEGACY_KEY_SYMBOL ? 'H3' : symbol.name })),
-	);
-
-const createRareLegacyKeyBoard = (board: { name: string }[][], spinIndex: number) => {
-	const result = withoutLegacyKeys(board);
-	if (spinIndex % 40 !== 39) return result;
-
-	const reelIndex = Math.floor(spinIndex / 40) % result.length;
-	const rowIndex = TOP_PADDING_ROWS + Math.floor(spinIndex / 200) % VISIBLE_ROWS;
-	result[reelIndex][rowIndex] = { name: LEGACY_KEY_SYMBOL };
-	return result;
-};
-
 const toBookAmount = (amount: number) => Math.round(amount * BOOK_AMOUNT_MULTIPLIER);
 
-const normalizeMode = (mode: string) => {
+const normalizeMode = (mode: string): MockMode => {
 	const key = mode.toLowerCase();
 	if (key === 'bonus') return 'bonus';
 	if (key === 'scatter_boost' || key === 'scatterboost' || key === 'scatter-boost') return 'scatter_boost';
@@ -263,111 +257,6 @@ const evaluateBoardWins = (board: MockBoard) => {
 	return { wins, totalWinMultiplier, totalWinBookAmount: toBookAmount(totalWinMultiplier) };
 };
 
-const mockBoards = [
-	[
-		mockReel(['L1', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['H2', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L3', 'H3', 'S', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'S', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['H3', 'L2', 'H4', 'S', 'L3', 'H5', 'L4']),
-		mockReel(['H4', 'L3', 'H1', 'M2', 'L6', 'H2', 'S']),
-		mockReel(['S', 'M5', 'H4', 'L2', 'H5', 'W', 'L1']),
-		mockReel(['L2', 'H2', 'S', 'H1', 'M10', 'L5', 'H3']),
-		mockReel(['H1', 'L3', 'H4', 'M2', 'S', 'L6', 'H2']),
-	],
-	[
-		mockReel(['L1', 'H1', 'H1', 'H1', 'L2', 'H4', 'S']),
-		mockReel(['H2', 'L3', 'H1', 'H4', 'L3', 'H1', 'M2']),
-		mockReel(['L3', 'M5', 'H1', 'S', 'M5', 'H4', 'L2']),
-		mockReel(['L4', 'H2', 'H1', 'L2', 'H2', 'S', 'H1']),
-		mockReel(['H5', 'L5', 'H1', 'H1', 'L3', 'H4', 'M2']),
-	],
-	[
-		mockReel(['H4', 'H4', 'L2', 'H4', 'S', 'L3', 'H5']),
-		mockReel(['L2', 'H4', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L3', 'H3', 'H4', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'H4', 'H2', 'S', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H4', 'L3', 'H4', 'M2', 'S']),
-	],
-];
-
-const mockBonusTriggerBoard = mockReel(['S', 'H4', 'L1', 'L2', 'H3', 'L5', 'L6']);
-const mockBonusBoards = [
-	[
-		mockReel(['L1', 'L5', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['L1', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L1', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['H3', 'L2', 'H4', 'S', 'L3', 'H5', 'L4']),
-		mockReel(['L2', 'L3', 'H1', 'M2', 'L6', 'H2', 'S']),
-		mockReel(['L2', 'M5', 'H4', 'L2', 'H5', 'W', 'L1']),
-		mockReel(['L2', 'H2', 'H6', 'H1', 'M10', 'L5', 'H3']),
-		mockReel(['H1', 'L3', 'H4', 'M2', 'S', 'L6', 'H2']),
-	],
-	[
-		mockReel(['H4', 'H1', 'H3', 'L2', 'L4', 'S', 'L3']),
-		mockReel(['H4', 'L2', 'H1', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['H4', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['L3', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['L4', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L5', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['H6', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['L5', 'H1', 'L1', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['L5', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L5', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['H2', 'H1', 'L1', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['H2', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L3', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['L1', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['H2', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L3', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['L4', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['L4', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L4', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['H1', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['H1', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L3', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-	[
-		mockReel(['L6', 'H1', 'H3', 'L2', 'H4', 'S', 'L3']),
-		mockReel(['L6', 'L2', 'H4', 'L3', 'H1', 'M2', 'L6']),
-		mockReel(['L6', 'H3', 'L2', 'M5', 'H4', 'L2', 'H5']),
-		mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-		mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-	],
-];
-
 const pushEvaluatedBoardEvents = ({
 	state,
 	board,
@@ -408,6 +297,81 @@ const pushEvaluatedBoardEvents = ({
 	return { index, cumulativeWinMultiplier: nextCumulativeWinMultiplier };
 };
 
+const appendMockFreeSpins = ({
+	state,
+	startIndex,
+	initialFreeSpins,
+	spinIndex,
+	mode,
+	cumulativeWinMultiplier,
+}: {
+	state: any[];
+	startIndex: number;
+	initialFreeSpins: number;
+	spinIndex: number;
+	mode: string;
+	cumulativeWinMultiplier: number;
+}) => {
+	let index = startIndex;
+	let totalFreeSpins = initialFreeSpins;
+	let freeSpinIndex = 0;
+	let totalWinMultiplier = cumulativeWinMultiplier;
+
+	while (freeSpinIndex < totalFreeSpins && freeSpinIndex < MAX_LOCAL_FREE_SPINS) {
+		const board = decorateBoard(drawFreeMathBoard(spinIndex, freeSpinIndex));
+		state.push({
+			index: index++,
+			type: 'updateFreeSpin',
+			amount: freeSpinIndex,
+			total: totalFreeSpins,
+		});
+		state.push({
+			index: index++,
+			type: 'reveal',
+			gameType: 'freegame',
+			paddingPositions: [0, 0, 0, 0, 0],
+			anticipation: [0, 0, 0, 0, 0],
+			board,
+		});
+		state.push(
+			createCollectionUpdateEvent({
+				index: index++,
+				board,
+				gameType: 'freegame',
+				mode,
+			}),
+		);
+
+		const evaluated = pushEvaluatedBoardEvents({
+			state,
+			board,
+			startIndex: index,
+			cumulativeWinMultiplier: totalWinMultiplier,
+		});
+		index = evaluated.index;
+		totalWinMultiplier = evaluated.cumulativeWinMultiplier;
+
+		const scatterPositions = getVisiblePositions(board, VAULT_SCATTER_SYMBOL);
+		const retriggerSpins = getTriggerAward(
+			scatterPositions.length,
+			FREE_SPIN_RETRIGGER_AWARDS,
+		);
+		if (retriggerSpins > 0 && totalFreeSpins < MAX_LOCAL_FREE_SPINS) {
+			totalFreeSpins = Math.min(MAX_LOCAL_FREE_SPINS, totalFreeSpins + retriggerSpins);
+			state.push({
+				index: index++,
+				type: 'freeSpinRetrigger',
+				totalFs: totalFreeSpins,
+				positions: scatterPositions,
+			});
+		}
+
+		freeSpinIndex += 1;
+	}
+
+	return { index, cumulativeWinMultiplier: totalWinMultiplier };
+};
+
 const createMockPlayResponse = (options: { currency: string; amount: number; mode: string }) => {
 	const normalizedMode = normalizeMode(options.mode);
 	const costMultiplier = getModeCostMultiplier(options.mode);
@@ -423,8 +387,8 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 	if (normalizedMode === 'bonus') return createMockBonusBuyResponse(options, costApiAmount);
 
 	const spinIndex = mockSpinIndex;
-	const legacySpinIndex = mockLegacyEligibleSpinIndex;
-	const board = decorateBoard(createRareLegacyKeyBoard(mockBoards[spinIndex % mockBoards.length], legacySpinIndex));
+	const modeSpinIndex = mockModeSpinCounts[normalizedMode];
+	const board = decorateBoard(drawBaseMathBoard(normalizedMode, spinIndex, modeSpinIndex));
 	const legacyCreditAvailable = mockLegacyKeyCount >= LEGACY_KEY_TARGET;
 	const { wins, totalWinMultiplier, totalWinBookAmount } = evaluateBoardWins(board);
 	let cumulativeWinMultiplier = totalWinMultiplier;
@@ -456,56 +420,41 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 
 	const naturalScatterPositions = getVisiblePositions(board, VAULT_SCATTER_SYMBOL);
 	const usesLegacyScatterCredit = legacyCreditAvailable && naturalScatterPositions.length === 2;
-	if (usesLegacyScatterCredit) {
-		state.push({
-			index: index++,
-			type: 'legacyScatterCredit',
-			collected: LEGACY_KEY_TARGET,
-			target: LEGACY_KEY_TARGET,
-			virtualScatters: 1,
-			naturalScatters: naturalScatterPositions.length,
-			effectiveScatters: naturalScatterPositions.length + 1,
-			used: true,
-			gameType: 'basegame',
-		});
+	const effectiveScatterCount = naturalScatterPositions.length + (usesLegacyScatterCredit ? 1 : 0);
+	const initialFreeSpins = getTriggerAward(effectiveScatterCount, BASE_FREE_SPIN_AWARDS);
+	if (initialFreeSpins > 0) {
+		if (usesLegacyScatterCredit) {
+			state.push({
+				index: index++,
+				type: 'legacyScatterCredit',
+				collected: LEGACY_KEY_TARGET,
+				target: LEGACY_KEY_TARGET,
+				virtualScatters: 1,
+				naturalScatters: naturalScatterPositions.length,
+				effectiveScatters: effectiveScatterCount,
+				used: true,
+				gameType: 'basegame',
+			});
+		}
 		state.push({
 			index: index++,
 			type: 'freeSpinTrigger',
-			totalFs: 8,
+			totalFs: initialFreeSpins,
 			positions: naturalScatterPositions,
 		});
-		state.push(createCollectionResetEvent(index++));
+		if (usesLegacyScatterCredit) state.push(createCollectionResetEvent(index++));
 
-		for (let freeSpinIndex = 0; freeSpinIndex < 8; freeSpinIndex += 1) {
-			const freeSpinBoard = decorateBoard(
-				withoutLegacyKeys(mockBonusBoards[(spinIndex + freeSpinIndex) % mockBonusBoards.length]),
-			);
-			state.push({
-				index: index++,
-				type: 'updateFreeSpin',
-				amount: freeSpinIndex,
-				total: 8,
-			});
-			state.push({
-				index: index++,
-				type: 'reveal',
-				gameType: 'freegame',
-				paddingPositions: [0, 0, 0, 0, 0],
-				anticipation: [0, 0, 0, 0, 0],
-				board: freeSpinBoard,
-			});
-			state.push(createCollectionUpdateEvent({ index: index++, board: freeSpinBoard, gameType: 'freegame', mode: normalizedMode }));
-			const evaluated = pushEvaluatedBoardEvents({
-				state,
-				board: freeSpinBoard,
-				startIndex: index,
-				cumulativeWinMultiplier,
-			});
-			index = evaluated.index;
-			cumulativeWinMultiplier = evaluated.cumulativeWinMultiplier;
-			cumulativeWinBookAmount = toBookAmount(cumulativeWinMultiplier);
-		}
-
+		const feature = appendMockFreeSpins({
+			state,
+			startIndex: index,
+			initialFreeSpins,
+			spinIndex,
+			mode: normalizedMode,
+			cumulativeWinMultiplier,
+		});
+		index = feature.index;
+		cumulativeWinMultiplier = feature.cumulativeWinMultiplier;
+		cumulativeWinBookAmount = toBookAmount(cumulativeWinMultiplier);
 		state.push({
 			index: index++,
 			type: 'freeSpinEnd',
@@ -519,7 +468,7 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 	const payoutAmount = options.amount * cumulativeWinMultiplier;
 	const payoutApiAmount = Math.round(payoutAmount * API_AMOUNT_MULTIPLIER);
 	mockSpinIndex += 1;
-	mockLegacyEligibleSpinIndex += 1;
+	mockModeSpinCounts[normalizedMode] += 1;
 	mockBalanceAmount = Math.max(0, mockBalanceAmount - costApiAmount + payoutApiAmount);
 
 	return {
@@ -544,6 +493,8 @@ const createMockBonusBuyResponse = (
 ) => {
 	let index = 0;
 	let cumulativeWinMultiplier = 0;
+	const triggerBoard = decorateBoard(drawBonusTriggerBoard(mockSpinIndex));
+	const triggerPositions = getVisiblePositions(triggerBoard, VAULT_SCATTER_SYMBOL);
 	const state: any[] = [
 		{
 			index: index++,
@@ -551,13 +502,7 @@ const createMockBonusBuyResponse = (
 			gameType: 'basegame',
 			paddingPositions: [0, 0, 0, 0, 0],
 			anticipation: [0, 0, 1, 2, 3],
-			board: decorateBoard(withoutLegacyKeys([
-				mockBonusTriggerBoard,
-				mockReel(['H2', 'S', 'H4', 'L3', 'H1', 'M2', 'L6']),
-				mockReel(['L3', 'H3', 'S', 'M5', 'H4', 'L2', 'H5']),
-				mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
-				mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-			])),
+			board: triggerBoard,
 		},
 		{
 			index: index++,
@@ -568,42 +513,20 @@ const createMockBonusBuyResponse = (
 			index: index++,
 			type: 'freeSpinTrigger',
 			totalFs: BONUS_BUY_FREE_SPINS,
-			positions: [
-				{ reel: 0, row: 0 },
-				{ reel: 1, row: 1 },
-				{ reel: 2, row: 2 },
-				{ reel: 4, row: 4 },
-			],
+			positions: triggerPositions,
 		},
 	];
 
-	for (let freeSpinIndex = 0; freeSpinIndex < BONUS_BUY_FREE_SPINS; freeSpinIndex += 1) {
-		const board = decorateBoard(
-			withoutLegacyKeys(mockBonusBoards[(mockSpinIndex + freeSpinIndex) % mockBonusBoards.length]),
-		);
-		state.push({
-			index: index++,
-			type: 'updateFreeSpin',
-			amount: freeSpinIndex,
-			total: BONUS_BUY_FREE_SPINS,
-		});
-		state.push({
-			index: index++,
-			type: 'reveal',
-			gameType: 'freegame',
-			paddingPositions: [0, 0, 0, 0, 0],
-			anticipation: [0, 0, 0, 0, 0],
-			board,
-		});
-		const evaluated = pushEvaluatedBoardEvents({
-			state,
-			board,
-			startIndex: index,
-			cumulativeWinMultiplier,
-		});
-		index = evaluated.index;
-		cumulativeWinMultiplier = evaluated.cumulativeWinMultiplier;
-	}
+	const feature = appendMockFreeSpins({
+		state,
+		startIndex: index,
+		initialFreeSpins: BONUS_BUY_FREE_SPINS,
+		spinIndex: mockSpinIndex,
+		mode: 'bonus',
+		cumulativeWinMultiplier,
+	});
+	index = feature.index;
+	cumulativeWinMultiplier = feature.cumulativeWinMultiplier;
 
 	const payoutAmount = options.amount * cumulativeWinMultiplier;
 	const payoutApiAmount = Math.round(payoutAmount * API_AMOUNT_MULTIPLIER);
