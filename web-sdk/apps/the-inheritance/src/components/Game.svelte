@@ -22,7 +22,6 @@
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
 	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
-	import GlobalMultiplier from './GlobalMultiplier.svelte';
 	import Transition from './Transition.svelte';
 	import InheritanceUi from './InheritanceUi.svelte';
 	import InheritanceBuyModal from './InheritanceBuyModal.svelte';
@@ -57,7 +56,6 @@
 		<BoardFrame />
 		<Board />
 		<Anticipations />
-		<GlobalMultiplier />
 
 		<InheritanceUi />
 		<Win />

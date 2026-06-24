@@ -22,6 +22,7 @@
 	import { Tween } from 'svelte/motion';
 	import { waitForTimeout } from 'utils-shared/wait';
 	import { BoardContext } from 'components-shared';
+	import { Rectangle } from 'pixi-svelte';
 
 	import { getContext } from '../game/context';
 	import BoardContainer from './BoardContainer.svelte';
@@ -37,6 +38,11 @@
 	const winLineProgress = new Tween(0);
 	const winLineAlpha = new Tween(0);
 	const WIN_SYMBOL_PRESENTATION_MS = 780;
+	const boardLayout = $derived(context.stateGameDerived.boardLayout());
+
+	const completeSpin = () => {
+		context.stateGameDerived.enhancedBoard.stop();
+	};
 
 	const uniquePositions = (positions: Position[]) => {
 		const seen = new Set<string>();
@@ -112,6 +118,19 @@
 					alpha={winLineAlpha.current}
 				/>
 			{/if}
+			<Rectangle
+				x={boardLayout.width / 2}
+				y={boardLayout.height / 2}
+				anchor={0.5}
+				width={boardLayout.width}
+				height={boardLayout.height}
+				backgroundColor={0x000000}
+				backgroundAlpha={0.001}
+				eventMode="static"
+				cursor="pointer"
+				onpointerdown={completeSpin}
+				zIndex={80}
+			/>
 		</BoardContainer>
 	</BoardContext>
 {/if}

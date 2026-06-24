@@ -192,6 +192,7 @@
 			context.eventEmitter.broadcast({ type: 'bet' });
 		} else if (!stopDisabled) {
 			if (stateBetDerived.hasAutoBetCounter()) stateBet.autoSpinsCounter = 0;
+			context.stateGameDerived.enhancedBoard.stop();
 			context.eventEmitter.broadcast({ type: 'stopButtonClick' });
 		}
 	};

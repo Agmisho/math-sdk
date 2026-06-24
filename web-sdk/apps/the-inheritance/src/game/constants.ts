@@ -47,8 +47,12 @@ export const MOTION_BLUR_VELOCITY = 31;
 export const zIndexes = { background: { backdrop: -3, normal: -2, feature: -1 } };
 
 const explosion = { type: 'spine', assetKey: 'explosion', animationName: 'explosion', sizeRatios: { width: 1, height: 1 } };
-const symbolSprite = (assetKey: RawSymbol['name'], width = 0.88, height = 0.88) => ({ type: 'sprite', assetKey, sizeRatios: { width, height } });
-const symbolInfo = (assetKey: RawSymbol['name'], width = 0.82, height = 0.82) => {
+const symbolSprite = (assetKey: RawSymbol['name'], width = 0.94, height = 0.94) => ({
+	type: 'sprite',
+	assetKey,
+	sizeRatios: { width, height },
+});
+const symbolInfo = (assetKey: RawSymbol['name'], width = 0.92, height = 0.92) => {
 	const sprite = symbolSprite(assetKey, width, height);
 	return { explosion, win: sprite, postWinStatic: sprite, static: sprite, spin: sprite, land: sprite };
 };
