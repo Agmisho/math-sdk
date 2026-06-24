@@ -11,7 +11,8 @@ The Inheritance is a premium mystery mansion slot game using a dark mansion / hi
 - 5 reels
 - 5 rows
 - 15 paylines
-- RTP configuration: 97%
+- Selectable RTP editions: 92%, 93%, 94%, 95%, 96%, and 97%
+- Default development/submission edition: 97%
 - Volatility target: High
 - Max win target: 5000x
 - Base mode
@@ -252,3 +253,30 @@ Full SDK generation uses:
 ```bash
 PYTHONPATH=. python3 games/2_0_The_Inheritance/run.py
 ```
+
+## RTP editions
+
+RTP is selected before math generation with `THE_INHERITANCE_RTP`. The value
+must be a whole percentage from 92 through 97. The 97% edition is the default.
+
+```powershell
+$env:THE_INHERITANCE_RTP='97'
+python games/2_0_The_Inheritance/generate_rtp_profiles.py
+```
+
+Each edition uses the same deterministic books and a separate optimized lookup
+table/config bundle under `library/rtp_profiles`. This keeps certified math
+editions separate without changing symbol rules, feature rules, or frontend
+result calculation.
+
+RTP editions are deployment/submission variants. They must not be switched
+during a player session or presented as a player-selectable gameplay control.
+
+The web build must advertise the matching edition:
+
+```powershell
+$env:PUBLIC_THE_INHERITANCE_RTP='0.97'
+pnpm --filter the-inheritance build
+```
+
+Do not pair a frontend RTP value with a different math lookup edition.

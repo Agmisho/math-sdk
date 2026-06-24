@@ -2,6 +2,7 @@ import json
 import toml
 import subprocess
 import os
+import shutil
 from src.config.paths import PATH_TO_GAMES, SETUP_PATH, OPTIMIZATION_PATH, PROJECT_PATH
 
 
@@ -50,16 +51,30 @@ class OptimizationExecution:
     @staticmethod
     def run_rust_script():
         """Run compiled binary and pip results to terminal."""
-        cargo_bin_path = os.path.join(os.path.expanduser("~"), ".cargo", "bin")
-        updated_path = cargo_bin_path + os.pathsep + os.environ.get("PATH", "")
+        binary_name = "PigFarmRust.exe" if os.name == "nt" else "PigFarmRust"
+        binary_path = os.path.join(OPTIMIZATION_PATH, "target", "release", binary_name)
+        use_cargo = os.environ.get("MATH_SDK_OPTIMIZER_USE_CARGO") == "1"
+
+        if os.path.exists(binary_path) and not use_cargo:
+            command = [binary_path]
+            env = os.environ.copy()
+        else:
+            cargo = shutil.which("cargo")
+            if cargo is None:
+                raise RuntimeError(
+                    "The optimizer requires either the bundled release binary or a working cargo installation."
+                )
+            command = [cargo, "run", "--release"]
+            env = os.environ.copy()
+
         result = subprocess.run(
-            ["cargo", "run", "--release"],
+            command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             cwd=OPTIMIZATION_PATH,
             check=True,
-            env={**os.environ, "PATH": updated_path},
+            env=env,
         )
         if result.returncode == 0:
             print(result.stdout)

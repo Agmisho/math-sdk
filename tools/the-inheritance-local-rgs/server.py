@@ -7,13 +7,18 @@ settled books and never imports reel strips, probabilities, or payout logic.
 
 from __future__ import annotations
 
+from bisect import bisect_right
+import csv
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import io
 import json
 from pathlib import Path
 import sys
 import threading
 import time
 from urllib.parse import urlparse
+
+import zstandard as zstd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -23,18 +28,60 @@ for import_path in (str(GAME_DIR), str(REPO_ROOT)):
         sys.path.insert(0, import_path)
 
 from game_config import GameConfig  # noqa: E402
-from gamestate import GameState  # noqa: E402
 
 
 API_AMOUNT_MULTIPLIER = 1_000_000
 HOST = "127.0.0.1"
 PORT = 3008
+PUBLISH_DIR = GAME_DIR / "library" / "publish_files"
+
+
+class PublishedMathLibrary:
+    """Read settled books through the same lookup weights used by the RGS."""
+
+    def __init__(self, modes: tuple[str, ...]) -> None:
+        self.books = {mode: self.load_books(mode) for mode in modes}
+        self.cumulative_weights = {}
+        self.total_weights = {}
+        for mode in modes:
+            cumulative = []
+            running_total = 0
+            with (PUBLISH_DIR / f"lookUpTable_{mode}_0.csv").open(
+                newline="",
+                encoding="utf-8",
+            ) as handle:
+                for book_id, weight, _payout in csv.reader(handle):
+                    running_total += int(weight)
+                    cumulative.append((running_total, int(book_id)))
+            self.cumulative_weights[mode] = cumulative
+            self.total_weights[mode] = running_total
+
+    @staticmethod
+    def load_books(mode: str) -> dict[int, dict]:
+        path = PUBLISH_DIR / f"books_{mode}.jsonl.zst"
+        books = {}
+        with path.open("rb") as compressed:
+            with zstd.ZstdDecompressor().stream_reader(compressed) as reader:
+                text_reader = io.TextIOWrapper(reader, encoding="utf-8")
+                for line in text_reader:
+                    book = json.loads(line)
+                    books[int(book["id"])] = book
+        return books
+
+    def select_book(self, mode: str, roll: float) -> dict:
+        total_weight = self.total_weights[mode]
+        selected_weight = min(int(roll * total_weight), total_weight - 1)
+        cumulative = self.cumulative_weights[mode]
+        index = bisect_right(cumulative, (selected_weight, sys.maxsize))
+        book_id = cumulative[index][1]
+        return self.books[mode][book_id]
 
 
 class LocalInheritanceRgs:
     def __init__(self) -> None:
         self.config = GameConfig()
-        self.game = GameState(self.config)
+        self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
+        self.math_library = PublishedMathLibrary(tuple(self.bet_modes))
         self.balance = 1000 * API_AMOUNT_MULTIPLIER
         self.spin_index = 0
         self.lock = threading.Lock()
@@ -49,7 +96,7 @@ class LocalInheritanceRgs:
         return "base"
 
     def mode_cost(self, mode: str) -> float:
-        bet_mode = self.game.get_betmode(mode)
+        bet_mode = self.bet_modes.get(mode)
         if bet_mode is None:
             raise ValueError(f"Unknown bet mode: {mode}")
         return float(bet_mode.get_cost())
@@ -58,16 +105,6 @@ class LocalInheritanceRgs:
     def deterministic_roll(index: int) -> float:
         value = (index + 1) * 1_103_515_245 + 12_345
         return (value & 0x7FFFFFFF) / 0x80000000
-
-    def choose_criteria(self, mode: str, spin_index: int) -> str:
-        distributions = self.game.get_betmode(mode).get_distributions()
-        roll = self.deterministic_roll(spin_index)
-        cumulative = 0.0
-        for distribution in distributions:
-            cumulative += float(distribution.get_quota() or 0)
-            if roll < cumulative:
-                return distribution.get_criteria()
-        return distributions[-1].get_criteria()
 
     def authenticate(self) -> dict:
         return {
@@ -106,16 +143,12 @@ class LocalInheritanceRgs:
                     "message": f"Insufficient balance for {mode}.",
                 }
 
-            criteria = self.choose_criteria(mode, self.spin_index)
-            self.game.betmode = mode
-            self.game.criteria = criteria
-            self.game.run_spin(self.spin_index)
-
-            payout_multiplier = float(self.game.final_win)
+            roll = self.deterministic_roll(self.spin_index)
+            book = self.math_library.select_book(mode, roll)
+            payout_multiplier = float(book["payoutMultiplier"])
             payout_amount = amount * payout_multiplier
             payout_api_amount = round(payout_amount * API_AMOUNT_MULTIPLIER)
             self.balance = max(0, self.balance - cost_api_amount + payout_api_amount)
-            book = self.game.book.to_json()
             round_id = int(time.time_ns())
             self.spin_index += 1
 
@@ -183,7 +216,14 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path == "/health":
-            self.send_json({"status": "ok", "game": "2_0_The_Inheritance"})
+            self.send_json(
+                {
+                    "status": "ok",
+                    "game": "2_0_The_Inheritance",
+                    "rtp": RGS.config.rtp,
+                    "profile": RGS.config.rtp_profile.slug,
+                }
+            )
         elif path.startswith("/bet/replay/"):
             self.send_json({"error": "REPLAY_NOT_AVAILABLE", "message": "Local replay requires a stored round."}, 404)
         else:

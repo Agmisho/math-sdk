@@ -1,0 +1,253 @@
+{
+  "generatedAt": "2026-06-24T12:39:12.009544+00:00",
+  "activeProfile": "rtp_97",
+  "profiles": [
+    {
+      "profile": "rtp_92",
+      "targetRtp": 0.92,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.9199999999641457,
+          "hitRate": 0.2896378543433076,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906834053,
+          "targetRtp": 0.92,
+          "absoluteError": 3.585431951336204e-11,
+          "lookupSha256": "db2be47ecc7af93a1e0221a12384ea0a18a9b5d7c240877531e1fe034693ddee"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9199999999912186,
+          "hitRate": 0.2899575738498706,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906839994,
+          "targetRtp": 0.92,
+          "absoluteError": 8.781420035575138e-12,
+          "lookupSha256": "37de51cfef14bccba4938b625278575bf9b80606777c0f29e7a86cdf13c32c7e"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9200000000025953,
+          "hitRate": 0.9982990478508492,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906836405,
+          "targetRtp": 0.92,
+          "absoluteError": 2.595257342363766e-12,
+          "lookupSha256": "af1cdf112ca3e49626404c180e4a3cd572a91fdfc5eb5c978de44d81592c6686"
+        }
+      }
+    },
+    {
+      "profile": "rtp_93",
+      "targetRtp": 0.93,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.9299999999647909,
+          "hitRate": 0.28963785434321543,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906833907,
+          "targetRtp": 0.93,
+          "absoluteError": 3.5209168913752364e-11,
+          "lookupSha256": "1dd6c1916eb63af461b8b42f37f49bdc081f8171a57db845a1a1b458e930e504"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9299999999919367,
+          "hitRate": 0.2899575738498441,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906839952,
+          "targetRtp": 0.93,
+          "absoluteError": 8.063327783247587e-12,
+          "lookupSha256": "127b51fabee007f63c10d9dc43aff17d81b860358a22ca437a2d8534b4a7d72f"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9300000000023709,
+          "hitRate": 0.9981032068161156,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906836764,
+          "targetRtp": 0.93,
+          "absoluteError": 2.3708812690870218e-12,
+          "lookupSha256": "2695791b573b8c34a22d03be062ce01178464d3eba8e72bf467133ee07d84742"
+        }
+      }
+    },
+    {
+      "profile": "rtp_94",
+      "targetRtp": 0.94,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.9399999999643971,
+          "hitRate": 0.28963785434323314,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906833935,
+          "targetRtp": 0.94,
+          "absoluteError": 3.5602853998284445e-11,
+          "lookupSha256": "f234fe394a1296808994ef15b940ed11f2af7c261a66d1d3cf3afb2ade4bf54e"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9399999999914964,
+          "hitRate": 0.28995757384991916,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906840071,
+          "targetRtp": 0.94,
+          "absoluteError": 8.503531212511461e-12,
+          "lookupSha256": "9e70ec166a6e087f0e6282ad513ec3b88e3d002814d68fbd893058aa7c22046b"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9400000000014386,
+          "hitRate": 0.9978566320734353,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906837691,
+          "targetRtp": 0.94,
+          "absoluteError": 1.4386269953092778e-12,
+          "lookupSha256": "74dd8dead3fdc07c838a6e289ea276471d7d6611ac8c2544e8284d6cd41a95dd"
+        }
+      }
+    },
+    {
+      "profile": "rtp_95",
+      "targetRtp": 0.95,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.9499999999660176,
+          "hitRate": 0.2896378543433271,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906834084,
+          "targetRtp": 0.95,
+          "absoluteError": 3.3982372471541566e-11,
+          "lookupSha256": "36fbacef089cc99916c6e011725fd066a66d7da0915aa5d5d32007f5d2d7b5bd"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9499999999917678,
+          "hitRate": 0.2899575738498063,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906839892,
+          "targetRtp": 0.95,
+          "absoluteError": 8.232192705293073e-12,
+          "lookupSha256": "c51fe2aea9870c2185a55994cf2082ced54c9748e61d8deb59192e12d9bae53e"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9500000000011599,
+          "hitRate": 0.997698574290716,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906838211,
+          "targetRtp": 0.95,
+          "absoluteError": 1.1599610161283636e-12,
+          "lookupSha256": "bb6eec7ef2bd62701a7f60acb00297627fb6529a685238e86486b6b67538f36f"
+        }
+      }
+    },
+    {
+      "profile": "rtp_96",
+      "targetRtp": 0.96,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.9599999999666784,
+          "hitRate": 0.2896378543431927,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906833871,
+          "targetRtp": 0.96,
+          "absoluteError": 3.3321567727284673e-11,
+          "lookupSha256": "5d14e9c18fa6d15805fa15620584e589be6b1e844ae968ad56c33273c140d15d"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9599999999914411,
+          "hitRate": 0.28995757384987186,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906839996,
+          "targetRtp": 0.96,
+          "absoluteError": 8.558820319137794e-12,
+          "lookupSha256": "2f5cb3a67ee52a4153763f8b1d593033ca647633e4db6d625cc96fd214c5a328"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9600000000008581,
+          "hitRate": 0.9988039199290589,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906838556,
+          "targetRtp": 0.96,
+          "absoluteError": 8.580913757327835e-13,
+          "lookupSha256": "2ccf157c901d351e19f5ce6cc18733661787f6e27ed455d829382c60f8811b75"
+        }
+      }
+    },
+    {
+      "profile": "rtp_97",
+      "targetRtp": 0.97,
+      "sharedBooks": [
+        "books_base.jsonl.zst",
+        "books_scatter_boost.jsonl.zst",
+        "books_bonus.jsonl.zst"
+      ],
+      "modes": {
+        "base": {
+          "rows": 10000,
+          "rtp": 0.969999999966407,
+          "hitRate": 0.28963785434332273,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906834077,
+          "targetRtp": 0.97,
+          "absoluteError": 3.3593017256805524e-11,
+          "lookupSha256": "4536314dedc9bcd5302bbbafd3d5a4e358550fc7e835e8bfcc18216284098c01"
+        },
+        "scatter_boost": {
+          "rows": 10000,
+          "rtp": 0.9699999999923775,
+          "hitRate": 0.2899575738498252,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906839922,
+          "targetRtp": 0.97,
+          "absoluteError": 7.622458220168937e-12,
+          "lookupSha256": "60073589ae302fc3f0fa16e3acdcff85832657c192d6aa4424a7a1c28f7c7f99"
+        },
+        "bonus": {
+          "rows": 10000,
+          "rtp": 0.9700000000010596,
+          "hitRate": 0.9983998461601448,
+          "maxPayoutMultiplier": 5000.0,
+          "totalWeight": 1125899906838356,
+          "targetRtp": 0.97,
+          "absoluteError": 1.0595968547022494e-12,
+          "lookupSha256": "8d3fe74cbfd9a1af881df6c7bc48e6e514fe2768bee25e6b729e20aacca69353"
+        }
+      }
+    }
+  ],
+  "note": "Generated books are shared; each RTP edition has separate optimized lookup weights and configs."
+}

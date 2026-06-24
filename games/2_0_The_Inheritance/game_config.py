@@ -5,6 +5,7 @@ from src.config.config import Config
 from src.config.distributions import Distribution
 from src.config.betmode import BetMode
 from inheritance_feature_config import build_inheritance_feature_config
+from rtp_profiles import resolve_rtp_profile
 
 
 class GameConfig(Config):
@@ -23,7 +24,8 @@ class GameConfig(Config):
         self.working_name = "The Inheritance"
         self.wincap = 5000.0
         self.win_type = "lines"
-        self.rtp = 0.9700
+        self.rtp_profile = resolve_rtp_profile()
+        self.rtp = self.rtp_profile.rtp
         self.construct_paths()
 
         # Game Dimensions

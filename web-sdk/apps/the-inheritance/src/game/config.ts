@@ -4,6 +4,9 @@ const paytable = (three: number, four: number, five: number) => [
 	{ '3': three },
 ];
 const wildPaytable = [{ '5': 20 }];
+const configuredRtp = Number(import.meta.env.PUBLIC_THE_INHERITANCE_RTP ?? '0.97');
+const supportedRtpValues = new Set([0.92, 0.93, 0.94, 0.95, 0.96, 0.97]);
+const rtp = supportedRtpValues.has(configuredRtp) ? configuredRtp : 0.97;
 
 const symbols = {
 	S: { special_properties: ['scatter'] },
@@ -54,7 +57,7 @@ export default {
 	providerName: 'sample_provider',
 	gameName: 'the_inheritance',
 	gameID: '2_0_The_Inheritance',
-	rtp: 0.97,
+	rtp,
 	numReels: 5,
 	numRows: [5, 5, 5, 5, 5],
 	betModes: {
@@ -62,21 +65,21 @@ export default {
 			cost: 1.0,
 			feature: true,
 			buyBonus: false,
-			rtp: 0.97,
+			rtp,
 			max_win: 5000.0,
 		},
 		scatter_boost: {
 			cost: 3.0,
 			feature: true,
 			buyBonus: false,
-			rtp: 0.97,
+			rtp,
 			max_win: 5000.0,
 		},
 		bonus: {
 			cost: 100.0,
 			feature: false,
 			buyBonus: true,
-			rtp: 0.97,
+			rtp,
 			max_win: 5000.0,
 		},
 	},
