@@ -66,7 +66,7 @@ export default {
 			max_win: 5000.0,
 		},
 		scatter_boost: {
-			cost: 2.0,
+			cost: 3.0,
 			feature: true,
 			buyBonus: false,
 			rtp: 0.97,

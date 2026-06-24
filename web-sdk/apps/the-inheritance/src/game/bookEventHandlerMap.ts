@@ -79,6 +79,8 @@ const normalizeLegacyKeyCount = (collected: number, target: number) => Math.max(
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
+		eventEmitter.broadcast({ type: 'globalMultiplierUpdate', multiplier: 1 });
+		eventEmitter.broadcast({ type: 'globalMultiplierHide' });
 		const isBonusGame = checkIsMultipleRevealEvents({ bookEvents });
 		if (isBonusGame) {
 			eventEmitter.broadcast({ type: 'stopButtonEnable' });
@@ -240,7 +242,13 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		}
 	},
 	multiplierUpdate: async (bookEvent: BookEventOfType<'multiplierUpdate'>) => {
-		// The current visual multiplier treatment is symbol-board based; consume the event to avoid missing-handler errors.
+		const multiplier = Math.max(1, bookEvent.appliedMultiplier || bookEvent.multiplier || 1);
+		if (multiplier > 1) {
+			eventEmitter.broadcast({ type: 'globalMultiplierShow' });
+			eventEmitter.broadcast({ type: 'globalMultiplierUpdate', multiplier });
+		} else {
+			eventEmitter.broadcast({ type: 'globalMultiplierHide' });
+		}
 	},
 	vaultReelResolved: async (bookEvent: BookEventOfType<'vaultReelResolved'>) => {
 		stateGame.vaultReelResolutions.push(bookEvent);

@@ -18,7 +18,7 @@
 	const BONUS_MODE_KEY = 'BONUS';
 	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
 	const BUY_BONUS_MULTIPLIER = gameConfig.betModes.bonus.cost;
-	const SCATTER_BOOST_MULTIPLIER = 2;
+	const SCATTER_BOOST_MULTIPLIER = gameConfig.betModes.scatter_boost.cost;
 	const panelLayout = $derived(context.stateGameDerived.uiPanelLayout());
 	const panelWidth = $derived(panelLayout.width);
 	const panelHeight = $derived(panelLayout.height);
@@ -32,8 +32,9 @@
 	const spinHitSize = $derived(spinButtonSize * 1.08);
 	const betHitWidth = $derived(panelWidth * 0.115);
 	const betHitHeight = $derived(panelHeight * 0.22);
-	const balanceBackgroundWidth = $derived(panelWidth * 0.105);
-	const balanceBackgroundHeight = $derived(panelHeight * 0.075);
+	const balanceBackgroundWidth = $derived(panelWidth * 0.086);
+	const balanceBackgroundHeight = $derived(panelHeight * 0.138);
+	const balanceBackgroundRadius = $derived(panelWidth * 0.008);
 	const balanceTextStyle = $derived({
 		fontFamily: 'Georgia',
 		fontSize: panelWidth * 0.014,
@@ -82,7 +83,7 @@
 			text: {
 				title: 'Scatter Boost',
 				description: 'Increases the chance of landing a scatter/free-spin trigger.',
-				dialog: 'Scatter Boost costs 2x the selected bet per spin and increases the chance of landing a scatter/free-spin trigger while active.',
+				dialog: `Scatter Boost costs ${SCATTER_BOOST_MULTIPLIER}x the selected bet per spin and increases the chance of landing a scatter/free-spin trigger while active.`,
 				button: 'Activate',
 				tickerIdle: '',
 				tickerSpin: '',
@@ -228,8 +229,9 @@
 	y={uiY(0.462)}
 	width={balanceBackgroundWidth}
 	height={balanceBackgroundHeight}
+	borderRadius={balanceBackgroundRadius}
 	backgroundColor={0x02130c}
-	backgroundAlpha={0.94}
+	backgroundAlpha={0.98}
 	zIndex={23}
 />
 <Text text={formatMoney(stateBet.balanceAmount)} anchor={0.5} x={uiX(0.891)} y={uiY(0.462)} style={balanceTextStyle} zIndex={24} />

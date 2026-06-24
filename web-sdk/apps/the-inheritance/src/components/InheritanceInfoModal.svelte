@@ -108,7 +108,7 @@
 
 			<section class="info-section compact">
 				<h3>Feature Costs</h3>
-				<p>Buy Bonus costs 100x the selected bet and starts 10 free spins. Scatter Boost costs 2x the selected bet per spin and increases the scatter/free-spin trigger chance while active.</p>
+				<p>Buy Bonus costs 100x the selected bet and starts 10 free spins. Scatter Boost costs {config.betModes.scatter_boost.cost}x the selected bet per spin and increases the scatter/free-spin trigger chance while active.</p>
 				<p>All displayed wins are illustrative until confirmed and settled by the RGS. Malfunction voids all plays and payouts.</p>
 			</section>
 		</section>

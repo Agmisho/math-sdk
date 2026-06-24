@@ -12,7 +12,7 @@
 	const BONUS_MODE_KEY = 'BONUS';
 	const SCATTER_BOOST_MODE_KEY = 'SCATTER_BOOST';
 	const BUY_BONUS_MULTIPLIER = gameConfig.betModes.bonus.cost;
-	const SCATTER_BOOST_MULTIPLIER = 2;
+	const SCATTER_BOOST_MULTIPLIER = gameConfig.betModes.scatter_boost.cost;
 
 	const close = () => (stateInheritanceUi.modal = null);
 	const formatMoney = (value: number) =>

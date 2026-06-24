@@ -34,7 +34,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 ### Needs Business Decision
 
 - Legacy Key collection now uses the shared target `10` in math and frontend display.
-- The math `scatter_boost` cost is `3x`; current frontend copy/config says `2x`.
+- Math and frontend both use the configured `scatter_boost` cost of `3x`.
 - Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
 - Current $1 paytable values were updated in math, frontend config, and local mock for `W`, `H1`-`H6`, and `L1`-`L5`; `H7`-`H9` and `L6` remain secondary configured symbols.
 
@@ -43,7 +43,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 | Mode | Trigger | Debit | Reel / Symbol Rules | Feature Rules | Result | Next State |
 | --- | --- | --- | --- | --- | --- | --- |
 | Base Spin | Player spin using math mode `base`; frontend mode key usually `BASE` | Config cost `1.0x` underlying bet | Base reveal uses `BR0.csv`; free spins use `FR0.csv`; wincap free spins can weight `FR0` and `FRWCAP` | Can trigger Free Spins with effective scatter count `3`, `4`, or `5`; can collect Legacy Keys in basegame; Legacy scatter credit can apply | Pays line wins, can enter Free Spins, emits final win | Returns to `basegame` unless Free Spins are triggered |
-| Scatter Boost Spin | Player activates `scatter_boost`; frontend mode key currently `SCATTER_BOOST` | Math cost `3.0x`; frontend currently says `2.0x` | Same active reel strips as base (`BR0` for basegame, `FR0` for freegame); distribution quota raises forced-freegame selection from `0.100` to `0.108` | Can trigger Free Spins; can collect Legacy Keys; Legacy scatter credit can apply | Same result types as base, with higher free-game distribution quota | Remains in basegame after result unless Free Spins are triggered |
+| Scatter Boost Spin | Player activates `scatter_boost`; frontend mode key currently `SCATTER_BOOST` | Configured cost `3.0x` | Same active reel strips as base (`BR0` for basegame, `FR0` for freegame); distribution quota raises forced-freegame selection from `0.100` to `0.108` | Can trigger Free Spins; can collect Legacy Keys; Legacy scatter credit can apply | Same result types as base, with higher free-game distribution quota | Remains in basegame after result unless Free Spins are triggered |
 | Boot / Initial Board | Frontend creates `INITIAL_BOARD` in `web-sdk/apps/the-inheritance/src/game/constants.ts` before the first paid result | No debit found | Static frontend display board only; not a math spin | Should not trigger Free Spins or collect Legacy Keys | Shows initial symbols only | First real spin is a paid mode |
 | Bought Spin / Bonus Buy | Player chooses buy mode `bonus`; frontend key currently `BONUS` | Config cost `100.0x` underlying bet | Initial trigger reveal uses `BR0` with forced scatter count; Free Spins use `FR0`, or `FR0` plus `FRWCAP` for wincap condition | Math now awards exactly `10` initial free spins through `bonus_buy_free_spins`; Legacy Key collection is blocked in `bonus` | Enters Free Spins immediately after the forced trigger reveal | Free Spins, then basegame |
 | Free Spin | Started by `run_freespin_from_base()` after base/scatter boost/buy trigger | No additional debit in math | Uses `FR0`; wincap condition can select `FR0` or `FRWCAP` with weights `{FR0: 1, WCAP: 8}` | Can retrigger on natural scatters: `2 -> 3`, `3 -> 5`, `4 -> 8`, `5 -> 12`; Legacy Keys are not collected in freegame | Accumulates freegame wins and emits `freeSpinEnd` | Returns to `basegame` after all free spins are complete |
@@ -363,11 +363,19 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 ## 11. Frontend-To-Math Integration Map
 
+### Submission Boundary
+
+- The Math SDK owns reel strips, distribution quotas, symbol probabilities, pay evaluation, feature resolution, max-win enforcement, and deterministic book creation.
+- The web SDK owns rendering, animation, controls, modals, sound, and typed handling of settled book events.
+- The production web path sends mode and bet requests to the configured Stake RGS URL. It does not import files from `games/2_0_The_Inheritance`.
+- Local development uses `tools/the-inheritance-local-rgs/server.py` as a separate process. The bridge executes the Python Math SDK and returns the same settled round/book contract consumed by the frontend.
+- The local bridge is development infrastructure, not part of either Stake submission package.
+
 ### Confirmed From Code
 
 | Area | Math / Library Source | Frontend Source | Current Status |
 | --- | --- | --- | --- |
-| Mode costs | `game_config.py`, `publish_files/index.json` | `config.ts`, `InheritanceUi.svelte`, `InheritanceBuyModal.svelte` | Base and bonus match; scatter boost mismatches (`3x` math vs `2x` frontend). |
+| Mode costs | `game_config.py`, `publish_files/index.json` | `config.ts`, `InheritanceUi.svelte`, `InheritanceBuyModal.svelte` | Base, Scatter Boost, and Bonus Buy costs match the Math SDK configuration. |
 | Paytable | `game_config.py` | `config.ts`, `InheritanceInfoModal.svelte` | Mirrored for current configured symbols and displayed as $1 bet values in the info modal. |
 | Symbols/assets | `game_config.py` symbols | `assets.ts` and static assets | Asset mapping exists for all math symbols. `L6` asset filename says Wild, but math treats it as low. |
 | Reels/probabilities | CSV strips under `games/2_0_The_Inheritance/reels` | Frontend only has padding reels in `config.ts` | Frontend does not contain the active full reel strips. |
@@ -382,7 +390,7 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - `FR100.csv` exists but is not loaded by active math config.
 - `FRWCAP.csv` is loaded as `WCAP` and used only through wincap freegame conditions.
-- Local mock responses in `rgs-requests.ts` are hand-authored and still do not use active math reel strips, distribution quotas, or generated publish library results; they now mirror the documented paytable/paylines and Bonus Buy count.
+- Local play is supplied by the separate Python Math SDK bridge. `rgs-requests.ts` contains transport selection only and no game reels, payout evaluation, or feature probability logic.
 - Current frontend state has explicit `spinMode: 'base' | 'boot' | 'bought' | 'free'`.
 
 ### Not Found In Code
