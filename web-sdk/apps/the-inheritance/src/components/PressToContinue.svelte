@@ -7,10 +7,12 @@
 
 	type Props = {
 		onpress: () => void;
+		labelYRatio?: number;
 	};
 
 	const props: Props = $props();
 	const context = getContext();
+	const labelYRatio = $derived(props.labelYRatio ?? 0.96);
 </script>
 
 <MainContainer alignVertical="bottom">
@@ -18,7 +20,7 @@
 		text="PRESS ANYWHERE TO CONTINUE"
 		anchor={{ x: 0.5, y: 1 }}
 		x={context.stateLayoutDerived.mainLayout().width * 0.5}
-		y={context.stateLayoutDerived.mainLayout().height * 0.96}
+		y={context.stateLayoutDerived.mainLayout().height * labelYRatio}
 		style={{
 			fontFamily: 'Georgia',
 			fontSize: context.stateLayoutDerived.mainLayout().width * 0.019,
