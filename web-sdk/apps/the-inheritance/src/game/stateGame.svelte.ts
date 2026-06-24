@@ -14,13 +14,35 @@ import type { BookEventOfType } from './typesBookEvent';
 const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
 const FRAME_PLAYABLE_GRID = { left: 226, top: 44, width: 1079, height: 713 } as const;
-const FRAME_GROUP_LEFT_SHIFT = 0.08;
+const UI_RATIO = 1672 / 941;
+const UI_VERTICAL_OFFSET = 0.48;
+const UI_SCALE = 0.9;
+const UI_HORIZONTAL_OFFSET = 0.012;
 export const LEGACY_KEY_TARGET = 10;
 export const BONUS_BUY_FREE_SPINS = 10;
 export type SpinMode = 'base' | 'boot' | 'bought' | 'free';
 
 const frameImageRatioX = (value: number) => value / FRAME_IMAGE_SIZES.width;
 const frameImageRatioY = (value: number) => value / FRAME_IMAGE_SIZES.height;
+
+const uiPanelBaseLayout = () => {
+	const canvas = stateLayoutDerived.canvasSizes();
+	const isPortrait = canvas.height > canvas.width * 1.05;
+	const baseWidth = Math.min(
+		canvas.width * (isPortrait ? 0.90 : 0.68),
+		canvas.height * 0.40 * UI_RATIO,
+	);
+	const baseHeight = baseWidth / UI_RATIO;
+	const width = baseWidth * UI_SCALE;
+
+	return {
+		x: canvas.width / 2 + baseWidth * UI_HORIZONTAL_OFFSET,
+		baseWidth,
+		baseHeight,
+		width,
+		height: width / UI_RATIO,
+	};
+};
 
 const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 	if (symbolHasRole(rawSymbol.name, SYMBOL_ROLE_VAULT_TRIGGER)) {
@@ -75,11 +97,15 @@ const frameLayout = () => {
 	const canvas = stateLayoutDerived.canvasSizes();
 	const isPortrait = canvas.height > canvas.width * 1.05;
 	const width = Math.min(
-		canvas.width * (isPortrait ? 0.86 : 0.64),
-		canvas.height * (isPortrait ? 0.47 : 0.58) * FRAME_RATIO,
+		canvas.width * (isPortrait ? 0.90 : 0.67),
+		canvas.height * (isPortrait ? 0.49 : 0.61) * FRAME_RATIO,
 	);
 	const height = width / FRAME_RATIO;
-	const x = canvas.width * 0.5 - width * FRAME_GROUP_LEFT_SHIFT;
+	const panel = uiPanelBaseLayout();
+	const gridCenterRatioX = frameImageRatioX(
+		FRAME_PLAYABLE_GRID.left + FRAME_PLAYABLE_GRID.width / 2,
+	);
+	const x = panel.x - width * (gridCenterRatioX - 0.5);
 	const y = canvas.height * (isPortrait ? 0.13 : 0.08) + height / 2;
 	const grid = {
 		x: x + width * (frameImageRatioX(FRAME_PLAYABLE_GRID.left) - 0.5),
@@ -98,6 +124,16 @@ const frameLayout = () => {
 			centerX: grid.x + grid.width / 2,
 			centerY: grid.y + grid.height / 2,
 		},
+	};
+};
+
+const uiPanelLayout = () => {
+	const panel = uiPanelBaseLayout();
+	const frame = frameLayout();
+
+	return {
+		...panel,
+		y: frame.grid.centerY + frame.height / 2 + panel.baseHeight * UI_VERTICAL_OFFSET,
 	};
 };
 
@@ -153,4 +189,15 @@ const { enhanceBoard } = createEnhanceBoard();
 const enhancedBoard = enhanceBoard({ board: stateGame.board });
 export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLevelAlias({ winLevelMap });
 
-export const stateGameDerived = { onSymbolLand, frameLayout, boardLayout, boardRaw, scatterLandIndex, enhancedBoard, startBonusBuy, startBaseSpin, getWinLevelDataByWinLevelAlias };
+export const stateGameDerived = {
+	onSymbolLand,
+	frameLayout,
+	uiPanelLayout,
+	boardLayout,
+	boardRaw,
+	scatterLandIndex,
+	enhancedBoard,
+	startBonusBuy,
+	startBaseSpin,
+	getWinLevelDataByWinLevelAlias,
+};

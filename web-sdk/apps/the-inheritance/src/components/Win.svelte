@@ -22,10 +22,7 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
-	const UI_RATIO = 1672 / 941;
-	const UI_VERTICAL_OFFSET = 0.48;
-	const UI_SCALE = 0.9;
-	const UI_HORIZONTAL_OFFSET = 0.012;
+	const WIN_HORIZONTAL_OFFSET_RATIO = 0.014;
 
 	let show = $state(false);
 	let amount = $state(0);
@@ -35,21 +32,17 @@
 	let onCountUpComplete = $state(() => {});
 
 	const winTextLayout = $derived.by(() => {
-		const canvas = context.stateLayoutDerived.canvasSizes();
 		const boardLayout = context.stateGameDerived.boardLayout();
-		const isPortrait = canvas.height > canvas.width * 1.05;
-		const basePanelWidth = Math.min(canvas.width * (isPortrait ? 0.90 : 0.68), canvas.height * 0.40 * UI_RATIO);
-		const basePanelHeight = basePanelWidth / UI_RATIO;
-		const panelWidth = basePanelWidth * UI_SCALE;
-		const panelHeight = panelWidth / UI_RATIO;
-		const panelX = canvas.width / 2 + basePanelWidth * UI_HORIZONTAL_OFFSET;
-		const panelY = boardLayout.y + boardLayout.frameHeight / 2 + basePanelHeight * UI_VERTICAL_OFFSET;
+		const panel = context.stateGameDerived.uiPanelLayout();
+		const panelHeight = panel.height;
+		const panelX = panel.x;
+		const panelY = panel.y;
 		const frameBottom = boardLayout.frameY + boardLayout.frameHeight / 2;
 		const uiTop = panelY - panelHeight / 2;
 		const availableGap = Math.max(uiTop - frameBottom, panelHeight * 0.12);
 
 		return {
-			x: (boardLayout.frameX + panelX) / 2,
+			x: (boardLayout.frameX + panelX) / 2 + boardLayout.frameWidth * WIN_HORIZONTAL_OFFSET_RATIO,
 			y: frameBottom + availableGap * 0.88,
 			gap: availableGap,
 		};
