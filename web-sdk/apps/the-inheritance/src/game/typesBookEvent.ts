@@ -29,6 +29,9 @@ type BookEventFreeSpinTrigger = {
 	type: 'freeSpinTrigger';
 	totalFs: number;
 	positions: Position[];
+	naturalScatters?: number;
+	effectiveScatters?: number;
+	legacyCredit?: number;
 };
 
 type BookEventFreeSpinRetrigger = {
@@ -83,6 +86,7 @@ type BookEventCollectionUpdate = {
 	type: 'collectionUpdate';
 	collected: number;
 	target: number;
+	landedKeys?: number;
 	displayMultiplier?: number;
 	mansionLevel?: number;
 	positions: Position[];

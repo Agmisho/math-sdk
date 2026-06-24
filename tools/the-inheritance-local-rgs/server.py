@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from bisect import bisect_right
 import csv
+from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
@@ -41,20 +42,31 @@ class PublishedMathLibrary:
 
     def __init__(self, modes: tuple[str, ...]) -> None:
         self.books = {mode: self.load_books(mode) for mode in modes}
-        self.cumulative_weights = {}
-        self.total_weights = {}
+        self.weight_maps = {mode: self.load_weights(mode) for mode in modes}
+        self.pools = {}
         for mode in modes:
-            cumulative = []
-            running_total = 0
-            with (PUBLISH_DIR / f"lookUpTable_{mode}_0.csv").open(
-                newline="",
-                encoding="utf-8",
-            ) as handle:
-                for book_id, weight, _payout in csv.reader(handle):
-                    running_total += int(weight)
-                    cumulative.append((running_total, int(book_id)))
-            self.cumulative_weights[mode] = cumulative
-            self.total_weights[mode] = running_total
+            all_book_ids = list(self.books[mode])
+            inactive_book_ids = [
+                book_id for book_id in all_book_ids if not self.book_requires_active_legacy(self.books[mode][book_id])
+            ]
+            active_book_ids = [
+                book_id for book_id in all_book_ids if self.book_requires_active_legacy(self.books[mode][book_id])
+            ]
+            if mode == "bonus":
+                inactive_book_ids = all_book_ids
+                active_book_ids = all_book_ids
+            self.pools[mode] = {
+                False: self.build_pool(mode, inactive_book_ids or all_book_ids),
+                True: self.build_pool(mode, active_book_ids or all_book_ids),
+            }
+
+    @staticmethod
+    def load_weights(mode: str) -> dict[int, int]:
+        weights = {}
+        with (PUBLISH_DIR / f"lookUpTable_{mode}_0.csv").open(newline="", encoding="utf-8") as handle:
+            for book_id, weight, _payout in csv.reader(handle):
+                weights[int(book_id)] = int(weight)
+        return weights
 
     @staticmethod
     def load_books(mode: str) -> dict[int, dict]:
@@ -68,13 +80,45 @@ class PublishedMathLibrary:
                     books[int(book["id"])] = book
         return books
 
-    def select_book(self, mode: str, roll: float) -> dict:
-        total_weight = self.total_weights[mode]
+    @staticmethod
+    def book_requires_active_legacy(book: dict) -> bool:
+        events = book.get("events", [])
+        if any(event.get("type") == "legacyScatterCredit" and event.get("used") for event in events):
+            return True
+
+        collection_event = next(
+            (
+                event
+                for event in events
+                if event.get("type") == "collectionUpdate" and event.get("gameType") == "basegame"
+            ),
+            None,
+        )
+        if not collection_event:
+            return False
+        landed_keys = int(collection_event.get("landedKeys", len(collection_event.get("positions", []))))
+        pre_spin_count = int(collection_event.get("collected", 0)) - landed_keys
+        return pre_spin_count >= int(collection_event.get("target", 10))
+
+    def build_pool(self, mode: str, book_ids: list[int]) -> tuple[list[tuple[int, int]], int]:
+        cumulative = []
+        running_total = 0
+        for book_id in book_ids:
+            weight = self.weight_maps[mode].get(book_id, 0)
+            if weight <= 0:
+                continue
+            running_total += weight
+            cumulative.append((running_total, book_id))
+        if running_total <= 0:
+            raise ValueError(f"No positive lookup weights for {mode}.")
+        return cumulative, running_total
+
+    def select_book(self, mode: str, roll: float, legacy_active: bool) -> dict:
+        cumulative, total_weight = self.pools[mode][legacy_active]
         selected_weight = min(int(roll * total_weight), total_weight - 1)
-        cumulative = self.cumulative_weights[mode]
         index = bisect_right(cumulative, (selected_weight, sys.maxsize))
         book_id = cumulative[index][1]
-        return self.books[mode][book_id]
+        return deepcopy(self.books[mode][book_id])
 
 
 class LocalInheritanceRgs:
@@ -84,6 +128,8 @@ class LocalInheritanceRgs:
         self.math_library = PublishedMathLibrary(tuple(self.bet_modes))
         self.balance = 1000 * API_AMOUNT_MULTIPLIER
         self.spin_index = 0
+        self.key_count = 0
+        self.key_target = int(self.config.legacy_key_collection_target)
         self.lock = threading.Lock()
 
     @staticmethod
@@ -105,6 +151,80 @@ class LocalInheritanceRgs:
     def deterministic_roll(index: int) -> float:
         value = (index + 1) * 1_103_515_245 + 12_345
         return (value & 0x7FFFFFFF) / 0x80000000
+
+    @staticmethod
+    def visible_board(reveal_event: dict) -> list[list[dict]]:
+        visible = []
+        for reel in reveal_event.get("board", []):
+            visible.append(reel[1:-1] if len(reel) > 5 else reel)
+        return visible
+
+    @staticmethod
+    def symbol_positions(board: list[list[dict]], symbol_name: str) -> list[dict]:
+        return [
+            {"reel": reel_index, "row": row_index}
+            for reel_index, reel in enumerate(board)
+            for row_index, symbol in enumerate(reel)
+            if symbol.get("name") == symbol_name
+        ]
+
+    def apply_legacy_session_state(self, book: dict, mode: str) -> dict:
+        if mode == "bonus":
+            return book
+
+        events = book.get("events", [])
+        reveal_event = next(
+            (
+                event
+                for event in events
+                if event.get("type") == "reveal" and event.get("gameType") == "basegame"
+            ),
+            None,
+        )
+        if not reveal_event:
+            return book
+
+        board = self.visible_board(reveal_event)
+        key_positions = self.symbol_positions(board, "H4")
+        natural_scatters = len(self.symbol_positions(board, "S"))
+        legacy_active = self.key_count >= self.key_target
+        collected_after_spin = min(self.key_target, self.key_count + len(key_positions))
+        legacy_event = next(
+            (event for event in events if event.get("type") == "legacyScatterCredit" and event.get("used")),
+            None,
+        )
+        legacy_used = bool(legacy_active and natural_scatters >= 2 and legacy_event)
+
+        collection_event = next(
+            (
+                event
+                for event in events
+                if event.get("type") == "collectionUpdate" and event.get("gameType") == "basegame"
+            ),
+            None,
+        )
+        if collection_event:
+            collection_event["collected"] = collected_after_spin
+            collection_event["target"] = self.key_target
+            collection_event["landedKeys"] = len(key_positions)
+            collection_event["positions"] = key_positions
+
+        if legacy_event:
+            legacy_event["collected"] = self.key_target
+            legacy_event["target"] = self.key_target
+            legacy_event["virtualScatters"] = 1
+            legacy_event["naturalScatters"] = natural_scatters
+            legacy_event["effectiveScatters"] = natural_scatters + 1
+            legacy_event["used"] = legacy_used
+
+        trigger_event = next((event for event in events if event.get("type") == "freeSpinTrigger"), None)
+        if trigger_event:
+            trigger_event["naturalScatters"] = natural_scatters
+            trigger_event["effectiveScatters"] = natural_scatters + int(legacy_used)
+            trigger_event["legacyCredit"] = int(legacy_used)
+
+        self.key_count = 0 if legacy_used else collected_after_spin
+        return book
 
     def authenticate(self) -> dict:
         return {
@@ -144,7 +264,9 @@ class LocalInheritanceRgs:
                 }
 
             roll = self.deterministic_roll(self.spin_index)
-            book = self.math_library.select_book(mode, roll)
+            legacy_active = self.key_count >= self.key_target
+            book = self.math_library.select_book(mode, roll, legacy_active)
+            book = self.apply_legacy_session_state(book, mode)
             payout_multiplier = float(book["payoutMultiplier"])
             payout_amount = amount * payout_multiplier
             payout_api_amount = round(payout_amount * API_AMOUNT_MULTIPLIER)
@@ -222,6 +344,8 @@ class Handler(BaseHTTPRequestHandler):
                     "game": "2_0_The_Inheritance",
                     "rtp": RGS.config.rtp,
                     "profile": RGS.config.rtp_profile.slug,
+                    "legacyKeys": RGS.key_count,
+                    "legacyTarget": RGS.key_target,
                 }
             )
         elif path.startswith("/bet/replay/"):

@@ -12,6 +12,7 @@ import { stateInheritanceUi } from './stateInheritanceUi.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position, RawSymbol } from './types';
 import config from './config';
+import { SYMBOL_ROLE_KEY, symbolHasRole } from './symbolRoles';
 
 const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) => {
 	if (winLevelData?.alias === 'max') eventEmitter.broadcastAsync({ type: 'uiHide' });
@@ -76,6 +77,27 @@ const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) =
 const normalizeLegacyKeyTarget = (target: number) =>
 	Number.isFinite(target) && target > 0 ? Math.floor(target) : LEGACY_KEY_TARGET;
 const normalizeLegacyKeyCount = (collected: number, target: number) => Math.max(0, Math.min(target, collected));
+const processedCollectionReveals = new WeakSet<object>();
+const countVisibleLegacyKeys = (board: RawSymbol[][]) =>
+	board.reduce(
+		(total, reel) =>
+			total + reel.slice(1, -1).filter((symbol) => symbolHasRole(symbol.name, SYMBOL_ROLE_KEY)).length,
+		0,
+	);
+const collectSettledLegacyKeys = (bookEvent: BookEventOfType<'reveal'>) => {
+	if (bookEvent.gameType !== 'basegame' || stateGame.isBonusBuy || processedCollectionReveals.has(bookEvent)) return;
+	processedCollectionReveals.add(bookEvent);
+
+	const landedKeys = countVisibleLegacyKeys(bookEvent.board);
+	if (landedKeys <= 0) return;
+
+	const target = normalizeLegacyKeyTarget(stateGame.keyTarget);
+	const wasBelowTarget = stateGame.keyCounter < target;
+	stateGame.keyCounter = normalizeLegacyKeyCount(stateGame.keyCounter + landedKeys, target);
+	if (wasBelowTarget && stateGame.keyCounter >= target) {
+		stateInheritanceUi.modal = 'legacyFeatureUnlocked';
+	}
+};
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
@@ -97,6 +119,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			revealEvent: bookEvent,
 			paddingBoard: config.paddingReels[bookEvent.gameType],
 		});
+		collectSettledLegacyKeys(bookEvent);
 		if (bookEvent.gameType === 'freegame') {
 			stateGame.freeSpinsRemaining = Math.max(stateGame.freeSpinsRemaining - 1, 0);
 		}
@@ -227,13 +250,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// Do nothing
 	},
 	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
-		const target = normalizeLegacyKeyTarget(bookEvent.target);
-		const wasBelowTarget = stateGame.keyCounter < target;
-		stateGame.keyTarget = target;
-		stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected, target);
-		if (wasBelowTarget && stateGame.keyCounter >= target) {
-			stateInheritanceUi.modal = 'legacyFeatureUnlocked';
-		}
+		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
 		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);

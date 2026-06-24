@@ -9,14 +9,13 @@
 	import { Tween } from 'svelte/motion';
 
 	import {
-		BitmapText,
 		Container,
 		SpineEventEmitterProvider,
 		SpineProvider,
 		SpineSlot,
 		SpineTrack,
 	} from 'pixi-svelte';
-	import { FadeContainer } from 'components-pixi';
+	import { FadeContainer, ResponsiveBitmapText } from 'components-pixi';
 	import { stateBetDerived } from 'state-shared';
 	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
 
@@ -81,31 +80,23 @@
 					trackIndex={0}
 					{animationName}
 					timeScale={stateBetDerived.timeScale()}
-					listener={{
-						complete: () => {
-							oncomplete();
-						},
-					}}
+					listener={{ complete: () => oncomplete() }}
 				/>
 				<SpineEventEmitterProvider>
 					<SpineSlot slotName="slot_multi">
-						<BitmapText
+						<ResponsiveBitmapText
 							anchor={0.5}
-							text={`${Math.round(previousMultiplier.current)}×`}
-							style={{
-								fontFamily: 'gold',
-								fontSize: SYMBOL_SIZE * 5.2,
-							}}
+							text={`x${Math.round(previousMultiplier.current)}`}
+							style={{ fontFamily: 'gold', fontSize: SYMBOL_SIZE * 0.82 }}
+							maxWidth={PANEL_WIDTH * 0.72}
 						/>
 					</SpineSlot>
 					<SpineSlot slotName="slot_multi_next">
-						<BitmapText
+						<ResponsiveBitmapText
 							anchor={0.5}
-							text={`${multiplier}×`}
-							style={{
-								fontFamily: 'gold',
-								fontSize: SYMBOL_SIZE * 5.2,
-							}}
+							text={`x${multiplier}`}
+							style={{ fontFamily: 'gold', fontSize: SYMBOL_SIZE * 0.82 }}
+							maxWidth={PANEL_WIDTH * 0.72}
 						/>
 					</SpineSlot>
 				</SpineEventEmitterProvider>

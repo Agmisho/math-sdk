@@ -43,9 +43,7 @@ class GameStateOverride(GameExecutables):
             return False
         if not getattr(self, "legacy_scatter_credit_available", False):
             return False
-        if not self.get_current_distribution_conditions().get("force_freegame", False):
-            return False
-        return self.count_special_symbols(scatter_key) == 2
+        return self.count_special_symbols(scatter_key) >= 2
 
     def get_effective_scatter_count(self, scatter_key: str = "scatter") -> int:
         """Natural scatter count plus the virtual scatter credit when eligible."""
@@ -90,6 +88,7 @@ class GameStateOverride(GameExecutables):
             "type": "collectionUpdate",
             "collected": int(self.collected_count),
             "target": int(self.collection_target),
+            "landedKeys": 0,
             "mansionLevel": int(self.mansion_level),
             "displayMultiplier": int(self.display_multiplier),
             "positions": [],
@@ -120,6 +119,7 @@ class GameStateOverride(GameExecutables):
 
     def run_freespin_from_base(self, scatter_key: str = "scatter") -> None:
         """Trigger free spins and reset Legacy Keys if the virtual scatter credit was used."""
+        natural_scatters = self.count_special_symbols(scatter_key)
         effective_scatters = self.get_effective_scatter_count(scatter_key)
         self.record(
             {
@@ -130,6 +130,11 @@ class GameStateOverride(GameExecutables):
             }
         )
         self.update_freespin_amount(scatter_key)
+        trigger_event = self.book.events[-1]
+        if trigger_event.get("type") == "freeSpinTrigger":
+            trigger_event["naturalScatters"] = int(natural_scatters)
+            trigger_event["effectiveScatters"] = int(effective_scatters)
+            trigger_event["legacyCredit"] = int(self.legacy_scatter_credit_used)
         if self.legacy_scatter_credit_used:
             self.reset_legacy_collection_after_credit_use()
         self.run_freespin()

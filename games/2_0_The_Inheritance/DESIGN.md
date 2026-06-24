@@ -123,9 +123,11 @@ Enhancer target reference: about 1 in 236 before final tuning
 - Legacy Keys do not collect during Bonus Buy.
 - The collection target is 10 keys.
 - Collection progress persists between paid spins and must be stored by the frontend/server player state.
-- When a player starts an eligible paid spin with 10 keys, the spin receives one virtual scatter credit.
-- If that spin lands exactly 2 natural scatters, the virtual credit raises the effective scatter count to 3.
-- 3 effective scatters trigger 8 free spins.
+- When a player starts an eligible paid spin with 10 keys, the spin receives one virtual Vault scatter.
+- If that spin lands 2 or more natural Vaults, the virtual Vault raises the effective scatter count by one.
+- 2 natural + 1 virtual Vault triggers 8 free spins.
+- 3 natural + 1 virtual Vault triggers 12 free spins.
+- Effective counts above 5 use the configured 5-scatter award cap.
 - After the credit is used and the free game is triggered, key collection resets to 0.
 - Bonus Buy does not use this mechanic.
 - Free spins do not use this mechanic.

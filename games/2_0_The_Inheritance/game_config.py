@@ -26,6 +26,7 @@ class GameConfig(Config):
         self.win_type = "lines"
         self.rtp_profile = resolve_rtp_profile()
         self.rtp = self.rtp_profile.rtp
+        self.allow_stateful_feature_from_base = True
         self.construct_paths()
 
         # Game Dimensions

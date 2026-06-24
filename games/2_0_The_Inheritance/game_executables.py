@@ -111,6 +111,7 @@ class GameExecutables(VaultReelFeatureMixin, GameCalculations):
             "type": "collectionUpdate",
             "collected": int(self.collected_count),
             "target": int(self.collection_target),
+            "landedKeys": len(positions),
             "mansionLevel": int(self.mansion_level),
             "displayMultiplier": int(self.display_multiplier),
             "positions": positions,

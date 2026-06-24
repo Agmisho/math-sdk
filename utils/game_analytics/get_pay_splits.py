@@ -44,7 +44,13 @@ def get_unoptimized_hits(lut_path, all_modes, win_ranges):
     return all_modes_hit_rates, all_modes_range_hits
 
 
-def make_split_win_distribution(lut_file, split_file, all_modes, base_mode_name="basegame"):
+def make_split_win_distribution(
+    lut_file,
+    split_file,
+    all_modes,
+    base_mode_name="basegame",
+    allow_stateful_feature_from_base=False,
+):
     """Separate probability information for different game-types."""
     combined_distributions = defaultdict(lambda: defaultdict(float))
     all_modes.append("cumulative")
@@ -76,7 +82,11 @@ def make_split_win_distribution(lut_file, split_file, all_modes, base_mode_name=
             for mode in all_modes:
                 if mode != base_mode_name and mode != "cumulative":
                     combined_distributions[mode][all_free[idx]] += all_weights[idx]
-            if (all_free[idx] != 0) and (all_fences[idx] == base_mode_name):
+            if (
+                all_free[idx] != 0
+                and all_fences[idx] == base_mode_name
+                and not allow_stateful_feature_from_base
+            ):
                 raise ValueError("Non-Zero FreeGame win in baseGame Fence.")
 
         # Construct cumulative hit-rate data

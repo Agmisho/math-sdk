@@ -147,7 +147,15 @@ class GameInformation:
             lut_path, split_path = return_all_filepaths(self.game_id, mode)
             sub_modes = list(self.mode_fence_info[mode].keys())
             mode_sorted_distributions, total_mode_weight = make_split_win_distribution(
-                lut_path, split_path, sub_modes, "basegame"
+                lut_path,
+                split_path,
+                sub_modes,
+                "basegame",
+                allow_stateful_feature_from_base=getattr(
+                    self.config,
+                    "allow_stateful_feature_from_base",
+                    False,
+                ),
             )
             sub_mode_hits, sub_mode_probs, sub_mode_rtp_allocation = return_hit_rates(
                 mode_sorted_distributions, total_mode_weight, self.win_ranges, self.cost_mapping[mode]

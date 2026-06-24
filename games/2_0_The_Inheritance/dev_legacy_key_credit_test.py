@@ -42,12 +42,30 @@ def inject_two_scatter_board(game):
     }
 
 
+def inject_three_scatter_board(game):
+    sym = game.symbol_storage.create_symbol
+    game.board = [
+        [sym("S"), sym("L1"), sym("L2"), sym("L3"), sym("L4")],
+        [sym("L1"), sym("L1"), sym("L2"), sym("L3"), sym("L4")],
+        [sym("S"), sym("L1"), sym("L2"), sym("L3"), sym("L4")],
+        [sym("L1"), sym("L1"), sym("L2"), sym("L3"), sym("L4")],
+        [sym("S"), sym("L1"), sym("L2"), sym("L3"), sym("L4")],
+    ]
+    game.special_syms_on_board = {
+        "scatter": [
+            {"reel": 0, "row": 0},
+            {"reel": 2, "row": 0},
+            {"reel": 4, "row": 0},
+        ],
+    }
+
+
 def get_events(game, event_type):
     return [event for event in game.book.events if event.get("type") == event_type]
 
 
 def validate_base_credit_trigger():
-    game = make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
+    game = make_game(mode="base", criteria="basegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
 
     assert game.collected_count == LEGACY_KEY_TARGET
@@ -87,7 +105,7 @@ def validate_base_credit_trigger():
 
 
 def validate_scatter_boost_credit_trigger():
-    game = make_game(mode="scatter_boost", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
+    game = make_game(mode="scatter_boost", criteria="basegame", collected_count=LEGACY_KEY_TARGET)
     inject_two_scatter_board(game)
 
     assert game.count_special_symbols("scatter") == 2
@@ -131,12 +149,45 @@ def validate_freegame_does_not_use_credit():
     assert get_events(game, "legacyScatterCredit") == []
 
 
+def validate_natural_three_scatter_trigger():
+    game = make_game(mode="base", criteria="freegame", collected_count=0)
+    inject_three_scatter_board(game)
+
+    assert game.get_effective_scatter_count("scatter") == 3
+    assert game.check_fs_condition("scatter") is True
+
+    game.run_freespin_from_base("scatter")
+
+    trigger = get_events(game, "freeSpinTrigger")[0]
+    assert trigger["naturalScatters"] == 3
+    assert trigger["effectiveScatters"] == 3
+    assert trigger["legacyCredit"] == 0
+    assert trigger["totalFs"] == 8
+
+
+def validate_active_credit_counts_with_three_natural_scatters():
+    game = make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET)
+    inject_three_scatter_board(game)
+
+    assert game.get_effective_scatter_count("scatter") == 4
+    game.run_freespin_from_base("scatter")
+
+    trigger = get_events(game, "freeSpinTrigger")[0]
+    assert trigger["naturalScatters"] == 3
+    assert trigger["effectiveScatters"] == 4
+    assert trigger["legacyCredit"] == 1
+    assert trigger["totalFs"] == 12
+    assert game.collected_count == 0
+
+
 def main():
     validate_base_credit_trigger()
     validate_scatter_boost_credit_trigger()
     validate_no_credit_without_target_keys()
     validate_bonus_does_not_use_credit()
     validate_freegame_does_not_use_credit()
+    validate_natural_three_scatter_trigger()
+    validate_active_credit_counts_with_three_natural_scatters()
     print("Legacy Key virtual scatter credit validation: OK")
 
 

@@ -191,9 +191,11 @@ Rules:
 - Legacy Keys are not collected during Bonus Buy.
 - Key collection persists between paid spins and must be stored by the frontend/server player state.
 - Collection target is 10 keys.
-- When the player starts an eligible paid spin with 10 keys, one virtual scatter credit is available.
-- If that spin lands exactly 2 natural scatters, the virtual credit makes it 3 effective scatters.
-- 3 effective scatters trigger 8 free spins.
+- When the player starts an eligible paid spin with 10 keys, one virtual Vault scatter is active.
+- If that spin lands 2 or more natural Vault scatters, the virtual Vault is added to the settled count.
+- 2 natural + 1 virtual Vault = 3 effective scatters and 8 free spins.
+- 3 natural + 1 virtual Vault = 4 effective scatters and 12 free spins.
+- 4 or more natural Vaults plus the virtual Vault use the configured 5-scatter award cap.
 - After the virtual scatter credit is used and the free game is won/triggered, collection resets to 0.
 
 `legacyScatterCredit` includes:

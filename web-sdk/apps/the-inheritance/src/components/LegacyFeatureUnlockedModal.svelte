@@ -10,8 +10,8 @@
 	<Popup zIndex={1000} onclose={close}>
 		<section class="legacy-unlocked" role="dialog" aria-modal="true" aria-label="Legacy Feature Unlocked">
 			<p>THE INHERITANCE</p>
-			<h2>Legacy Feature Unlocked</h2>
-			<span>Full feature coming soon.</span>
+			<h2>Legacy Vault Active</h2>
+			<span>One virtual Vault is held. Land 2 or more Vaults on a paid spin to unlock Free Spins.</span>
 			<button onclick={close}>Continue</button>
 		</section>
 	</Popup>
