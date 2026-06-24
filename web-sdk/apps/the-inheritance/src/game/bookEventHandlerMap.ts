@@ -73,7 +73,9 @@ const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) =
 	eventEmitter.broadcast({ type: 'boardSettle', board });
 };
 
-const normalizeLegacyKeyCount = (collected: number) => Math.max(0, Math.min(LEGACY_KEY_TARGET, collected));
+const normalizeLegacyKeyTarget = (target: number) =>
+	Number.isFinite(target) && target > 0 ? Math.floor(target) : LEGACY_KEY_TARGET;
+const normalizeLegacyKeyCount = (collected: number, target: number) => Math.max(0, Math.min(target, collected));
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
@@ -223,13 +225,16 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// Do nothing
 	},
 	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
-		const wasBelowTarget = stateGame.keyCounter < LEGACY_KEY_TARGET;
-		stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected);
-		if (wasBelowTarget && stateGame.keyCounter >= LEGACY_KEY_TARGET) {
+		const target = normalizeLegacyKeyTarget(bookEvent.target);
+		const wasBelowTarget = stateGame.keyCounter < target;
+		stateGame.keyTarget = target;
+		stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected, target);
+		if (wasBelowTarget && stateGame.keyCounter >= target) {
 			stateInheritanceUi.modal = 'legacyFeatureUnlocked';
 		}
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
+		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);
 		if (bookEvent.used) {
 			stateGame.keyCounter = 0;
 		}

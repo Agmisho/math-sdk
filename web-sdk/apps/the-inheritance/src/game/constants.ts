@@ -7,11 +7,11 @@ export const REEL_PADDING = 0.5;
 const sym = (name: RawSymbol['name']) => ({ name });
 
 export const INITIAL_BOARD: RawSymbol[][] = [
-	[sym('L1'), sym('H1'), sym('H3'), sym('L2'), sym('H4'), sym('S'), sym('L3')],
-	[sym('H2'), sym('L2'), sym('H4'), sym('L3'), sym('H1'), sym('M2'), sym('L6')],
-	[sym('L3'), sym('H3'), sym('S'), sym('M5'), sym('H4'), sym('L2'), sym('H5')],
-	[sym('L4'), sym('H4'), sym('L2'), sym('H2'), sym('S'), sym('H1'), sym('M10')],
-	[sym('H5'), sym('L5'), sym('H1'), sym('L3'), sym('H4'), sym('M2'), sym('S')],
+	[sym('L1'), sym('H1'), sym('H3'), sym('L2'), sym('H3'), sym('S'), sym('L3')],
+	[sym('H2'), sym('L2'), sym('H3'), sym('L3'), sym('H1'), sym('M2'), sym('L6')],
+	[sym('L3'), sym('H3'), sym('S'), sym('M5'), sym('H3'), sym('L2'), sym('H5')],
+	[sym('L4'), sym('H3'), sym('L2'), sym('H2'), sym('S'), sym('H1'), sym('M10')],
+	[sym('H5'), sym('L5'), sym('H1'), sym('L3'), sym('H3'), sym('M2'), sym('S')],
 ];
 
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };

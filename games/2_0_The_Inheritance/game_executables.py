@@ -64,27 +64,27 @@ class GameExecutables(VaultReelFeatureMixin, GameCalculations):
 
     def calculate_mansion_level(self, collected_count: int) -> int:
         """Map collection progress to the mansion level display."""
-        if collected_count >= 20:
-            return 5
-        if collected_count >= 15:
-            return 4
         if collected_count >= 10:
-            return 3
+            return 5
+        if collected_count >= 8:
+            return 4
         if collected_count >= 5:
+            return 3
+        if collected_count >= 3:
             return 2
         return 1
 
     def calculate_display_multiplier(self, collected_count: int) -> int:
         """Map collection progress to the side-panel multiplier display."""
-        if collected_count >= 20:
-            return 10
-        if collected_count >= 18:
-            return 7
-        if collected_count >= 14:
-            return 5
         if collected_count >= 10:
+            return 10
+        if collected_count >= 9:
+            return 7
+        if collected_count >= 7:
+            return 5
+        if collected_count >= 5:
             return 4
-        if collected_count >= 6:
+        if collected_count >= 3:
             return 3
         if collected_count >= 1:
             return 2

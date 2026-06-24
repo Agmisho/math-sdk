@@ -33,7 +33,7 @@ This document maps the existing The Inheritance implementation before gameplay c
 
 ### Needs Business Decision
 
-- Legacy Key collection now uses the shared target `20` in math and frontend display.
+- Legacy Key collection now uses the shared target `10` in math and frontend display.
 - The math `scatter_boost` cost is `3x`; current frontend copy/config says `2x`.
 - Normal base trigger awards remain `3 scatters = 8`, `4 scatters = 12`, `5 scatters = 15`; Bonus Buy now overrides the initial award to exactly `10`.
 - Current $1 paytable values were updated in math, frontend config, and local mock for `W`, `H1`-`H6`, and `L1`-`L5`; `H7`-`H9` and `L6` remain secondary configured symbols.
@@ -182,8 +182,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 | Source | Reel 1 | Reel 2 | Reel 3 | Reel 4 | Reel 5 | Notes |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `BR0.csv` | `1 / 80` | `1 / 80` | `1 / 80` | `1 / 80` | `1 / 80` | Base reveal strip. Natural non-force basegame redraws if `3+` visible scatters land. |
-| `FR0.csv` | `1 / 120` | `1 / 120` | `1 / 120` | `1 / 120` | `1 / 120` | Freegame strip. Used for Free Spins. |
+| `BR0.csv` | `1 / 800` | `1 / 800` | `1 / 800` | `1 / 800` | `1 / 800` | Base reveal strip. Legacy Keys are deliberately super rare. Natural non-force basegame redraws if `3+` visible scatters land. |
+| `FR0.csv` | `1 / 1200` | `1 / 1200` | `1 / 1200` | `1 / 1200` | `1 / 1200` | Freegame strip. Used for Free Spins; Legacy Keys remain visual paying symbols but are not collected. |
 | `FRWCAP.csv` | `0 / 120` | `0 / 120` | `0 / 120` | `0 / 120` | `0 / 120` | Wincap-support freegame strip. |
 | `FR100.csv` | `0 / 30` | `0 / 30` | `0 / 30` | `0 / 30` | `0 / 30` | File exists, but is not loaded in active `game_config.py`. |
 
@@ -254,8 +254,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 | Reel Strip | `M2` | `M5` | `M10` | `M20` | `M100` | Total |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `BR0.csv` | 1 | 1 | 1 | 1 | 1 | 5 |
-| `FR0.csv` | 5 | 6 | 3 | 2 | 2 | 18 |
+| `BR0.csv` | 10 | 10 | 10 | 10 | 10 | 50 |
+| `FR0.csv` | 50 | 60 | 30 | 20 | 20 | 180 |
 | `FRWCAP.csv` | 25 | 25 | 30 | 40 | 75 | 195 |
 
 ### Source Files
@@ -324,8 +324,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 - Displayed name: Legacy Key.
 - Frontend asset: `Legacy Key.png`.
 - Math collection symbol: `collection_symbol = "H4"`.
-- Math target: `20`.
-- Frontend counter target: `20`.
+- Math target: `10`.
+- Frontend counter target: `10`.
 - Math collection is part of the game math, not frontend-only.
 - Keys can appear on active base and free strips, but only collect when `can_collect_legacy_keys()` returns true.
 - `can_collect_legacy_keys()` returns true only when:

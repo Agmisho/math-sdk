@@ -96,7 +96,7 @@
 								{:else if symbolName === 'W'}
 									<p>ID W. Wild symbol. Substitutes for regular paying symbols and pays directly only as five Wilds.</p>
 								{:else if symbolName === 'H4'}
-									<p>ID H4. Legacy Key. Collected by math only on settled paid base/scatter-boost boards, never opening boards, bonus buy trigger boards, or free spins. The counter uses final visible H4 positions from collectionUpdate events and resets when the 20-key Vault support credit is used.</p>
+									<p>ID H4. Legacy Key. Collected by math only on settled paid base/scatter-boost boards, never opening boards, bonus buy trigger boards, or free spins. The counter uses final visible H4 positions from collectionUpdate events and resets when the 10-key Vault support credit is used.</p>
 								{:else}
 									<p>Diamond Seal multiplier. The displayed value applies globally to the settled line-win total for the result.</p>
 								{/if}

@@ -6,11 +6,12 @@ export * from './types';
 const mockReel = (names: string[]) => names.map((name) => ({ name }));
 let mockBalanceAmount = 1000 * API_AMOUNT_MULTIPLIER;
 let mockSpinIndex = 0;
+let mockLegacyEligibleSpinIndex = 0;
 let mockLegacyKeyCount = 0;
 const BONUS_BUY_COST_MULTIPLIER = 100;
 const BONUS_BUY_FREE_SPINS = 10;
 const SCATTER_BOOST_COST_MULTIPLIER = 2;
-const LEGACY_KEY_TARGET = 20;
+const LEGACY_KEY_TARGET = 10;
 const LEGACY_KEY_SYMBOL = 'H4';
 const VAULT_SCATTER_SYMBOL = 'S';
 const VISIBLE_ROWS = 5;
@@ -80,6 +81,21 @@ const decorateSymbol = ({ name }: { name: string }): MockSymbol => ({
 const decorateBoard = (board: { name: string }[][]): MockBoard =>
 	board.map((reel) => reel.map((symbol) => decorateSymbol(symbol)));
 
+const withoutLegacyKeys = (board: { name: string }[][]) =>
+	board.map((reel) =>
+		reel.map((symbol) => ({ name: symbol.name === LEGACY_KEY_SYMBOL ? 'H3' : symbol.name })),
+	);
+
+const createRareLegacyKeyBoard = (board: { name: string }[][], spinIndex: number) => {
+	const result = withoutLegacyKeys(board);
+	if (spinIndex % 40 !== 39) return result;
+
+	const reelIndex = Math.floor(spinIndex / 40) % result.length;
+	const rowIndex = TOP_PADDING_ROWS + Math.floor(spinIndex / 200) % VISIBLE_ROWS;
+	result[reelIndex][rowIndex] = { name: LEGACY_KEY_SYMBOL };
+	return result;
+};
+
 const toBookAmount = (amount: number) => Math.round(amount * BOOK_AMOUNT_MULTIPLIER);
 
 const normalizeMode = (mode: string) => {
@@ -143,19 +159,19 @@ const getVisiblePositions = (board: MockBoard, symbolName: string) =>
 	);
 
 const calculateMansionLevel = (collected: number) => {
-	if (collected >= 20) return 5;
-	if (collected >= 15) return 4;
-	if (collected >= 10) return 3;
-	if (collected >= 5) return 2;
+	if (collected >= 10) return 5;
+	if (collected >= 8) return 4;
+	if (collected >= 5) return 3;
+	if (collected >= 3) return 2;
 	return 1;
 };
 
 const calculateDisplayMultiplier = (collected: number) => {
-	if (collected >= 20) return 10;
-	if (collected >= 18) return 7;
-	if (collected >= 14) return 5;
-	if (collected >= 10) return 4;
-	if (collected >= 6) return 3;
+	if (collected >= 10) return 10;
+	if (collected >= 9) return 7;
+	if (collected >= 7) return 5;
+	if (collected >= 5) return 4;
+	if (collected >= 3) return 3;
 	if (collected >= 1) return 2;
 	return 1;
 };
@@ -407,7 +423,8 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 	if (normalizedMode === 'bonus') return createMockBonusBuyResponse(options, costApiAmount);
 
 	const spinIndex = mockSpinIndex;
-	const board = decorateBoard(mockBoards[spinIndex % mockBoards.length]);
+	const legacySpinIndex = mockLegacyEligibleSpinIndex;
+	const board = decorateBoard(createRareLegacyKeyBoard(mockBoards[spinIndex % mockBoards.length], legacySpinIndex));
 	const legacyCreditAvailable = mockLegacyKeyCount >= LEGACY_KEY_TARGET;
 	const { wins, totalWinMultiplier, totalWinBookAmount } = evaluateBoardWins(board);
 	let cumulativeWinMultiplier = totalWinMultiplier;
@@ -460,7 +477,9 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 		state.push(createCollectionResetEvent(index++));
 
 		for (let freeSpinIndex = 0; freeSpinIndex < 8; freeSpinIndex += 1) {
-			const freeSpinBoard = decorateBoard(mockBonusBoards[(spinIndex + freeSpinIndex) % mockBonusBoards.length]);
+			const freeSpinBoard = decorateBoard(
+				withoutLegacyKeys(mockBonusBoards[(spinIndex + freeSpinIndex) % mockBonusBoards.length]),
+			);
 			state.push({
 				index: index++,
 				type: 'updateFreeSpin',
@@ -500,6 +519,7 @@ const createMockPlayResponse = (options: { currency: string; amount: number; mod
 	const payoutAmount = options.amount * cumulativeWinMultiplier;
 	const payoutApiAmount = Math.round(payoutAmount * API_AMOUNT_MULTIPLIER);
 	mockSpinIndex += 1;
+	mockLegacyEligibleSpinIndex += 1;
 	mockBalanceAmount = Math.max(0, mockBalanceAmount - costApiAmount + payoutApiAmount);
 
 	return {
@@ -531,13 +551,13 @@ const createMockBonusBuyResponse = (
 			gameType: 'basegame',
 			paddingPositions: [0, 0, 0, 0, 0],
 			anticipation: [0, 0, 1, 2, 3],
-			board: decorateBoard([
+			board: decorateBoard(withoutLegacyKeys([
 				mockBonusTriggerBoard,
 				mockReel(['H2', 'S', 'H4', 'L3', 'H1', 'M2', 'L6']),
 				mockReel(['L3', 'H3', 'S', 'M5', 'H4', 'L2', 'H5']),
 				mockReel(['L4', 'H4', 'L2', 'H2', 'H6', 'H1', 'M10']),
 				mockReel(['H5', 'L5', 'H1', 'L3', 'H4', 'M2', 'S']),
-			]),
+			])),
 		},
 		{
 			index: index++,
@@ -558,7 +578,9 @@ const createMockBonusBuyResponse = (
 	];
 
 	for (let freeSpinIndex = 0; freeSpinIndex < BONUS_BUY_FREE_SPINS; freeSpinIndex += 1) {
-		const board = decorateBoard(mockBonusBoards[(mockSpinIndex + freeSpinIndex) % mockBonusBoards.length]);
+		const board = decorateBoard(
+			withoutLegacyKeys(mockBonusBoards[(mockSpinIndex + freeSpinIndex) % mockBonusBoards.length]),
+		);
 		state.push({
 			index: index++,
 			type: 'updateFreeSpin',

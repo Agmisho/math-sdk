@@ -15,7 +15,7 @@ const FRAME_IMAGE_SIZES = { width: 1358, height: 804 } as const;
 const FRAME_RATIO = FRAME_IMAGE_SIZES.width / FRAME_IMAGE_SIZES.height;
 const FRAME_PLAYABLE_GRID = { left: 226, top: 44, width: 1079, height: 713 } as const;
 const FRAME_GROUP_LEFT_SHIFT = 0.08;
-export const LEGACY_KEY_TARGET = 20;
+export const LEGACY_KEY_TARGET = 10;
 export const BONUS_BUY_FREE_SPINS = 10;
 export type SpinMode = 'base' | 'boot' | 'bought' | 'free';
 
@@ -67,6 +67,7 @@ export const stateGame = $state({
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
 	keyCounter: 0,
+	keyTarget: LEGACY_KEY_TARGET,
 	vaultReelResolutions: [] as BookEventOfType<'vaultReelResolved'>[],
 });
 

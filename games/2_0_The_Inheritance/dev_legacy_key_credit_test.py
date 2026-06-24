@@ -14,7 +14,7 @@ if str(GAME_DIR) not in sys.path:
 from game_config import GameConfig  # noqa: E402
 from gamestate import GameState  # noqa: E402
 
-LEGACY_KEY_TARGET = 20
+LEGACY_KEY_TARGET = 10
 
 
 def make_game(mode="base", criteria="freegame", collected_count=LEGACY_KEY_TARGET):
