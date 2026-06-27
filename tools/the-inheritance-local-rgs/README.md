@@ -9,6 +9,16 @@ Run from the repository root:
 python tools/the-inheritance-local-rgs/server.py
 ```
 
+The local demo balance is kept in a separate file:
+
+```text
+tools/the-inheritance-local-rgs/demo_settings.py
+```
+
+By default the demo starts with `$1,000.00`. This setting is local-development
+only; it is not imported by the production web SDK path or by the Math SDK
+submission.
+
 The bridge listens on `http://127.0.0.1:3008`. When the frontend has no
 `rgs_url` query parameter, `rgs-requests` uses this local endpoint. When Stake
 provides an RGS URL, the normal remote request path is used unchanged.

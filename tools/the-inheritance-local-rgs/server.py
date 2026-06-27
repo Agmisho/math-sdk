@@ -21,6 +21,8 @@ from urllib.parse import urlparse
 
 import zstandard as zstd
 
+from demo_settings import DEMO_CURRENCY, DEMO_STARTING_BALANCE_USD
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GAME_DIR = REPO_ROOT / "games" / "2_0_The_Inheritance"
@@ -129,7 +131,9 @@ class LocalInheritanceRgs:
         self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
         self.weights_dir = self.resolve_weights_dir()
         self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.weights_dir)
-        self.balance = 1000 * API_AMOUNT_MULTIPLIER
+        self.currency = DEMO_CURRENCY
+        self.starting_balance_usd = DEMO_STARTING_BALANCE_USD
+        self.balance = self.to_api_amount(self.starting_balance_usd)
         self.spin_index = 0
         self.key_count = 0
         self.key_target = int(self.config.legacy_key_collection_target)
@@ -144,6 +148,10 @@ class LocalInheritanceRgs:
             flush=True,
         )
         return PUBLISH_DIR
+
+    @staticmethod
+    def to_api_amount(amount: float) -> int:
+        return round(float(amount) * API_AMOUNT_MULTIPLIER)
 
     @staticmethod
     def normalize_mode(mode: str) -> str:
@@ -242,7 +250,7 @@ class LocalInheritanceRgs:
     def authenticate(self) -> dict:
         return {
             "status": {"statusCode": "SUCCESS", "statusMessage": "Local Math SDK bridge"},
-            "balance": {"amount": self.balance, "currency": "USD"},
+            "balance": {"amount": self.balance, "currency": self.currency},
             "config": {
                 "jurisdiction": {
                     "socialCasino": False,
@@ -305,7 +313,7 @@ class LocalInheritanceRgs:
     def end_round(self) -> dict:
         return {
             "status": {"statusCode": "SUCCESS", "statusMessage": "Round closed"},
-            "balance": {"amount": self.balance, "currency": "USD"},
+            "balance": {"amount": self.balance, "currency": self.currency},
         }
 
 
@@ -358,6 +366,9 @@ class Handler(BaseHTTPRequestHandler):
                     "rtp": RGS.config.rtp,
                     "profile": RGS.config.rtp_profile.slug,
                     "weightsPath": str(RGS.weights_dir),
+                    "demo": True,
+                    "startingBalance": RGS.starting_balance_usd,
+                    "currency": RGS.currency,
                     "legacyKeys": RGS.key_count,
                     "legacyTarget": RGS.key_target,
                 }
