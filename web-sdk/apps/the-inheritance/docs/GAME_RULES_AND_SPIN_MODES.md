@@ -358,10 +358,11 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 
 - `typesBookEvent.ts` and `bookEventHandlerMap.ts` type and handle math custom
   events `collectionUpdate`, `legacyScatterCredit`, and `multiplierUpdate`.
-- After the awaited reel-settle animation, the frontend counts visible H4
-  symbols from the final reveal board exactly once. `collectionUpdate` supplies
-  the target and deterministic event metadata; `legacyScatterCredit.used`
-  resets the visible counter.
+- The frontend treats `collectionUpdate.collected` from the settled Math SDK /
+  RGS result as the authoritative visible Key total. It may animate positions
+  from the event, but it does not independently own or recalculate the total.
+- `legacyScatterCredit.used` resets the visible counter after the virtual Vault
+  support credit is consumed.
 
 ### Source Files
 
@@ -410,7 +411,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 - RTP editions from 92% through 97% are validated in
   `games/2_0_The_Inheritance/docs/RTP_PROFILE_VALIDATION.json`.
 - Scatter Boost follows the resolved math cost of `3x`.
-- The local Python RGS bridge reads generated books and keeps Legacy Key session
+- The local Python RGS bridge reads generated books, loads lookup weights from
+  the selected RTP profile directory when present, and keeps Legacy Key session
   state without moving outcome calculation into the frontend.
 
 ### Remaining Gaps

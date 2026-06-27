@@ -35,14 +35,16 @@ API_AMOUNT_MULTIPLIER = 1_000_000
 HOST = "127.0.0.1"
 PORT = 3008
 PUBLISH_DIR = GAME_DIR / "library" / "publish_files"
+RTP_PROFILE_ROOT = GAME_DIR / "library" / "rtp_profiles"
 
 
 class PublishedMathLibrary:
     """Read settled books through the same lookup weights used by the RGS."""
 
-    def __init__(self, modes: tuple[str, ...]) -> None:
+    def __init__(self, modes: tuple[str, ...], weights_dir: Path) -> None:
+        self.weights_dir = weights_dir
         self.books = {mode: self.load_books(mode) for mode in modes}
-        self.weight_maps = {mode: self.load_weights(mode) for mode in modes}
+        self.weight_maps = {mode: self.load_weights(weights_dir, mode) for mode in modes}
         self.pools = {}
         for mode in modes:
             all_book_ids = list(self.books[mode])
@@ -61,9 +63,9 @@ class PublishedMathLibrary:
             }
 
     @staticmethod
-    def load_weights(mode: str) -> dict[int, int]:
+    def load_weights(weights_dir: Path, mode: str) -> dict[int, int]:
         weights = {}
-        with (PUBLISH_DIR / f"lookUpTable_{mode}_0.csv").open(newline="", encoding="utf-8") as handle:
+        with (weights_dir / f"lookUpTable_{mode}_0.csv").open(newline="", encoding="utf-8") as handle:
             for book_id, weight, _payout in csv.reader(handle):
                 weights[int(book_id)] = int(weight)
         return weights
@@ -125,12 +127,23 @@ class LocalInheritanceRgs:
     def __init__(self) -> None:
         self.config = GameConfig()
         self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
-        self.math_library = PublishedMathLibrary(tuple(self.bet_modes))
+        self.weights_dir = self.resolve_weights_dir()
+        self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.weights_dir)
         self.balance = 1000 * API_AMOUNT_MULTIPLIER
         self.spin_index = 0
         self.key_count = 0
         self.key_target = int(self.config.legacy_key_collection_target)
         self.lock = threading.Lock()
+
+    def resolve_weights_dir(self) -> Path:
+        profile_dir = RTP_PROFILE_ROOT / self.config.rtp_profile.slug
+        if profile_dir.exists():
+            return profile_dir
+        print(
+            f"[local-rgs] RTP profile {profile_dir} not found; falling back to {PUBLISH_DIR}",
+            flush=True,
+        )
+        return PUBLISH_DIR
 
     @staticmethod
     def normalize_mode(mode: str) -> str:
@@ -344,6 +357,7 @@ class Handler(BaseHTTPRequestHandler):
                     "game": "2_0_The_Inheritance",
                     "rtp": RGS.config.rtp,
                     "profile": RGS.config.rtp_profile.slug,
+                    "weightsPath": str(RGS.weights_dir),
                     "legacyKeys": RGS.key_count,
                     "legacyTarget": RGS.key_target,
                 }

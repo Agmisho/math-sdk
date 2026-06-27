@@ -12,7 +12,6 @@ import { stateInheritanceUi } from './stateInheritanceUi.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position, RawSymbol } from './types';
 import config from './config';
-import { SYMBOL_ROLE_KEY, symbolHasRole } from './symbolRoles';
 
 const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) => {
 	if (winLevelData?.alias === 'max') eventEmitter.broadcastAsync({ type: 'uiHide' });
@@ -77,27 +76,6 @@ const settleVaultReelBoard = (bookEvent: BookEventOfType<'vaultReelResolved'>) =
 const normalizeLegacyKeyTarget = (target: number) =>
 	Number.isFinite(target) && target > 0 ? Math.floor(target) : LEGACY_KEY_TARGET;
 const normalizeLegacyKeyCount = (collected: number, target: number) => Math.max(0, Math.min(target, collected));
-const processedCollectionReveals = new WeakSet<object>();
-const countVisibleLegacyKeys = (board: RawSymbol[][]) =>
-	board.reduce(
-		(total, reel) =>
-			total + reel.slice(1, -1).filter((symbol) => symbolHasRole(symbol.name, SYMBOL_ROLE_KEY)).length,
-		0,
-	);
-const collectSettledLegacyKeys = (bookEvent: BookEventOfType<'reveal'>) => {
-	if (bookEvent.gameType !== 'basegame' || stateGame.isBonusBuy || processedCollectionReveals.has(bookEvent)) return;
-	processedCollectionReveals.add(bookEvent);
-
-	const landedKeys = countVisibleLegacyKeys(bookEvent.board);
-	if (landedKeys <= 0) return;
-
-	const target = normalizeLegacyKeyTarget(stateGame.keyTarget);
-	const wasBelowTarget = stateGame.keyCounter < target;
-	stateGame.keyCounter = normalizeLegacyKeyCount(stateGame.keyCounter + landedKeys, target);
-	if (wasBelowTarget && stateGame.keyCounter >= target) {
-		stateInheritanceUi.modal = 'legacyFeatureUnlocked';
-	}
-};
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
@@ -119,7 +97,6 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			revealEvent: bookEvent,
 			paddingBoard: config.paddingReels[bookEvent.gameType],
 		});
-		collectSettledLegacyKeys(bookEvent);
 		if (bookEvent.gameType === 'freegame') {
 			stateGame.freeSpinsRemaining = Math.max(stateGame.freeSpinsRemaining - 1, 0);
 		}
@@ -249,14 +226,41 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
 		// Do nothing
 	},
-	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>) => {
-		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);
+	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>, { bookEvents }: BookEventContext) => {
+		const target = normalizeLegacyKeyTarget(bookEvent.target);
+		const previousCount = stateGame.keyCounter;
+		const nextCount = normalizeLegacyKeyCount(bookEvent.collected, target);
+		const legacyCreditUsed = bookEvents.some(
+			(event) => event.type === 'legacyScatterCredit' && event.used,
+		);
+
+		stateGame.keyTarget = target;
+		stateGame.keyCounter = nextCount;
+		eventEmitter.broadcast({
+			type: 'collectionUpdate',
+			collected: nextCount,
+			target,
+			positions: bookEvent.positions,
+			gameType: bookEvent.gameType,
+		});
+
+		if (!legacyCreditUsed && previousCount < target && nextCount >= target) {
+			stateInheritanceUi.modal = 'legacyFeatureUnlocked';
+		}
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
 		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);
 		if (bookEvent.used) {
 			stateGame.keyCounter = 0;
+		} else {
+			stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected, stateGame.keyTarget);
 		}
+		eventEmitter.broadcast({
+			type: 'legacyScatterCredit',
+			used: bookEvent.used,
+			collected: stateGame.keyCounter,
+			target: stateGame.keyTarget,
+		});
 	},
 	multiplierUpdate: async (bookEvent: BookEventOfType<'multiplierUpdate'>) => {
 		const multiplier = Math.max(1, bookEvent.appliedMultiplier || bookEvent.multiplier || 1);

@@ -40,7 +40,10 @@
 	const WIN_SYMBOL_PRESENTATION_MS = 780;
 	const boardLayout = $derived(context.stateGameDerived.boardLayout());
 
+	const canStopByBoardClick = $derived(!context.stateXstateDerived.isIdle());
+
 	const completeSpin = () => {
+		if (!canStopByBoardClick) return;
 		context.stateGameDerived.enhancedBoard.stop();
 	};
 
@@ -118,19 +121,21 @@
 					alpha={winLineAlpha.current}
 				/>
 			{/if}
-			<Rectangle
-				x={boardLayout.width / 2}
-				y={boardLayout.height / 2}
-				anchor={0.5}
-				width={boardLayout.width}
-				height={boardLayout.height}
-				backgroundColor={0x000000}
-				backgroundAlpha={0.001}
-				eventMode="static"
-				cursor="pointer"
-				onpointerdown={completeSpin}
-				zIndex={80}
-			/>
+			{#if canStopByBoardClick}
+				<Rectangle
+					x={boardLayout.width / 2}
+					y={boardLayout.height / 2}
+					anchor={0.5}
+					width={boardLayout.width}
+					height={boardLayout.height}
+					backgroundColor={0x000000}
+					backgroundAlpha={0.001}
+					eventMode="static"
+					cursor="pointer"
+					onpointerdown={completeSpin}
+					zIndex={80}
+				/>
+			{/if}
 		</BoardContainer>
 	</BoardContext>
 {/if}

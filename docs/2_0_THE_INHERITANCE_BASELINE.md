@@ -1,5 +1,10 @@
 # 2_0_THE_INHERITANCE Baseline
 
+> Superseded note: this historical baseline contains obsolete paytable and
+> frontend notes. Use `games/2_0_The_Inheritance/game_config.py` plus
+> `web-sdk/apps/the-inheritance/docs/GAME_RULES_AND_SPIN_MODES.md` as the
+> canonical current rules.
+
 This file captures the current local baseline before adding Key-driven Vault Reel or other new feature mechanics. Values are confirmed from code and generated local output where available.
 
 ## Core Math Baseline

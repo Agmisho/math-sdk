@@ -60,9 +60,7 @@
 		<InheritanceUi />
 		<Win />
 		<FreeSpinIntro />
-		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
-			<FreeSpinCounter />
-		{/if}
+		<FreeSpinCounter />
 		<FreeSpinOutro />
 		<Transition />
 	{/if}

@@ -1,5 +1,10 @@
 # 2_0_THE_INHERITANCE Audit
 
+> Superseded note: this historical audit is no longer the source of truth for
+> current payout values or feature state. Use
+> `web-sdk/apps/the-inheritance/docs/GAME_RULES_AND_SPIN_MODES.md` and
+> `games/2_0_The_Inheritance/game_config.py` as the canonical references.
+
 This audit records the current local source of truth for The Inheritance before adding new feature mechanics. It intentionally avoids unrelated game folders and treats the local `games/2_0_The_Inheritance` and `web-sdk/apps/the-inheritance` implementations as canonical.
 
 ## A. Exact Project Paths
