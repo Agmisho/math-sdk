@@ -122,7 +122,9 @@
 		return null;
 	};
 	const currentBetCost = () => activeBetModeType() === 'activate' ? stateBet.betAmount * SCATTER_BOOST_MULTIPLIER : stateBet.betAmount;
-	const canPayForBet = () => stateBet.balanceAmount <= 0 || currentBetCost() <= stateBet.balanceAmount;
+	const canPayForBet = () =>
+		stateBet.balanceAmount > 0 &&
+		currentBetCost() <= stateBet.balanceAmount;
 
 	onMount(() => {
 		stateMeta.betModeMeta = { ...stateMeta.betModeMeta, ...inheritanceBetModeMeta };
