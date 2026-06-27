@@ -166,8 +166,10 @@ to trigger the feature.
 Collection rules:
 
 - start at `0 / 10`;
-- count every visible H4 on the final settled 5x5 result;
-- count after reel motion completes;
+- Math/RGS counts every visible H4 on the final settled 5x5 result;
+- frontend displays the `collectionUpdate.collected` value from the settled
+  event stream and does not independently own or recalculate the permanent
+  total;
 - never count the opening board;
 - never count a result twice;
 - collect only on paid Base and Scatter Boost spins in the current math;
