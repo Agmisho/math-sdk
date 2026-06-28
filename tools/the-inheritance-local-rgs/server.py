@@ -190,10 +190,17 @@ class LocalInheritanceRgs:
         ]
 
     def apply_legacy_session_state(self, book: dict, mode: str) -> dict:
+        events = book.get("events", [])
+
         if mode == "bonus":
+            self.rewrite_collection_events(
+                events,
+                collected=self.key_count,
+                landed_keys=0,
+                positions=[],
+            )
             return book
 
-        events = book.get("events", [])
         reveal_event = next(
             (
                 event
@@ -203,6 +210,12 @@ class LocalInheritanceRgs:
             None,
         )
         if not reveal_event:
+            self.rewrite_collection_events(
+                events,
+                collected=self.key_count,
+                landed_keys=0,
+                positions=[],
+            )
             return book
 
         board = self.visible_board(reveal_event)
@@ -216,19 +229,14 @@ class LocalInheritanceRgs:
         )
         legacy_used = bool(legacy_active and natural_scatters >= 2 and legacy_event)
 
-        collection_event = next(
-            (
-                event
-                for event in events
-                if event.get("type") == "collectionUpdate" and event.get("gameType") == "basegame"
-            ),
-            None,
+        displayed_count = 0 if legacy_used else collected_after_spin
+        self.rewrite_collection_events(
+            events,
+            collected=displayed_count,
+            landed_keys=len(key_positions),
+            positions=key_positions,
+            collecting_game_type="basegame",
         )
-        if collection_event:
-            collection_event["collected"] = collected_after_spin
-            collection_event["target"] = self.key_target
-            collection_event["landedKeys"] = len(key_positions)
-            collection_event["positions"] = key_positions
 
         if legacy_event:
             legacy_event["collected"] = self.key_target
@@ -246,6 +254,25 @@ class LocalInheritanceRgs:
 
         self.key_count = 0 if legacy_used else collected_after_spin
         return book
+
+    def rewrite_collection_events(
+        self,
+        events: list[dict],
+        collected: int,
+        landed_keys: int,
+        positions: list[dict],
+        collecting_game_type: str | None = None,
+    ) -> None:
+        """Mirror the authoritative session Key state onto every display event."""
+        for event in events:
+            if event.get("type") != "collectionUpdate":
+                continue
+
+            is_collecting_event = collecting_game_type is not None and event.get("gameType") == collecting_game_type
+            event["collected"] = collected
+            event["target"] = self.key_target
+            event["landedKeys"] = landed_keys if is_collecting_event else 0
+            event["positions"] = positions if is_collecting_event else []
 
     def authenticate(self) -> dict:
         return {
@@ -288,7 +315,7 @@ class LocalInheritanceRgs:
             legacy_active = self.key_count >= self.key_target
             book = self.math_library.select_book(mode, roll, legacy_active)
             book = self.apply_legacy_session_state(book, mode)
-            payout_multiplier = float(book["payoutMultiplier"])
+            payout_multiplier = float(book["payoutMultiplier"]) / 100
             payout_amount = amount * payout_multiplier
             payout_api_amount = round(payout_amount * API_AMOUNT_MULTIPLIER)
             self.balance = max(0, self.balance - cost_api_amount + payout_api_amount)
