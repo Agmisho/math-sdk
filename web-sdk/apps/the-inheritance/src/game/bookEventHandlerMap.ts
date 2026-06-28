@@ -223,7 +223,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		});
 		winLevelSoundsStop();
 	},
-	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
+	finalWin: async () => {
 		// Do nothing
 	},
 	collectionUpdate: async (bookEvent: BookEventOfType<'collectionUpdate'>, { bookEvents }: BookEventContext) => {
