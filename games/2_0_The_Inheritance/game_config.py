@@ -109,6 +109,15 @@ class GameConfig(Config):
             "scatter": ["S"],
             "multiplier": ["M2", "M5", "M10", "M20", "M100"],
         }
+        self.wild_substitution_blocked_symbols = [
+            "H4",
+            "S",
+            "M2",
+            "M5",
+            "M10",
+            "M20",
+            "M100",
+        ]
 
         self.freespin_triggers = {
             self.basegame_type: {3: 8, 4: 12, 5: 15},

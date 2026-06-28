@@ -127,7 +127,7 @@ Active resolved values:
 
 | ID | Display | Current Role |
 | --- | --- | --- |
-| `W` | Wild | Substitutes regular paying symbols; direct pay only for 5 Wilds |
+| `W` | Wild | Substitutes regular paying symbols; direct pay only for 5 Wilds; does not substitute Legacy Keys, Vault Scatters, or Diamond Seals |
 | `S` | Vault Scatter | Free Spin trigger/retrigger symbol |
 | `M2` | Diamond Seal x2 | Current-spin global multiplier source |
 | `M5` | Diamond Seal x5 | Current-spin global multiplier source |

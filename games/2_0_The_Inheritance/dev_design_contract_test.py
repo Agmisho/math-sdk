@@ -35,6 +35,15 @@ def main() -> None:
     assert config.legacy_key_collection_target == 10
     assert config.special_symbols["wild"] == ["W"]
     assert config.special_symbols["scatter"] == ["S"]
+    assert config.wild_substitution_blocked_symbols == [
+        "H4",
+        "S",
+        "M2",
+        "M5",
+        "M10",
+        "M20",
+        "M100",
+    ]
     assert MULTIPLIER_SYMBOL_VALUES == {
         "M2": 2,
         "M5": 5,

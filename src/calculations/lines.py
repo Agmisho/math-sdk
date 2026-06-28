@@ -38,6 +38,7 @@ class Lines:
             "totalWin": 0,
             "wins": [],
         }
+        wild_substitution_blocked_symbols = set(getattr(config, "wild_substitution_blocked_symbols", []))
 
         for line_index in config.paylines.keys():
             line = config.paylines[line_index]
@@ -45,6 +46,7 @@ class Lines:
             finished_wild_win = False if first_sym.check_attribute(wild_key) else True
             first_non_wild = first_sym if finished_wild_win else None
             potential_line = [first_sym]
+            used_wild_substitution = False
 
             wild_matches = 0 * (finished_wild_win) + 1 * (not (finished_wild_win))
             matches = 1 * (finished_wild_win) + 0 * (not (finished_wild_win))
@@ -53,8 +55,12 @@ class Lines:
             for reel in range(1, len(line)):
                 sym = board[reel][line[reel]]
                 if finished_wild_win:
-                    if sym.name == first_non_wild.name or sym.check_attribute(wild_key):
+                    wild_substitution_allowed = first_non_wild.name not in wild_substitution_blocked_symbols
+                    if sym.name == first_non_wild.name:
                         matches += 1
+                    elif wild_substitution_allowed and sym.check_attribute(wild_key):
+                        matches += 1
+                        used_wild_substitution = True
                     else:
                         break
                 else:
@@ -71,7 +77,11 @@ class Lines:
             if (wild_matches, wild_sym) in config.paytable:
                 wild_win = config.paytable[(wild_matches, wild_sym)]
             if first_non_wild is not None:
-                if (wild_matches + matches, first_non_wild.name) in config.paytable:
+                blocked_symbol_used_with_wild = (
+                    first_non_wild.name in wild_substitution_blocked_symbols
+                    and (wild_matches > 0 or used_wild_substitution)
+                )
+                if not blocked_symbol_used_with_wild and (wild_matches + matches, first_non_wild.name) in config.paytable:
                     base_win = config.paytable[(wild_matches + matches, first_non_wild.name)]
 
             if base_win > 0 or wild_win > 0:

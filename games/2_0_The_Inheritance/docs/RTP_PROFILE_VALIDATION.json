@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-24T13:37:06.710790+00:00",
+  "generatedAt": "2026-06-28T18:39:21.251855+00:00",
   "activeProfile": "rtp_97",
   "profiles": [
     {
@@ -13,33 +13,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.91999999998549,
-          "hitRate": 0.2896378543426592,
+          "rtp": 0.9199999999855428,
+          "hitRate": 0.28963785434296774,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835465,
+          "totalWeight": 1125899906835954,
           "targetRtp": 0.92,
-          "absoluteError": 1.4510059820338483e-11,
-          "lookupSha256": "0296c951b6051b2888145bc1ea6b1d4a80e1b2653238e5d201e77c38c4269546"
+          "absoluteError": 1.4457213204366326e-11,
+          "lookupSha256": "853f36f7c567a19872e8b2ffc6314764884a067bb1d78c7e3d529d8875026d23"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.9199999999989479,
-          "hitRate": 0.2899575738498599,
+          "rtp": 0.9199999999988316,
+          "hitRate": 0.2899575738498548,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906839977,
+          "totalWeight": 1125899906839969,
           "targetRtp": 0.92,
-          "absoluteError": 1.0521583604372609e-12,
-          "lookupSha256": "29e8a9f7b21ecb4559b5fc8f8150697441eff12a86cdc6c681a663b362e848e6"
+          "absoluteError": 1.1683987111155147e-12,
+          "lookupSha256": "feaf276f30b30d22905728f26a658550d28c86d2c4d0473224c2f0e0b7f5285e"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9200000000026465,
-          "hitRate": 0.9983139106659752,
+          "rtp": 0.9200000000031491,
+          "hitRate": 0.9972366428110488,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906838568,
+          "totalWeight": 1125899906837898,
           "targetRtp": 0.92,
-          "absoluteError": 2.6464386237989856e-12,
-          "lookupSha256": "31da548e9341cff815eb0455f6c6e5f74b78a15761ba8c6dcce607afcefddb27"
+          "absoluteError": 3.149036587046794e-12,
+          "lookupSha256": "93ad7f0969176fc4a14e003c1034d693f50322cc4bffdee6f05c1f977ce72c0e"
         }
       }
     },
@@ -54,33 +54,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.9299999999857494,
-          "hitRate": 0.2896378543427463,
+          "rtp": 0.9299999999853389,
+          "hitRate": 0.2896378543428151,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835603,
+          "totalWeight": 1125899906835712,
           "targetRtp": 0.93,
-          "absoluteError": 1.4250600699483584e-11,
-          "lookupSha256": "7e81ac0cc751ad0688551c3d96e82f1002e4951959433ac32be66f23637f55d8"
+          "absoluteError": 1.4661161173989967e-11,
+          "lookupSha256": "841f94b14412bff14c63ad1a8d56e0c2e276067baf39ea60ecc3b22369207086"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.929999999999206,
-          "hitRate": 0.2899575738499217,
+          "rtp": 0.9299999999993455,
+          "hitRate": 0.28995757384975207,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906840075,
+          "totalWeight": 1125899906839806,
           "targetRtp": 0.93,
-          "absoluteError": 7.94031507211912e-13,
-          "lookupSha256": "32b84b7597c82658a040ac5448d946f49ba42457f38a0d612ee3132a6b4968fa"
+          "absoluteError": 6.545874953189923e-13,
+          "lookupSha256": "291700653b1bfc77f71feaab8fcefb54a5318210193570402f2884e1fdc8346f"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9300000000045219,
-          "hitRate": 0.9983776995085802,
+          "rtp": 0.9300000000030465,
+          "hitRate": 0.9980716574568806,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906836330,
+          "totalWeight": 1125899906838063,
           "targetRtp": 0.93,
-          "absoluteError": 4.5218273569958e-12,
-          "lookupSha256": "279ee6cd916a4abc1fc9cbd03a9241daafc39b4e0737111124544e2e1de23e63"
+          "absoluteError": 3.0464519795714295e-12,
+          "lookupSha256": "e3e5f9abad87bf736aaad3f32774247766c319c52b2837c885b8ebef914b1e33"
         }
       }
     },
@@ -95,33 +95,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.9399999999854949,
-          "hitRate": 0.2896378543427936,
+          "rtp": 0.9399999999848634,
+          "hitRate": 0.2896378543428592,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835678,
+          "totalWeight": 1125899906835782,
           "targetRtp": 0.94,
-          "absoluteError": 1.450506381672767e-11,
-          "lookupSha256": "5c8d85508bd851864534753a872224077b0eb8cb7d1e8316c77e2ca58a6a30c6"
+          "absoluteError": 1.513655867313446e-11,
+          "lookupSha256": "f0a76976f512dd6d81da3f8d4d0d0d0502115ff05fd0a7bdde9810f82cf54f9a"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.9399999999992145,
-          "hitRate": 0.2899575738497861,
+          "rtp": 0.9399999999992951,
+          "hitRate": 0.28995757384971294,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906839860,
+          "totalWeight": 1125899906839744,
           "targetRtp": 0.94,
-          "absoluteError": 7.854827899222983e-13,
-          "lookupSha256": "33abc136058b8e14da91a7d8b9b11b088c464f7910b28d06d5be92e4b18e64e3"
+          "absoluteError": 7.048805983345119e-13,
+          "lookupSha256": "ba51e9efe11e6ff0cc67680a8a46b752f8ed86119944e6a77488a7f50bee10af"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9400000000031963,
-          "hitRate": 0.9973064545395806,
+          "rtp": 0.9400000000034607,
+          "hitRate": 0.9984482179952325,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906837939,
+          "totalWeight": 1125899906837657,
           "targetRtp": 0.94,
-          "absoluteError": 3.1963320878958257e-12,
-          "lookupSha256": "da667eb4f54f131baaf23de5955bd926c3c90769c136e9b77b7d73b57398985a"
+          "absoluteError": 3.460787212361538e-12,
+          "lookupSha256": "bfa8a49c12da0333f7603e8753d7143be628ec0cd66a433fc10649819d7beade"
         }
       }
     },
@@ -136,33 +136,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.94999999998575,
-          "hitRate": 0.2896378543429482,
+          "rtp": 0.9499999999850773,
+          "hitRate": 0.28963785434277534,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835923,
+          "totalWeight": 1125899906835649,
           "targetRtp": 0.95,
-          "absoluteError": 1.424993456566881e-11,
-          "lookupSha256": "84d270ead72ca3c3cb818088bd3932a6a2b245c198a748007b921abdb2b4c7e9"
+          "absoluteError": 1.492261869628919e-11,
+          "lookupSha256": "46170de35b7fc952cd0ab52557d258681f4f9e62566280f76ce5a343bdb7b2b7"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.9499999999989414,
-          "hitRate": 0.2899575738498523,
+          "rtp": 0.9499999999994956,
+          "hitRate": 0.28995757384973125,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906839965,
+          "totalWeight": 1125899906839773,
           "targetRtp": 0.95,
-          "absoluteError": 1.0585976539800868e-12,
-          "lookupSha256": "20dee5d764e1b105f3241190933a455e8cd38b6b938677aa1c1a6fed68d85980"
+          "absoluteError": 5.043743200872086e-13,
+          "lookupSha256": "322ecc1f4c43810b4b943bd1ad6d506bc733caf41ca98b88f2644fa223d19dae"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9500000000026242,
-          "hitRate": 0.9984751157965537,
+          "rtp": 0.9500000000022749,
+          "hitRate": 0.9981956576211527,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906838695,
+          "totalWeight": 1125899906839117,
           "targetRtp": 0.95,
-          "absoluteError": 2.6242341633064825e-12,
-          "lookupSha256": "40da21dc7c9b3689187b0229f7baa68f3676424955ac408e380a2b3ec7c92092"
+          "absoluteError": 2.2749579997594083e-12,
+          "lookupSha256": "8b487dbadb69e78e417eb5669a417d586f24becd4b6c9563224b7a075a8b39f9"
         }
       }
     },
@@ -177,33 +177,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.959999999985726,
-          "hitRate": 0.2896378543428485,
+          "rtp": 0.9599999999860249,
+          "hitRate": 0.28963785434270656,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835765,
+          "totalWeight": 1125899906835540,
           "targetRtp": 0.96,
-          "absoluteError": 1.4273915383000713e-11,
-          "lookupSha256": "c1384a0ff447bd1b2db5fae769b2199a5ea171adbddc0517134ba12f494d8ea1"
+          "absoluteError": 1.397504334477162e-11,
+          "lookupSha256": "32fb35599e1147cdc74aca59fc74692dc06ef3a7e74381a4b045bf6303637f21"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.9599999999989531,
-          "hitRate": 0.2899575738498807,
+          "rtp": 0.9599999999991929,
+          "hitRate": 0.2899575738497754,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906840010,
+          "totalWeight": 1125899906839843,
           "targetRtp": 0.96,
-          "absoluteError": 1.0468292899190601e-12,
-          "lookupSha256": "67757c25fc214d9d8e5b472c9ddc431c56d919bc70cd1ba1024c4439cfe1b84d"
+          "absoluteError": 8.070211166000263e-13,
+          "lookupSha256": "e1e9e2093211911fbeabe0796764c6c6c621486e491c6780840cf615b651b2ef"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9600000000050818,
-          "hitRate": 0.9981181169484642,
+          "rtp": 0.9600000000040935,
+          "hitRate": 0.9987534890107659,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835811,
+          "totalWeight": 1125899906837009,
           "targetRtp": 0.96,
-          "absoluteError": 5.081823850616729e-12,
-          "lookupSha256": "e92c2e5b7ec28ceea442ce6676d8200d2c056e199367b73644edc29ec6a075c4"
+          "absoluteError": 4.093503314095415e-12,
+          "lookupSha256": "f503c07cddd8d8b9541f1d27f392903c007ac7a0b9705833745425059bca737e"
         }
       }
     },
@@ -218,33 +218,33 @@
       "modes": {
         "base": {
           "rows": 10000,
-          "rtp": 0.9699999999848186,
-          "hitRate": 0.2896378543427923,
+          "rtp": 0.9699999999861258,
+          "hitRate": 0.2896378543427135,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906835676,
+          "totalWeight": 1125899906835551,
           "targetRtp": 0.97,
-          "absoluteError": 1.5181411683329316e-11,
-          "lookupSha256": "e198fbe4fd1ca7fda8c518db4cff704107d92674afcccf04fe9fcf63d654165d"
+          "absoluteError": 1.3874124071833194e-11,
+          "lookupSha256": "5dcf8ffed7c8b37030109247efd6edc3d29d3fe6d23cd77ab92b11700b9a464f"
         },
         "scatter_boost": {
           "rows": 10000,
-          "rtp": 0.9699999999994682,
-          "hitRate": 0.28995757384975707,
+          "rtp": 0.9699999999991117,
+          "hitRate": 0.2899575738496606,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906839814,
+          "totalWeight": 1125899906839661,
           "targetRtp": 0.97,
-          "absoluteError": 5.3179682879545e-13,
-          "lookupSha256": "6c1b59b36881a618cb6496fb1b50e45b4bedd1d69ade3aeef7387651e22ae2b2"
+          "absoluteError": 8.882894420025877e-13,
+          "lookupSha256": "ccb2c768d0ce8338b26ea163f3e0d73c90a202e3e289850ce378f9840b565e2d"
         },
         "bonus": {
           "rows": 10000,
-          "rtp": 0.9700000000036796,
-          "hitRate": 0.9984036631305012,
+          "rtp": 0.9700000000036004,
+          "hitRate": 0.9982353632777798,
           "maxPayoutMultiplier": 5000.0,
-          "totalWeight": 1125899906837547,
+          "totalWeight": 1125899906837699,
           "targetRtp": 0.97,
-          "absoluteError": 3.679612170515156e-12,
-          "lookupSha256": "c67ba2241f04a85371385203417c419b30385d5945c17067db45719555435bf7"
+          "absoluteError": 3.6004532688593827e-12,
+          "lookupSha256": "88c1615d53f5d22fbffeb70789fa9d50a8dfc7fc7f1dc51ccace8ba9de6c3d3d"
         }
       }
     }

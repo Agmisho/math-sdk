@@ -91,9 +91,23 @@ def validate_bonus_preserves_key_state(module) -> None:
     assert all(event.get("positions", []) == [] for event in collection_events)
 
 
+def validate_replay_returns_stored_round(module) -> None:
+    rgs = module.LocalInheritanceRgs()
+    result = rgs.play({"mode": "base", "amount": 1, "currency": "USD"})
+    round_data = result["round"]
+    replay = rgs.replay(str(round_data["roundID"]))
+
+    assert replay["roundID"] == round_data["roundID"]
+    assert replay["amount"] == round_data["amount"]
+    assert replay["mode"] == round_data["mode"]
+    assert replay["state"] == round_data["state"]
+    assert rgs.replay("missing-round")["error"] == "REPLAY_NOT_FOUND"
+
+
 if __name__ == "__main__":
     server_module = load_server_module()
     validate_payout_multiplier_scaling(server_module)
     validate_legacy_key_rewrite(server_module)
     validate_bonus_preserves_key_state(server_module)
+    validate_replay_returns_stored_round(server_module)
     print("The Inheritance local RGS bridge validation: OK")

@@ -227,7 +227,7 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 | Symbol ID | Displayed Name | Frontend Asset | Classification | Payout Behavior | Special Behavior / Feature Interaction |
 | --- | --- | --- | --- | --- | --- |
 | `S` | Vault Scatter | `Vault Scatter.png` | Special | No line pay | Triggers/retriggers Free Spins; no independent scatter pay found. |
-| `W` | Wild | `Wild.png` | Special paying symbol | 5=`$20.00` on a $1 bet | Substitutes for paying symbols. Wild has no configured 3- or 4-of-kind pay. All-wild 5-of-kind can pay as Wild. Does not substitute Scatter. |
+| `W` | Wild | `Wild.png` | Special paying symbol | 5=`$20.00` on a $1 bet | Substitutes regular paying symbols. Wild has no configured 3- or 4-of-kind pay. All-wild 5-of-kind can pay as Wild. Does not substitute Vault Scatters, Legacy Keys, or Diamond Seal multiplier symbols. |
 | `M2` | Diamond Seal Multiplier 2 | `Diamond Seal Multiplier 2.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `2`. |
 | `M5` | Diamond Seal Multiplier 5 | `Diamond Seal Multiplier 5.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `5`. |
 | `M10` | Diamond Seal Multiplier 10 | `Diamond Seal Multiplier 10.png` | Special multiplier | No line pay | Fixed current-spin global multiplier value `10`. |
@@ -285,7 +285,8 @@ The real occurrence source is a combination of reel CSV stop counts, bet-mode di
 - Minimum match count: `3` for normal paying symbols; Wild direct pay is configured for `5` Wilds only.
 - Wins are line-based; multiple paylines can pay in the same reveal.
 - Wild substitution:
-  - Wild substitutes paying symbols.
+  - Wild substitutes regular paying symbols.
+  - Wild does not substitute Vault Scatters, Legacy Keys, or Diamond Seal multiplier symbols.
   - All-wild 5-of-kind lines can pay as Wild.
   - The line calculator compares the wild-only payout against the substituted-symbol payout and uses the better paying result.
 - Scatter payout rules:

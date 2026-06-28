@@ -137,6 +137,7 @@ class LocalInheritanceRgs:
         self.spin_index = 0
         self.key_count = 0
         self.key_target = int(self.config.legacy_key_collection_target)
+        self.rounds: dict[str, dict] = {}
         self.lock = threading.Lock()
 
     def resolve_weights_dir(self) -> Path:
@@ -322,19 +323,22 @@ class LocalInheritanceRgs:
             round_id = int(time.time_ns())
             self.spin_index += 1
 
+            round_data = {
+                "roundID": round_id,
+                "amount": cost_api_amount,
+                "payout": payout_amount,
+                "payoutMultiplier": payout_multiplier,
+                "active": False,
+                "mode": mode,
+                "event": "0",
+                "state": book["events"],
+            }
+            self.rounds[str(round_id)] = deepcopy(round_data)
+
             return {
                 "status": {"statusCode": "SUCCESS", "statusMessage": "Math SDK result"},
                 "balance": {"amount": self.balance, "currency": currency},
-                "round": {
-                    "roundID": round_id,
-                    "amount": cost_api_amount,
-                    "payout": payout_amount,
-                    "payoutMultiplier": payout_multiplier,
-                    "active": False,
-                    "mode": mode,
-                    "event": "0",
-                    "state": book["events"],
-                },
+                "round": round_data,
             }
 
     def end_round(self) -> dict:
@@ -342,6 +346,12 @@ class LocalInheritanceRgs:
             "status": {"statusCode": "SUCCESS", "statusMessage": "Round closed"},
             "balance": {"amount": self.balance, "currency": self.currency},
         }
+
+    def replay(self, round_id: str) -> dict:
+        round_data = self.rounds.get(str(round_id))
+        if round_data is None:
+            return {"error": "REPLAY_NOT_FOUND", "message": f"No local round found for {round_id}."}
+        return deepcopy(round_data)
 
 
 RGS = LocalInheritanceRgs()
@@ -401,7 +411,9 @@ class Handler(BaseHTTPRequestHandler):
                 }
             )
         elif path.startswith("/bet/replay/"):
-            self.send_json({"error": "REPLAY_NOT_AVAILABLE", "message": "Local replay requires a stored round."}, 404)
+            round_id = path.rstrip("/").split("/")[-1]
+            data = RGS.replay(round_id)
+            self.send_json(data, 404 if data.get("error") else 200)
         else:
             self.send_json({"error": "NOT_FOUND", "message": path}, 404)
 
