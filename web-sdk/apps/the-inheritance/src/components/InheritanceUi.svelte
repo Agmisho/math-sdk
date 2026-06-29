@@ -122,9 +122,10 @@
 		return null;
 	};
 	const currentBetCost = () => activeBetModeType() === 'activate' ? stateBet.betAmount * SCATTER_BOOST_MULTIPLIER : stateBet.betAmount;
-	const canPayForBet = () =>
-		stateBet.balanceAmount > 0 &&
-		currentBetCost() <= stateBet.balanceAmount;
+	const canPayForBet = () => {
+		const cost = currentBetCost();
+		return cost > 0 && stateBet.balanceAmount >= cost;
+	};
 
 	onMount(() => {
 		stateMeta.betModeMeta = { ...stateMeta.betModeMeta, ...inheritanceBetModeMeta };
@@ -173,6 +174,7 @@
 		if (stateBetDerived.hasAutoBetCounter()) {
 			stateBet.autoSpinsCounter = 0;
 		} else {
+			if (!canPayForBet()) return;
 			stateModal.modal = { name: 'autoSpin' };
 		}
 	};
@@ -187,12 +189,14 @@
 	};
 
 	const pressSpin = () => {
-		pressBetSound();
 		if (context.stateXstateDerived.isIdle()) {
+			if (!canPayForBet()) return;
+			pressBetSound();
 			if (activeBetModeType() === 'buy') stateBet.activeBetModeKey = 'BASE';
 			stateGameDerived.startBaseSpin();
 			context.eventEmitter.broadcast({ type: 'bet' });
 		} else if (!stopDisabled) {
+			pressBetSound();
 			if (stateBetDerived.hasAutoBetCounter()) stateBet.autoSpinsCounter = 0;
 			context.stateGameDerived.enhancedBoard.stop();
 			context.eventEmitter.broadcast({ type: 'stopButtonClick' });

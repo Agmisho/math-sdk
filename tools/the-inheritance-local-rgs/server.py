@@ -205,6 +205,17 @@ class LocalInheritanceRgs:
             if symbol.get("name") == symbol_name
         ]
 
+    @staticmethod
+    def collection_event_for_game(events: list[dict], game_type: str) -> dict | None:
+        return next(
+            (
+                event
+                for event in events
+                if event.get("type") == "collectionUpdate" and event.get("gameType") == game_type
+            ),
+            None,
+        )
+
     def apply_legacy_session_state(self, book: dict, mode: str) -> dict:
         events = book.get("events", [])
 
@@ -234,11 +245,13 @@ class LocalInheritanceRgs:
             )
             return book
 
+        collection_event = self.collection_event_for_game(events, "basegame")
+        landed_keys = int(collection_event.get("landedKeys", 0)) if collection_event else 0
+        key_positions = list(collection_event.get("positions", [])) if collection_event else []
         board = self.visible_board(reveal_event)
-        key_positions = self.symbol_positions(board, "H4")
         natural_scatters = len(self.symbol_positions(board, "S"))
         legacy_active = self.key_count >= self.key_target
-        collected_after_spin = min(self.key_target, self.key_count + len(key_positions))
+        collected_after_spin = min(self.key_target, self.key_count + max(0, landed_keys))
         legacy_event = next(
             (event for event in events if event.get("type") == "legacyScatterCredit" and event.get("used")),
             None,
@@ -249,7 +262,7 @@ class LocalInheritanceRgs:
         self.rewrite_collection_events(
             events,
             collected=displayed_count,
-            landed_keys=len(key_positions),
+            landed_keys=landed_keys,
             positions=key_positions,
             collecting_game_type="basegame",
         )

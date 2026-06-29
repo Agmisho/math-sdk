@@ -32,14 +32,16 @@ def validate_insufficient_balance_gate() -> None:
     ui = read("components/InheritanceUi.svelte")
     assert_contains(
         ui,
-        "stateBet.balanceAmount > 0",
-        "positive-balance requirement for Spin/Auto gating",
+        "cost > 0 && stateBet.balanceAmount >= cost",
+        "positive affordable cost requirement for Spin/Auto gating",
     )
     assert_contains(
         ui,
-        "currentBetCost() <= stateBet.balanceAmount",
-        "bet cost affordability requirement",
+        "if (!canPayForBet()) return;",
+        "handler-level insufficient-balance guard",
     )
+    if ui.count("if (!canPayForBet()) return;") < 2:
+        raise AssertionError("Spin and Auto handlers must both guard with canPayForBet().")
     assert_not_contains(
         ui,
         "stateBet.balanceAmount <= 0 ||",
@@ -58,6 +60,20 @@ def validate_legacy_key_authority() -> None:
         handler,
         "positions: bookEvent.positions",
         "Key positions reserved for animation/display",
+    )
+
+    rgs = (APP_DIR.parents[2] / "tools" / "the-inheritance-local-rgs" / "server.py").read_text(
+        encoding="utf-8",
+    )
+    assert_contains(
+        rgs,
+        "collection_event = self.collection_event_for_game(events, \"basegame\")",
+        "local RGS reads Math SDK collectionUpdate event",
+    )
+    assert_not_contains(
+        rgs,
+        "key_positions = self.symbol_positions(board, \"H4\")",
+        "local RGS reveal-board H4 recount for permanent Key state",
     )
 
 
