@@ -8,8 +8,10 @@ import sys
 from pathlib import Path
 
 GAME_DIR = Path(__file__).resolve().parent
-if str(GAME_DIR) not in sys.path:
-    sys.path.insert(0, str(GAME_DIR))
+REPO_ROOT = GAME_DIR.parents[1]
+for import_path in (str(GAME_DIR), str(REPO_ROOT)):
+    if import_path not in sys.path:
+        sys.path.insert(0, import_path)
 
 from game_config import GameConfig  # noqa: E402
 from gamestate import GameState  # noqa: E402

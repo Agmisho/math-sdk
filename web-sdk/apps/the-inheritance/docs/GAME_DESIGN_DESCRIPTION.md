@@ -104,9 +104,11 @@ Boot is a display state, not a Math SDK paid spin.
 ### Scatter Boost
 
 Scatter Boost is a paid base-style spin using Math SDK mode
-`scatter_boost`. It costs 3x the selected bet and uses the configured increased
-Free Spin distribution. The frontend must not manufacture extra Vault symbols
-or random feature results.
+`scatter_boost`. It costs 3x the selected bet. Its direct Free Spin
+distribution quota is 10.8% versus Base at 10.0%; including the separate 0.1%
+wincap feature-entry path, total forced feature-entry allocation is 10.9%
+versus Base at 10.1%. The frontend must not manufacture extra Vault symbols or
+random feature results.
 
 ### Bought
 

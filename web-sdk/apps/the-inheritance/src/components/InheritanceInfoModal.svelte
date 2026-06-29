@@ -108,7 +108,7 @@
 
 			<section class="info-section compact">
 				<h3>Feature Costs</h3>
-				<p>Buy Bonus costs 100x the selected bet and starts 10 free spins. Scatter Boost costs {config.betModes.scatter_boost.cost}x the selected bet per spin and increases the scatter/free-spin trigger chance while active.</p>
+				<p>Buy Bonus costs 100x the selected bet and starts 10 free spins. Scatter Boost costs {config.betModes.scatter_boost.cost}x the selected bet per spin. Its direct free-spin distribution quota is 10.8% instead of Base at 10.0%; including the separate 0.1% wincap feature-entry path, total forced feature-entry allocation is 10.9% instead of Base at 10.1%.</p>
 				<p>All displayed wins are illustrative until confirmed and settled by the RGS. Malfunction voids all plays and payouts.</p>
 			</section>
 		</section>

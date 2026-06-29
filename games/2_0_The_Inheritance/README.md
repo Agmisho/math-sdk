@@ -35,7 +35,7 @@ The frontend `BUY` button opens a Buy menu with two options:
 
 | Buy menu option | Internal mode | Cost | Behavior |
 |---|---|---:|---|
-| Scatter Boost | `scatter_boost` | 3x base bet per spin | Base spin with 8% relative higher 3-scatter trigger chance |
+| Scatter Boost | `scatter_boost` | 3x base bet per spin | Base-style spin with direct free-spin quota `10.8%` versus Base `10.0%`; including the separate `0.1%` wincap feature-entry path, total forced feature-entry allocation is `10.9%` versus Base `10.1%` |
 | Bonus Buy | `bonus` | 100x base bet | Starts a bought 3-, 4-, or 5-scatter entry state and awards 10 free spins |
 
 Scatter chance enhancer target:

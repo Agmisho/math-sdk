@@ -13,6 +13,7 @@ from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import threading
@@ -38,14 +39,16 @@ HOST = "127.0.0.1"
 PORT = 3008
 PUBLISH_DIR = GAME_DIR / "library" / "publish_files"
 RTP_PROFILE_ROOT = GAME_DIR / "library" / "rtp_profiles"
+ALLOW_PUBLISH_FALLBACK_ENV = "THE_INHERITANCE_ALLOW_PUBLISH_FALLBACK"
 
 
 class PublishedMathLibrary:
     """Read settled books through the same lookup weights used by the RGS."""
 
-    def __init__(self, modes: tuple[str, ...], weights_dir: Path) -> None:
+    def __init__(self, modes: tuple[str, ...], books_dir: Path, weights_dir: Path) -> None:
+        self.books_dir = books_dir
         self.weights_dir = weights_dir
-        self.books = {mode: self.load_books(mode) for mode in modes}
+        self.books = {mode: self.load_books(books_dir, mode) for mode in modes}
         self.weight_maps = {mode: self.load_weights(weights_dir, mode) for mode in modes}
         self.pools = {}
         for mode in modes:
@@ -73,8 +76,8 @@ class PublishedMathLibrary:
         return weights
 
     @staticmethod
-    def load_books(mode: str) -> dict[int, dict]:
-        path = PUBLISH_DIR / f"books_{mode}.jsonl.zst"
+    def load_books(books_dir: Path, mode: str) -> dict[int, dict]:
+        path = books_dir / f"books_{mode}.jsonl.zst"
         books = {}
         with path.open("rb") as compressed:
             with zstd.ZstdDecompressor().stream_reader(compressed) as reader:
@@ -129,8 +132,9 @@ class LocalInheritanceRgs:
     def __init__(self) -> None:
         self.config = GameConfig()
         self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
+        self.books_dir = self.resolve_books_dir()
         self.weights_dir = self.resolve_weights_dir()
-        self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.weights_dir)
+        self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.books_dir, self.weights_dir)
         self.currency = DEMO_CURRENCY
         self.starting_balance_usd = DEMO_STARTING_BALANCE_USD
         self.balance = self.to_api_amount(self.starting_balance_usd)
@@ -144,10 +148,21 @@ class LocalInheritanceRgs:
         profile_dir = RTP_PROFILE_ROOT / self.config.rtp_profile.slug
         if profile_dir.exists():
             return profile_dir
+        if os.getenv(ALLOW_PUBLISH_FALLBACK_ENV) != "1":
+            raise FileNotFoundError(
+                f"Missing RTP profile artifacts for {self.config.rtp_profile.slug}: {profile_dir}. "
+                f"Generate profiles or set {ALLOW_PUBLISH_FALLBACK_ENV}=1 for legacy fallback."
+            )
         print(
             f"[local-rgs] RTP profile {profile_dir} not found; falling back to {PUBLISH_DIR}",
             flush=True,
         )
+        return PUBLISH_DIR
+
+    @staticmethod
+    def resolve_books_dir() -> Path:
+        if not PUBLISH_DIR.exists():
+            raise FileNotFoundError(f"Missing shared published book artifacts: {PUBLISH_DIR}")
         return PUBLISH_DIR
 
     @staticmethod
@@ -402,7 +417,10 @@ class Handler(BaseHTTPRequestHandler):
                     "game": "2_0_The_Inheritance",
                     "rtp": RGS.config.rtp,
                     "profile": RGS.config.rtp_profile.slug,
+                    "booksPath": str(RGS.books_dir),
                     "weightsPath": str(RGS.weights_dir),
+                    "profileSelection": "server-side THE_INHERITANCE_RTP",
+                    "sessionStateModel": "development-only process-local state",
                     "demo": True,
                     "startingBalance": RGS.starting_balance_usd,
                     "currency": RGS.currency,

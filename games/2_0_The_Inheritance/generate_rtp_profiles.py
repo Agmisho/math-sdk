@@ -35,6 +35,7 @@ MODES = ("base", "scatter_boost", "bonus")
 LIBRARY_DIR = GAME_DIR / "library"
 PROFILE_ROOT = LIBRARY_DIR / "rtp_profiles"
 REPORT_PATH = GAME_DIR / "docs" / "RTP_PROFILE_VALIDATION.json"
+STATIC_ARTIFACT_MANIFEST_PATH = GAME_DIR / "docs" / "STATIC_RELEASE_ARTIFACT_MANIFEST.json"
 
 
 def file_sha256(path: Path) -> str:
@@ -184,6 +185,14 @@ def main() -> None:
     with REPORT_PATH.open("w", encoding="utf-8") as handle:
         json.dump(output, handle, indent=2)
     print(f"Wrote {REPORT_PATH}")
+
+    from dev_static_release_artifact_test import build_manifest, normalized_json  # noqa: PLC0415
+
+    STATIC_ARTIFACT_MANIFEST_PATH.write_text(
+        normalized_json(build_manifest()),
+        encoding="utf-8",
+    )
+    print(f"Wrote {STATIC_ARTIFACT_MANIFEST_PATH}")
 
 
 if __name__ == "__main__":

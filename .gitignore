@@ -37,3 +37,18 @@ __pycache__/
 .env.*
 
 backups/
+
+# The Inheritance release-critical static math package.
+# Keep the rest of library/ ignored, but retain the exact publish package,
+# RTP-specific lookup/config editions, and verification files for audit.
+!games/2_0_The_Inheritance/library/
+!games/2_0_The_Inheritance/library/publish_files/
+!games/2_0_The_Inheritance/library/publish_files/**
+!games/2_0_The_Inheritance/library/rtp_profiles/
+!games/2_0_The_Inheritance/library/rtp_profiles/**
+!games/2_0_The_Inheritance/library/configs/
+!games/2_0_The_Inheritance/library/configs/config.json
+!games/2_0_The_Inheritance/library/configs/config_fe_2_0_The_Inheritance.json
+!games/2_0_The_Inheritance/library/configs/math_config.json
+!games/2_0_The_Inheritance/library/configs/event_config_*.json
+!games/2_0_The_Inheritance/library/configs/books_*.verification.json

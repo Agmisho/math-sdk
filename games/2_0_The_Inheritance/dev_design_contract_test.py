@@ -2,6 +2,15 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+GAME_DIR = Path(__file__).resolve().parent
+REPO_ROOT = GAME_DIR.parents[1]
+for import_path in (str(GAME_DIR), str(REPO_ROOT)):
+    if import_path not in sys.path:
+        sys.path.insert(0, import_path)
+
 from game_config import GameConfig
 from inheritance_symbol_roles import MULTIPLIER_SYMBOL_VALUES
 from rtp_profiles import DEFAULT_RTP_PERCENTAGE, SUPPORTED_RTP_PERCENTAGES

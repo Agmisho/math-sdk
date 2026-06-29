@@ -4,9 +4,7 @@ const paytable = (three: number, four: number, five: number) => [
 	{ '3': three },
 ];
 const wildPaytable = [{ '5': 20 }];
-const configuredRtp = Number(import.meta.env.PUBLIC_THE_INHERITANCE_RTP ?? '0.97');
-const supportedRtpValues = new Set([0.92, 0.93, 0.94, 0.95, 0.96, 0.97]);
-const rtp = supportedRtpValues.has(configuredRtp) ? configuredRtp : 0.97;
+const rtp = 0.97;
 
 const symbols = {
 	S: { special_properties: ['scatter'] },

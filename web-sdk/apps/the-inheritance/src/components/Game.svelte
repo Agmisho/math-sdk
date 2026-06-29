@@ -27,6 +27,7 @@
 	import InheritanceBuyModal from './InheritanceBuyModal.svelte';
 	import InheritanceInfoModal from './InheritanceInfoModal.svelte';
 	import LegacyFeatureUnlockedModal from './LegacyFeatureUnlockedModal.svelte';
+	import GlobalMultiplier from './GlobalMultiplier.svelte';
 
 	const context = getContext();
 
@@ -56,6 +57,7 @@
 		<BoardFrame />
 		<Board />
 		<Anticipations />
+		<GlobalMultiplier />
 
 		<InheritanceUi />
 		<Win />

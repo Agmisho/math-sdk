@@ -40,7 +40,9 @@
 	const WIN_SYMBOL_PRESENTATION_MS = 780;
 	const boardLayout = $derived(context.stateGameDerived.boardLayout());
 
-	const canStopByBoardClick = $derived(!context.stateXstateDerived.isIdle());
+	const canStopByBoardClick = $derived(
+		context.stateGame.board.some((reel) => reel.reelState.motion === 'spinning'),
+	);
 
 	const completeSpin = () => {
 		if (!canStopByBoardClick) return;

@@ -6,35 +6,38 @@
 </script>
 
 <script lang="ts">
-	import { MainContainer } from 'components-layout';
 	import { FadeContainer } from 'components-pixi';
 
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE } from '../game/constants';
 	import { anchorToPivot, BitmapText, Container, Sprite, type Sizes } from 'pixi-svelte';
 
 	const context = getContext();
 	const PANEL_KEY_DESKTOP = 'Frame_FSCounter.png';
 	const PANEL_RATIO_DESKTOP = 824 / 622;
 	const panelKey = PANEL_KEY_DESKTOP;
-	const panelWidth = $derived(SYMBOL_SIZE * 2);
+	const panelWidth = $derived(context.stateGameDerived.frameLayout().width * 0.15);
 	const panelSizes = $derived({
 		width: panelWidth,
 		height: panelWidth / PANEL_RATIO_DESKTOP,
 	});
 	const scale = 1;
-	const position = $derived({
-		x:
-			context.stateGameDerived.boardLayout().x -
-			context.stateGameDerived.boardLayout().width * 0.5 -
-			panelSizes.width -
-			SYMBOL_SIZE * 0.7,
-		y:
-			context.stateGameDerived.boardLayout().y -
-			context.stateGameDerived.boardLayout().height * 0.5,
+	const position = $derived.by(() => {
+		const frame = context.stateGameDerived.frameLayout();
+		const stacked = context.stateLayoutDerived.isStacked();
+		if (stacked) {
+			return {
+				x: frame.grid.x + panelSizes.width * 0.55,
+				y: Math.max(panelSizes.height * 0.65, frame.grid.y - panelSizes.height * 0.34),
+			};
+		}
+
+		return {
+			x: frame.grid.x - panelSizes.width * 0.7,
+			y: frame.grid.y + panelSizes.height * 0.25,
+		};
 	});
 
-	const fontSize = SYMBOL_SIZE * 0.275;
+	const fontSize = $derived(panelWidth * 0.14);
 
 	let show = $state(false);
 	let current = $state(0);
@@ -58,36 +61,34 @@
 	});
 </script>
 
-<MainContainer>
-	<FadeContainer {show} {...position} {scale}>
-		<Sprite key={panelKey} {...panelSizes} />
-		<Container
-			x={panelSizes.width * 0.5}
-			y={panelSizes.height * 0.48}
-			pivot={anchorToPivot({
-				sizes: textContainerSizes,
-				anchor: { x: 0.5, y: 0.5 },
-			})}
-		>
-			<BitmapText
-				text={'FREE SPIN'}
-				style={{
-					fontFamily: 'gold',
-					fontSize,
-					wordWrap: false,
-				}}
-				onresize={(sizes) => (titleSizes = sizes)}
-			/>
-			<BitmapText
-				text={`${current} OF ${total}`}
-				{...counterPosition}
-				anchor={{ x: 0.5, y: 0 }}
-				style={{
-					fontFamily: 'gold',
-					fontSize,
-				}}
-				onresize={(sizes) => (counterSizes = sizes)}
-			/>
-		</Container>
-	</FadeContainer>
-</MainContainer>
+<FadeContainer {show} {...position} {scale}>
+	<Sprite key={panelKey} {...panelSizes} />
+	<Container
+		x={panelSizes.width * 0.5}
+		y={panelSizes.height * 0.48}
+		pivot={anchorToPivot({
+			sizes: textContainerSizes,
+			anchor: { x: 0.5, y: 0.5 },
+		})}
+	>
+		<BitmapText
+			text={'FREE SPIN'}
+			style={{
+				fontFamily: 'gold',
+				fontSize,
+				wordWrap: false,
+			}}
+			onresize={(sizes) => (titleSizes = sizes)}
+		/>
+		<BitmapText
+			text={`${current} OF ${total}`}
+			{...counterPosition}
+			anchor={{ x: 0.5, y: 0 }}
+			style={{
+				fontFamily: 'gold',
+				fontSize,
+			}}
+			onresize={(sizes) => (counterSizes = sizes)}
+		/>
+	</Container>
+</FadeContainer>
