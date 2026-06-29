@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Container, Rectangle, Sprite, Text } from 'pixi-svelte';
+	import { Container, Rectangle, Sprite } from 'pixi-svelte';
 	import { FadeContainer, LoadingProgress } from 'components-pixi';
 	import { MainContainer } from 'components-layout';
 
@@ -15,31 +15,37 @@
 	const context = getContext();
 
 	let loadingType = $state<'start' | 'transition'>('start');
+	const layout = () => context.stateLayoutDerived.mainLayout();
+	const loadingBarWidth = () => Math.min(540, layout().width * 0.34);
 </script>
 
-<!-- logo and loading progress -->
+<!-- title artwork and loading progress -->
 <FadeContainer show={loadingType === 'start'}>
 	<MainContainer>
+		<Sprite
+			key="inheritanceLoader"
+			anchor={0.5}
+			x={layout().width * 0.5}
+			y={layout().height * 0.5}
+			width={layout().width}
+			height={layout().height}
+			zIndex={-2}
+		/>
+		<Rectangle
+			x={0}
+			y={0}
+			width={layout().width}
+			height={layout().height}
+			backgroundColor={0x000000}
+			backgroundAlpha={0.1}
+			zIndex={-1}
+		/>
 		<Container
-			x={context.stateLayoutDerived.mainLayout().width * 0.5}
-			y={context.stateLayoutDerived.mainLayout().height * 0.5}
+			x={layout().width * 0.5}
+			y={layout().height * 0.82}
 		>
-			<Sprite key="H4" anchor={0.5} y={-80} width={190} height={190} rotation={-0.28} />
-			<Text
-				text="THE INHERITANCE"
-				anchor={0.5}
-				y={75}
-				style={{
-					fontFamily: 'Georgia',
-					fontSize: 54,
-					fontWeight: '800',
-					fill: 0xffe6a2,
-					stroke: { color: 0x140b04, width: 7 },
-					letterSpacing: 3,
-				}}
-			/>
 			{#if !context.stateApp.loaded}
-				<LoadingProgress y={155} width={420} height={22}>
+				<LoadingProgress width={loadingBarWidth()} height={22}>
 					{#snippet background(sizes)}
 						<Rectangle
 							{...sizes}

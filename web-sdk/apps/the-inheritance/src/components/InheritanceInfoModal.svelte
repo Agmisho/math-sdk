@@ -96,7 +96,7 @@
 								{:else if symbolName === 'W'}
 									<p>ID W. Wild symbol. Substitutes for regular paying symbols and pays directly only as five Wilds.</p>
 								{:else if symbolName === 'H4'}
-									<p>ID H4. Legacy Key. Collected only on settled paid base/scatter-boost boards, never opening boards, bonus buy trigger boards, or free spins. The RGS/Math result owns the permanent Key total and sends the counter value after the final 5x5 result settles; the meter resets when the 10-key Vault support credit is used.</p>
+									<p>ID H4. Legacy Key. Collect 10 to have an additional Vault Ready which will make getting the Bonus easier.</p>
 								{:else}
 									<p>Diamond Seal multiplier. The displayed value applies globally to the settled line-win total for the result.</p>
 								{/if}
@@ -106,11 +106,6 @@
 				</div>
 			</section>
 
-			<section class="info-section compact">
-				<h3>Feature Costs</h3>
-				<p>Buy Bonus costs 100x the selected bet and starts 10 free spins. Scatter Boost costs {config.betModes.scatter_boost.cost}x the selected bet per spin. Its direct free-spin distribution quota is 10.8% instead of Base at 10.0%; including the separate 0.1% wincap feature-entry path, total forced feature-entry allocation is 10.9% instead of Base at 10.1%.</p>
-				<p>All displayed wins are illustrative until confirmed and settled by the RGS. Malfunction voids all plays and payouts.</p>
-			</section>
 		</section>
 	</Popup>
 {/if}
@@ -300,16 +295,11 @@
 		color: #fff2bb;
 	}
 
-	.special-grid p,
-	.compact p {
+	.special-grid p {
 		margin: 0.25rem 0 0;
 		font-size: 0.82rem;
 		line-height: 1.35;
 		color: rgba(255, 244, 203, 0.9);
-	}
-
-	.compact p + p {
-		margin-top: 0.65rem;
 	}
 
 	@media (max-width: 760px) {

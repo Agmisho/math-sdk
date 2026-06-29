@@ -21,6 +21,11 @@ export default {
 		src: inheritanceAsset('backgrounds/background.png'),
 		preload: true,
 	},
+	inheritanceLoader: {
+		type: 'sprite',
+		src: inheritanceAsset('ui/loader.png'),
+		preload: true,
+	},
 	inheritanceFrame: {
 		type: 'sprite',
 		src: inheritanceAsset('ui/Frame1.png'),
@@ -218,5 +223,10 @@ export default {
 	coins: {
 		type: 'spriteSheet',
 		src: new URL('../../assets/sprites/coin/SD2_Coin.json', import.meta.url).href,
+	},
+	sound: {
+		type: 'audio',
+		src: new URL('../../assets/audio/sounds.json', import.meta.url).href,
+		preload: true,
 	},
 };
