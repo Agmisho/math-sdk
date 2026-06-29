@@ -250,15 +250,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	legacyScatterCredit: async (bookEvent: BookEventOfType<'legacyScatterCredit'>) => {
 		stateGame.keyTarget = normalizeLegacyKeyTarget(bookEvent.target);
-		if (bookEvent.used) {
-			stateGame.keyCounter = 0;
-		} else {
-			stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected, stateGame.keyTarget);
-		}
 		eventEmitter.broadcast({
 			type: 'legacyScatterCredit',
 			used: bookEvent.used,
-			collected: stateGame.keyCounter,
+			collected: normalizeLegacyKeyCount(bookEvent.collected, stateGame.keyTarget),
 			target: stateGame.keyTarget,
 		});
 	},

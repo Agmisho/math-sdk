@@ -32,7 +32,7 @@ def validate_insufficient_balance_gate() -> None:
     ui = read("components/InheritanceUi.svelte")
     assert_contains(
         ui,
-        "cost > 0 && stateBet.balanceAmount >= cost",
+        "stateBet.balanceAmount > 0 &&\n\t\tcurrentBetCost() <= stateBet.balanceAmount",
         "positive affordable cost requirement for Spin/Auto gating",
     )
     assert_contains(
@@ -56,10 +56,29 @@ def validate_legacy_key_authority() -> None:
         "normalizeLegacyKeyCount(bookEvent.collected, target)",
         "collectionUpdate.collected authoritative meter update",
     )
+    if handler.count("stateGame.keyCounter =") != 1:
+        raise AssertionError("Only collectionUpdate.collected may assign stateGame.keyCounter.")
+    assert_not_contains(
+        handler,
+        "stateGame.keyCounter = 0",
+        "legacyScatterCredit direct key meter reset",
+    )
+    assert_not_contains(
+        handler,
+        "stateGame.keyCounter = normalizeLegacyKeyCount(bookEvent.collected, stateGame.keyTarget)",
+        "legacyScatterCredit direct key meter assignment",
+    )
     assert_contains(
         handler,
         "positions: bookEvent.positions",
         "Key positions reserved for animation/display",
+    )
+
+    legacy_counter = read("components/LegacyKeyCounter.svelte")
+    assert_not_contains(
+        legacy_counter,
+        "legacyScatterCredit: ({ used })",
+        "LegacyKeyCounter display reset outside collectionUpdate.collected",
     )
 
     rgs = (APP_DIR.parents[2] / "tools" / "the-inheritance-local-rgs" / "server.py").read_text(

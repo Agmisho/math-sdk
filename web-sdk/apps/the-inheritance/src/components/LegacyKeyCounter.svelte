@@ -48,9 +48,6 @@
 		collectionUpdate: ({ collected }) => {
 			collectedKeys = Math.max(0, Math.min(TOTAL_KEYS, collected ?? 0));
 		},
-		legacyScatterCredit: ({ used }) => {
-			if (used) collectedKeys = 0;
-		},
 	});
 </script>
 
