@@ -8,6 +8,7 @@ on:
     paths:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
+      - "tools/the-inheritance-release-check.py"
       - "tools/the-inheritance-*/**"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
@@ -20,6 +21,7 @@ on:
     paths:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
+      - "tools/the-inheritance-release-check.py"
       - "tools/the-inheritance-*/**"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
