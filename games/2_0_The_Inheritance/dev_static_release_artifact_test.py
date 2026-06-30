@@ -116,6 +116,18 @@ def assert_lookup_matches_report(profile: dict[str, Any], profile_dir: Path) -> 
             raise AssertionError(f"{profile['profile']} {mode} exceeds {MAX_PAYOUT_MULTIPLIER}x cap.")
 
 
+def assert_profile_books(profile_name: str, profile_dir: Path) -> list[dict[str, Any]]:
+    files = []
+    for mode in MODES:
+        book_name = f"books_{mode}.jsonl.zst"
+        profile_book = profile_dir / book_name
+        source_book = PUBLISH_DIR / book_name
+        if sha256(profile_book) != sha256(source_book):
+            raise AssertionError(f"{profile_name} {book_name} differs from shared source books.")
+        files.append(file_entry(profile_book))
+    return files
+
+
 def assert_release_manifest() -> dict[str, Any]:
     manifest = read_json(RELEASE_DIR / "manifest.json")
     expected_profiles = [f"rtp_{percentage}" for percentage in PROFILES]
@@ -194,6 +206,7 @@ def build_manifest() -> dict[str, Any]:
         profile_dir = PROFILE_ROOT / profile_name
         profile_report = profile_reports[profile_name]
         assert_lookup_matches_report(profile_report, profile_dir)
+        profile_books = assert_profile_books(profile_name, profile_dir)
 
         profiles.append(
             {
@@ -209,6 +222,7 @@ def build_manifest() -> dict[str, Any]:
                         file_entry(profile_dir / f"lookUpTable_{mode}_0.csv")
                         for mode in MODES
                     ],
+                    *profile_books,
                 ],
                 "modes": profile_report["modes"],
             }
@@ -242,10 +256,11 @@ def build_manifest() -> dict[str, Any]:
         "rtpProfiles": [f"rtp_{percentage}" for percentage in PROFILES],
         "artifactPolicy": (
             "Compressed books are shared as canonical generation outputs, then "
-            "intentionally duplicated into every release/rtp_* upload folder. "
-            "Each RTP edition has distinct lookup weights and config files. The "
-            "active publish lookups must match the active RTP profile, and every "
-            "Stake upload folder must be self-contained."
+            "intentionally duplicated into every library/rtp_profiles/rtp_* "
+            "profile and release/rtp_* upload folder. Each RTP edition has "
+            "distinct lookup weights and config files. The active publish "
+            "lookups must match the active RTP profile, and every Stake upload "
+            "folder must be self-contained."
         ),
         "maxPayoutMultiplier": MAX_PAYOUT_MULTIPLIER,
         "rtpValidation": file_entry(RTP_VALIDATION_PATH),

@@ -17,7 +17,7 @@
       "sha256": "ccb2c768d0ce8338b26ea163f3e0d73c90a202e3e289850ce378f9840b565e2d"
     }
   },
-  "artifactPolicy": "Compressed books are shared as canonical generation outputs, then intentionally duplicated into every release/rtp_* upload folder. Each RTP edition has distinct lookup weights and config files. The active publish lookups must match the active RTP profile, and every Stake upload folder must be self-contained.",
+  "artifactPolicy": "Compressed books are shared as canonical generation outputs, then intentionally duplicated into every library/rtp_profiles/rtp_* profile and release/rtp_* upload folder. Each RTP edition has distinct lookup weights and config files. The active publish lookups must match the active RTP profile, and every Stake upload folder must be self-contained.",
   "configAndEventFiles": [
     {
       "bytes": 3191,
@@ -110,6 +110,21 @@
           "bytes": 199500,
           "path": "library/rtp_profiles/rtp_92/lookUpTable_bonus_0.csv",
           "sha256": "93ad7f0969176fc4a14e003c1034d693f50322cc4bffdee6f05c1f977ce72c0e"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_92/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_92/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_92/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
@@ -188,6 +203,21 @@
           "bytes": 200784,
           "path": "library/rtp_profiles/rtp_93/lookUpTable_bonus_0.csv",
           "sha256": "e3e5f9abad87bf736aaad3f32774247766c319c52b2837c885b8ebef914b1e33"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_93/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_93/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_93/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
@@ -266,6 +296,21 @@
           "bytes": 200606,
           "path": "library/rtp_profiles/rtp_94/lookUpTable_bonus_0.csv",
           "sha256": "bfa8a49c12da0333f7603e8753d7143be628ec0cd66a433fc10649819d7beade"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_94/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_94/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_94/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
@@ -344,6 +389,21 @@
           "bytes": 200775,
           "path": "library/rtp_profiles/rtp_95/lookUpTable_bonus_0.csv",
           "sha256": "8b487dbadb69e78e417eb5669a417d586f24becd4b6c9563224b7a075a8b39f9"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_95/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_95/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_95/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
@@ -422,6 +482,21 @@
           "bytes": 198078,
           "path": "library/rtp_profiles/rtp_96/lookUpTable_bonus_0.csv",
           "sha256": "f503c07cddd8d8b9541f1d27f392903c007ac7a0b9705833745425059bca737e"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_96/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_96/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_96/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
@@ -500,6 +575,21 @@
           "bytes": 200415,
           "path": "library/rtp_profiles/rtp_97/lookUpTable_bonus_0.csv",
           "sha256": "88c1615d53f5d22fbffeb70789fa9d50a8dfc7fc7f1dc51ccace8ba9de6c3d3d"
+        },
+        {
+          "bytes": 2149958,
+          "path": "library/rtp_profiles/rtp_97/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 2242050,
+          "path": "library/rtp_profiles/rtp_97/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 12682489,
+          "path": "library/rtp_profiles/rtp_97/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
         }
       ],
       "modes": {
