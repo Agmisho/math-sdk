@@ -46,8 +46,10 @@ jobs:
 
       - name: Install Math SDK dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          set -o pipefail
+          mkdir -p artifacts
+          python -m pip install --upgrade pip 2>&1 | tee artifacts/pip-bootstrap.log
+          python -m pip install -r requirements.txt 2>&1 | tee artifacts/math-dependency-install.log
 
       - name: Install Web SDK dependencies
         working-directory: web-sdk
@@ -81,6 +83,8 @@ jobs:
           name: the-inheritance-release-proof
           path: |
             artifacts/the-inheritance-ci-summary.json
+            artifacts/pip-bootstrap.log
+            artifacts/math-dependency-install.log
             web-sdk/apps/the-inheritance/build-release/**
             web-sdk/apps/the-inheritance/playwright-report/**
             web-sdk/apps/the-inheritance/test-results/**
