@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const frontendCommand = process.env.THE_INHERITANCE_E2E_STATIC_DIR
+	? 'python ../../../tools/the-inheritance-static-server.py'
+	: 'corepack pnpm exec vite dev --host 127.0.0.1 --port 3007';
+
 export default defineConfig({
 	testDir: './e2e',
 	timeout: 60_000,
@@ -22,7 +26,7 @@ export default defineConfig({
 			reuseExistingServer: false,
 		},
 		{
-			command: 'corepack pnpm exec vite dev --host 127.0.0.1 --port 3007',
+			command: frontendCommand,
 			url: 'http://127.0.0.1:3007',
 			timeout: 120_000,
 			reuseExistingServer: false,
