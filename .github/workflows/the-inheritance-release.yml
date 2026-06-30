@@ -33,6 +33,10 @@ on:
       - "web-sdk/turbo.json"
       - "requirements.txt"
 
+concurrency:
+  group: the-inheritance-release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
