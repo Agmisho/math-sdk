@@ -151,4 +151,5 @@ def main() -> None:
     print("\nThe Inheritance release-readiness proof: OK", flush=True)
 
 
-if __name__ == "__main__":n    main()
+if __name__ == "__main__":
+    main()
