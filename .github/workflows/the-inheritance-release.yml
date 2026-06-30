@@ -58,7 +58,9 @@ jobs:
           pnpm install --frozen-lockfile
 
       - name: Run The Inheritance release proof
-        run: python tools/the-inheritance-release-check.py
+        run: |
+          set -o pipefail
+          python tools/the-inheritance-release-check.py 2>&1 | tee artifacts/release-proof.log
 
       - name: Install Playwright Chromium
         working-directory: web-sdk
@@ -85,6 +87,7 @@ jobs:
             artifacts/the-inheritance-ci-summary.json
             artifacts/pip-bootstrap.log
             artifacts/math-dependency-install.log
+            artifacts/release-proof.log
             web-sdk/apps/the-inheritance/build-release/**
             web-sdk/apps/the-inheritance/playwright-report/**
             web-sdk/apps/the-inheritance/test-results/**
