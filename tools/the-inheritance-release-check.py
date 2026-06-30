@@ -21,6 +21,12 @@ SUBMISSION_PROFILE = "rtp_97"
 SUBMISSION_RTP = "0.97"
 CHECK_TIMEOUT_SECONDS = 300
 FRONTEND_BUILD_TIMEOUT_SECONDS = 720
+REQUIRED_STATIC_ASSETS = (
+    Path("assets/the-inheritance/ui/loader.png"),
+    Path("assets/the-inheritance/audio/main-theme.mp3"),
+    Path("assets/the-inheritance/audio/spin.mp3"),
+    Path("assets/the-inheritance/audio/scatter-landing.mp3"),
+)
 
 CHECKS = (
     "games/2_0_The_Inheritance/tools/validate_release_packages.py",
@@ -113,6 +119,10 @@ def validate_static_output(output_dir: Path) -> None:
     app_dir = output_dir / "_app"
     if not index_html.is_file() or not app_dir.is_dir() or not any(app_dir.rglob("*.js")):
         raise RuntimeError("Frontend build did not produce a complete static site.")
+    for required_asset in REQUIRED_STATIC_ASSETS:
+        asset = output_dir / required_asset
+        if not asset.is_file() or asset.stat().st_size <= 1024:
+            raise RuntimeError(f"Generated frontend is missing a required asset: {required_asset}")
     for item in output_dir.rglob("*"):
         if item.is_symlink():
             raise RuntimeError(f"Submission frontend cannot contain symlinks: {item}")
