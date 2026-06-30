@@ -8,8 +8,8 @@ on:
     paths:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
-      - "tools/the-inheritance-release-check.py"
-      - "tools/the-inheritance-*/**"
+      - "tools/the-inheritance-*.py"
+      - "tools/assemble-the-inheritance-submission.py"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
       - "web-sdk/package.json"
@@ -21,8 +21,8 @@ on:
     paths:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
-      - "tools/the-inheritance-release-check.py"
-      - "tools/the-inheritance-*/**"
+      - "tools/the-inheritance-*.py"
+      - "tools/assemble-the-inheritance-submission.py"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
       - "web-sdk/package.json"
@@ -31,10 +31,16 @@ on:
       - "web-sdk/turbo.json"
       - "requirements.txt"
 
+permissions:
+  contents: read
+
 jobs:
   release-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
+    env:
+      THE_INHERITANCE_RELEASE_BUILD_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_97
+      CI: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -47,19 +53,36 @@ jobs:
           node-version: "22.16.0"
 
       - name: Install Math SDK dependencies
+        timeout-minutes: 8
         run: |
-          set -o pipefail
           mkdir -p artifacts
-          python -m pip install --upgrade pip 2>&1 | tee artifacts/pip-bootstrap.log
-          python -m pip install -r requirements.txt 2>&1 | tee artifacts/math-dependency-install.log
+          set +e
+          python -m pip install --upgrade pip > artifacts/pip-bootstrap.log 2>&1
+          bootstrap_status=$?
+          python -m pip install -r requirements.txt > artifacts/math-dependency-install.log 2>&1
+          dependency_status=$?
+          cat artifacts/pip-bootstrap.log
+          cat artifacts/math-dependency-install.log
+          test $bootstrap_status -eq 0
+          exit $dependency_status
 
       - name: Install Web SDK dependencies
+        timeout-minutes: 10
         working-directory: web-sdk
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         run: |
           corepack enable
           pnpm install --frozen-lockfile
 
+      - name: Restore Playwright browser cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('web-sdk/pnpm-lock.yaml') }}
+
       - name: Run The Inheritance release proof
+        timeout-minutes: 15
         run: |
           mkdir -p artifacts
           set +e
@@ -69,32 +92,49 @@ jobs:
           exit $status
 
       - name: Install Playwright Chromium
+        timeout-minutes: 10
         working-directory: web-sdk
-        run: pnpm --filter the-inheritance exec playwright install --with-deps chromium
+        run: |
+          pnpm --filter the-inheritance exec playwright install --with-deps chromium > ../artifacts/playwright-install.log 2>&1
+          cat ../artifacts/playwright-install.log
 
       - name: Run The Inheritance browser smoke QA
+        timeout-minutes: 12
         working-directory: web-sdk
         env:
           NPM_CONFIG_NODE_LINKER: hoisted
+          THE_INHERITANCE_E2E_STATIC_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_97
         run: |
-          pnpm --filter the-inheritance e2e-smoke
-          pnpm --filter the-inheritance e2e-mobile
+          set +e
+          pnpm --filter the-inheritance e2e-smoke > ../artifacts/browser-smoke.log 2>&1
+          desktop_status=$?
+          pnpm --filter the-inheritance e2e-mobile >> ../artifacts/browser-smoke.log 2>&1
+          mobile_status=$?
+          cat ../artifacts/browser-smoke.log
+          test $desktop_status -eq 0
+          exit $mobile_status
 
       - name: Write machine-readable release summary
-        if: success()
+        timeout-minutes: 3
         run: python games/2_0_The_Inheritance/tools/write_ci_summary.py
 
-      - name: Upload release proof summary
+      - name: Assemble Stake submission bundle
+        timeout-minutes: 5
+        run: python tools/assemble-the-inheritance-submission.py
+
+      - name: Upload Stake submission proof
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: the-inheritance-release-proof
+          name: the-inheritance-stake-submission-rtp97
           path: |
+            artifacts/the-inheritance-submission-rtp97/**
             artifacts/the-inheritance-ci-summary.json
             artifacts/pip-bootstrap.log
             artifacts/math-dependency-install.log
             artifacts/release-proof.log
-            web-sdk/apps/the-inheritance/build-release/**
+            artifacts/playwright-install.log
+            artifacts/browser-smoke.log
             web-sdk/apps/the-inheritance/playwright-report/**
             web-sdk/apps/the-inheritance/test-results/**
           if-no-files-found: warn
