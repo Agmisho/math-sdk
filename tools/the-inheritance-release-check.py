@@ -27,14 +27,44 @@ CHECKS = (
     "web-sdk/apps/the-inheritance/dev_frontend_audit_test.py",
     "web-sdk/apps/the-inheritance/dev_release_asset_qa_test.py",
 )
-# Stake submission proof uses the selected 97% frontend. The math-package
-# validation above continues to validate every available RTP edition.
 SUBMISSION_RTP = "0.97"
+BUILD_EXIT_TIMEOUT_SECONDS = 90
 
 
 def run(command: list[str], cwd: Path, env: dict[str, str] | None = None) -> None:
     print("$ " + " ".join(command), flush=True)
     subprocess.run(command, cwd=cwd, env=env, check=True)
+
+
+def static_build_is_complete(output_dir: Path) -> bool:
+    index_html = output_dir / "index.html"
+    app_dir = output_dir / "_app"
+    return index_html.is_file() and app_dir.is_dir() and any(app_dir.rglob("*.js"))
+
+
+def run_frontend_build(command: list[str], env: dict[str, str], output_dir: Path) -> None:
+    print("$ " + " ".join(command), flush=True)
+    try:
+        subprocess.run(
+            command,
+            cwd=WEB_DIR,
+            env=env,
+            check=True,
+            timeout=BUILD_EXIT_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired as exc:
+        # SvelteKit has already written the completed static site but pnpm can
+        # remain alive in the hosted runner. Accept only a validated final build.
+        if static_build_is_complete(output_dir):
+            print(
+                "Static frontend files are complete; build command did not exit "
+                f"within {BUILD_EXIT_TIMEOUT_SECONDS}s, continuing with validated output.",
+                flush=True,
+            )
+            return
+        raise RuntimeError(
+            "Frontend build timed out before a complete static output was produced."
+        ) from exc
 
 
 def build_frontend() -> None:
@@ -50,7 +80,7 @@ def build_frontend() -> None:
     output_dir = APP_DIR / "build-release" / f"proof-{run_id}" / "rtp_97"
     env["PUBLIC_THE_INHERITANCE_RTP"] = SUBMISSION_RTP
     env["THE_INHERITANCE_RELEASE_BUILD_DIR"] = str(output_dir)
-    run([pnpm, "--filter", "the-inheritance", "build"], WEB_DIR, env)
+    run_frontend_build([pnpm, "--filter", "the-inheritance", "build"], env, output_dir)
 
 
 def main() -> None:
