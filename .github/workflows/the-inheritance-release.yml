@@ -9,6 +9,7 @@ on:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
       - "tools/the-inheritance-*.py"
+      - "tools/the-inheritance-local-rgs/**"
       - "tools/assemble-the-inheritance-submission.py"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
@@ -22,6 +23,7 @@ on:
       - ".github/workflows/the-inheritance-release.yml"
       - "games/2_0_The_Inheritance/**"
       - "tools/the-inheritance-*.py"
+      - "tools/the-inheritance-local-rgs/**"
       - "tools/assemble-the-inheritance-submission.py"
       - "web-sdk/apps/the-inheritance/**"
       - "web-sdk/packages/**"
@@ -63,8 +65,9 @@ jobs:
           dependency_status=$?
           cat artifacts/pip-bootstrap.log
           cat artifacts/math-dependency-install.log
-          test $bootstrap_status -eq 0
-          exit $dependency_status
+          if [ $bootstrap_status -ne 0 ] || [ $dependency_status -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Install Web SDK dependencies
         timeout-minutes: 10
@@ -95,8 +98,11 @@ jobs:
         timeout-minutes: 10
         working-directory: web-sdk
         run: |
+          set +e
           pnpm --filter the-inheritance exec playwright install --with-deps chromium > ../artifacts/playwright-install.log 2>&1
+          status=$?
           cat ../artifacts/playwright-install.log
+          exit $status
 
       - name: Run The Inheritance browser smoke QA
         timeout-minutes: 12
@@ -111,8 +117,9 @@ jobs:
           pnpm --filter the-inheritance e2e-mobile >> ../artifacts/browser-smoke.log 2>&1
           mobile_status=$?
           cat ../artifacts/browser-smoke.log
-          test $desktop_status -eq 0
-          exit $mobile_status
+          if [ $desktop_status -ne 0 ] || [ $mobile_status -ne 0 ]; then
+            exit 1
+          fi
 
       - name: Write machine-readable release summary
         timeout-minutes: 3
