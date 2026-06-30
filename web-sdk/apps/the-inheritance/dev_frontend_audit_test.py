@@ -98,10 +98,20 @@ def validate_legacy_key_authority() -> None:
 
 def validate_rtp_authority() -> None:
     config = read("game/config.ts")
-    assert_not_contains(
+    assert_contains(
         config,
         "PUBLIC_THE_INHERITANCE_RTP",
-        "frontend-controlled RTP profile selector",
+        "build-time RTP display binding",
+    )
+    assert_contains(
+        config,
+        "supportedRtpPercentages = [92, 93, 94, 95, 96, 97]",
+        "approved RTP edition allow-list",
+    )
+    assert_not_contains(
+        config,
+        "const rtp = 0.97;",
+        "hardcoded 97% frontend RTP",
     )
 
 

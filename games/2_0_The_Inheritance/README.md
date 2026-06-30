@@ -302,3 +302,12 @@ pnpm --filter the-inheritance build
 ```
 
 Do not pair a frontend RTP value with a different math lookup edition.
+
+Run the repeatable release proof before any provider review package is prepared:
+
+```powershell
+python tools/the-inheritance-release-check.py
+```
+
+The release checklist and remaining manual browser/mobile/audio/performance
+evidence gate live in `games/2_0_The_Inheritance/docs/RELEASE_READINESS_CHECKLIST.md`.

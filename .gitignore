@@ -37,6 +37,7 @@ __pycache__/
 .env.*
 
 backups/
+tmp/
 
 # The Inheritance release-critical static math package.
 # Keep the rest of library/ ignored, but retain the exact publish package,

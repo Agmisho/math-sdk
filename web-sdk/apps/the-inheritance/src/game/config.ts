@@ -1,10 +1,33 @@
+import * as envStaticPublic from '$env/static/public';
+
 const paytable = (three: number, four: number, five: number) => [
 	{ '5': five },
 	{ '4': four },
 	{ '3': three },
 ];
 const wildPaytable = [{ '5': 20 }];
-const rtp = 0.97;
+const supportedRtpPercentages = [92, 93, 94, 95, 96, 97] as const;
+const defaultRtp = 0.97;
+const parseRtp = (rawValue: string | undefined) => {
+	if (!rawValue?.trim()) return defaultRtp;
+
+	const normalized = rawValue.trim().toLowerCase().replace('%', '');
+	const numericValue = Number(normalized);
+	if (!Number.isFinite(numericValue)) {
+		throw new Error(`Invalid PUBLIC_THE_INHERITANCE_RTP value: ${rawValue}`);
+	}
+
+	const percentageValue = numericValue <= 1 ? numericValue * 100 : numericValue;
+	const percentage = Math.round(percentageValue);
+	if (
+		Math.abs(percentageValue - percentage) > 1e-9 ||
+		!supportedRtpPercentages.includes(percentage as (typeof supportedRtpPercentages)[number])
+	) {
+		throw new Error('PUBLIC_THE_INHERITANCE_RTP must be one of 92%, 93%, 94%, 95%, 96%, or 97%.');
+	}
+	return percentage / 100;
+};
+const rtp = parseRtp(envStaticPublic.PUBLIC_THE_INHERITANCE_RTP);
 
 const symbols = {
 	S: { special_properties: ['scatter'] },

@@ -8,8 +8,13 @@ PYTHONPATH=. python tools/the-inheritance-local-rgs/dev_local_rgs_bridge_test.py
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
 from pathlib import Path
 import sys
+import threading
+from urllib.error import HTTPError
+from urllib.request import urlopen
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -29,6 +34,32 @@ def load_server_module():
 
 def balance_usd(module, rgs) -> float:
     return rgs.balance / module.API_AMOUNT_MULTIPLIER
+
+
+def reset_game_config_singleton(module) -> None:
+    module.GameConfig._instance = None
+
+
+def validate_rtp_profile_binding(module) -> None:
+    original_value = os.environ.get("THE_INHERITANCE_RTP")
+    try:
+        os.environ["THE_INHERITANCE_RTP"] = "92"
+        reset_game_config_singleton(module)
+        rgs = module.LocalInheritanceRgs()
+
+        assert rgs.config.rtp == 0.92
+        assert rgs.config.rtp_profile.slug == "rtp_92"
+        assert rgs.books_dir == rgs.weights_dir
+        assert rgs.books_dir.name == "rtp_92"
+        for mode in ("base", "scatter_boost", "bonus"):
+            assert (rgs.books_dir / f"books_{mode}.jsonl.zst").is_file()
+            assert (rgs.weights_dir / f"lookUpTable_{mode}_0.csv").is_file()
+    finally:
+        if original_value is None:
+            os.environ.pop("THE_INHERITANCE_RTP", None)
+        else:
+            os.environ["THE_INHERITANCE_RTP"] = original_value
+        reset_game_config_singleton(module)
 
 
 def validate_payout_multiplier_scaling(module) -> None:
@@ -142,6 +173,47 @@ def validate_replay_returns_stored_round(module) -> None:
     assert rgs.replay("missing-round")["error"] == "REPLAY_NOT_FOUND"
 
 
+def validate_http_replay_route(module) -> None:
+    original_rgs = module.RGS
+    rgs = module.LocalInheritanceRgs()
+    result = rgs.play({"mode": "base", "amount": 1, "currency": "USD"})
+    round_data = result["round"]
+    module.RGS = rgs
+
+    server = module.ThreadingHTTPServer(("127.0.0.1", 0), module.Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+
+    try:
+        path_url = (
+            f"{base_url}/bet/replay/2_0_The_Inheritance/1/base/"
+            f"{round_data['roundID']}"
+        )
+        with urlopen(path_url, timeout=10) as response:
+            replay = json.loads(response.read().decode("utf-8"))
+        assert replay["roundID"] == round_data["roundID"]
+        assert replay["state"] == round_data["state"]
+
+        query_url = f"{base_url}/bet/replay?roundID={round_data['roundID']}"
+        with urlopen(query_url, timeout=10) as response:
+            replay = json.loads(response.read().decode("utf-8"))
+        assert replay["roundID"] == round_data["roundID"]
+
+        try:
+            urlopen(f"{base_url}/bet/replay/2_0_The_Inheritance/1/base/missing-round", timeout=10)
+        except HTTPError as error:
+            assert error.code == 404
+            missing = json.loads(error.read().decode("utf-8"))
+            assert missing["error"] == "REPLAY_NOT_FOUND"
+        else:
+            raise AssertionError("Missing replay round must return HTTP 404.")
+    finally:
+        server.shutdown()
+        server.server_close()
+        module.RGS = original_rgs
+
+
 def validate_insufficient_balance_rejects_without_state_change(module) -> None:
     rgs = module.LocalInheritanceRgs()
     rgs.balance = 0
@@ -168,10 +240,12 @@ def validate_insufficient_balance_rejects_without_state_change(module) -> None:
 
 if __name__ == "__main__":
     server_module = load_server_module()
+    validate_rtp_profile_binding(server_module)
     validate_payout_multiplier_scaling(server_module)
     validate_legacy_key_rewrite(server_module)
     validate_collection_update_is_authoritative(server_module)
     validate_bonus_preserves_key_state(server_module)
     validate_replay_returns_stored_round(server_module)
+    validate_http_replay_route(server_module)
     validate_insufficient_balance_rejects_without_state_change(server_module)
     print("The Inheritance local RGS bridge validation: OK")

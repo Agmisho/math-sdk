@@ -23,11 +23,18 @@ The bridge listens on `http://127.0.0.1:3008`. When the frontend has no
 `rgs_url` query parameter, `rgs-requests` uses this local endpoint. When Stake
 provides an RGS URL, the normal remote request path is used unchanged.
 
+RTP profile selection is server-side only through `THE_INHERITANCE_RTP`. The
+bridge loads both lookup CSVs and compressed book files from the selected
+self-contained `games/2_0_The_Inheritance/library/rtp_profiles/rtp_XX` folder.
+Set the matching frontend display value separately at build time with
+`PUBLIC_THE_INHERITANCE_RTP`.
+
 The bridge stores settled rounds in memory for the current process and supports
 local replay through:
 
 ```text
 GET /bet/replay/:game/:version/:mode/:roundID
+GET /bet/replay?roundID=:roundID
 ```
 
 This is for local Web SDK replay testing only. Restarting the bridge clears the

@@ -3,6 +3,7 @@ import * as envStaticPublic from '$env/static/public';
 export let PUBLIC_SITE_MODE = envStaticPublic.PUBLIC_SITE_MODE;
 export let PUBLIC_SENTRY_DSN = envStaticPublic.PUBLIC_SENTRY_DSN;
 export let PUBLIC_CHROMATIC = envStaticPublic.PUBLIC_CHROMATIC === 'true';
+export let PUBLIC_THE_INHERITANCE_RTP = envStaticPublic.PUBLIC_THE_INHERITANCE_RTP;
 
 // ==============================================================================================================================
 // $env/dynamic/private

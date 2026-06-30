@@ -18,7 +18,7 @@ from pathlib import Path
 import sys
 import threading
 import time
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import zstandard as zstd
 
@@ -132,8 +132,9 @@ class LocalInheritanceRgs:
     def __init__(self) -> None:
         self.config = GameConfig()
         self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
-        self.books_dir = self.resolve_books_dir()
-        self.weights_dir = self.resolve_weights_dir()
+        self.profile_dir = self.resolve_profile_dir()
+        self.books_dir = self.resolve_books_dir(self.profile_dir)
+        self.weights_dir = self.resolve_weights_dir(self.profile_dir)
         self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.books_dir, self.weights_dir)
         self.currency = DEMO_CURRENCY
         self.starting_balance_usd = DEMO_STARTING_BALANCE_USD
@@ -144,7 +145,7 @@ class LocalInheritanceRgs:
         self.rounds: dict[str, dict] = {}
         self.lock = threading.Lock()
 
-    def resolve_weights_dir(self) -> Path:
+    def resolve_profile_dir(self) -> Path:
         profile_dir = RTP_PROFILE_ROOT / self.config.rtp_profile.slug
         if profile_dir.exists():
             return profile_dir
@@ -160,10 +161,34 @@ class LocalInheritanceRgs:
         return PUBLISH_DIR
 
     @staticmethod
-    def resolve_books_dir() -> Path:
-        if not PUBLISH_DIR.exists():
-            raise FileNotFoundError(f"Missing shared published book artifacts: {PUBLISH_DIR}")
-        return PUBLISH_DIR
+    def resolve_books_dir(profile_dir: Path) -> Path:
+        missing_books = [
+            f"books_{mode}.jsonl.zst"
+            for mode in ("base", "scatter_boost", "bonus")
+            if not (profile_dir / f"books_{mode}.jsonl.zst").is_file()
+        ]
+        if not missing_books:
+            return profile_dir
+        if profile_dir == PUBLISH_DIR or os.getenv(ALLOW_PUBLISH_FALLBACK_ENV) == "1":
+            if not PUBLISH_DIR.exists():
+                raise FileNotFoundError(f"Missing shared published book artifacts: {PUBLISH_DIR}")
+            return PUBLISH_DIR
+        raise FileNotFoundError(
+            f"RTP profile {profile_dir} is not self-contained; missing books: {', '.join(missing_books)}."
+        )
+
+    @staticmethod
+    def resolve_weights_dir(profile_dir: Path) -> Path:
+        missing_lookups = [
+            f"lookUpTable_{mode}_0.csv"
+            for mode in ("base", "scatter_boost", "bonus")
+            if not (profile_dir / f"lookUpTable_{mode}_0.csv").is_file()
+        ]
+        if missing_lookups:
+            raise FileNotFoundError(
+                f"RTP profile {profile_dir} is missing lookup tables: {', '.join(missing_lookups)}."
+            )
+        return profile_dir
 
     @staticmethod
     def to_api_amount(amount: float) -> int:
@@ -422,7 +447,9 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"error": "LOCAL_MATH_ERROR", "message": str(exc)}, 500)
 
     def do_GET(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
+        query = parse_qs(parsed_url.query)
         if path == "/health":
             self.send_json(
                 {
@@ -441,8 +468,14 @@ class Handler(BaseHTTPRequestHandler):
                     "legacyTarget": RGS.key_target,
                 }
             )
-        elif path.startswith("/bet/replay/"):
-            round_id = path.rstrip("/").split("/")[-1]
+        elif path.startswith("/bet/replay/") or path == "/bet/replay":
+            round_id = (
+                query.get("roundID", [])
+                or query.get("roundId", [])
+                or query.get("round_id", [])
+                or query.get("event", [])
+                or [path.rstrip("/").split("/")[-1]]
+            )[0]
             data = RGS.replay(round_id)
             self.send_json(data, 404 if data.get("error") else 200)
         else:
