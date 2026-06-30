@@ -66,7 +66,6 @@ jobs:
         working-directory: web-sdk
         env:
           NPM_CONFIG_NODE_LINKER: hoisted
-          npm_config_node_linker: hoisted
         run: |
           pnpm --filter the-inheritance e2e-smoke
           pnpm --filter the-inheritance e2e-mobile
