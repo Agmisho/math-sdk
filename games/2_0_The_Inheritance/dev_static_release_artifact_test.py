@@ -139,12 +139,15 @@ def assert_release_manifest() -> dict[str, Any]:
 def assert_release_package(profile_name: str, profile_dir: Path) -> dict[str, Any]:
     package_dir = RELEASE_DIR / profile_name
     package_index = read_json(package_dir / "index.json")
+    package_manifest = read_json(package_dir / "manifest.json")
     profile_index = read_json(profile_dir / "index.json")
     if package_index != profile_index:
         raise AssertionError(f"{profile_name} release index does not match RTP profile index.")
+    if package_manifest.get("profile") != profile_name:
+        raise AssertionError(f"{profile_name} release manifest profile mismatch.")
 
-    files = [file_entry(package_dir / "index.json")]
-    expected_names = {"index.json"}
+    files = [file_entry(package_dir / "index.json"), file_entry(package_dir / "manifest.json")]
+    expected_names = {"index.json", "manifest.json"}
     modes = index_modes(package_index)
     for mode in MODES:
         mode_entry = modes[mode]

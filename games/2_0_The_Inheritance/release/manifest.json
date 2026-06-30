@@ -1,5 +1,6 @@
 {
   "gameId": "2_0_The_Inheritance",
+  "gameName": "The Inheritance",
   "manifestVersion": 1,
   "packages": [
     {
@@ -38,10 +39,17 @@
           "bytes": 12682489,
           "path": "release/rtp_92/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_92/manifest.json",
+          "sha256": "68d15989b851c93582160d23a0c40cf12d6f45b2e81fdd9b7a3b9dc5b1c89ef8"
         }
       ],
+      "manifestSha256": "68d15989b851c93582160d23a0c40cf12d6f45b2e81fdd9b7a3b9dc5b1c89ef8",
       "path": "release/rtp_92",
-      "profile": "rtp_92"
+      "profile": "rtp_92",
+      "rtp": 92
     },
     {
       "files": [
@@ -79,10 +87,17 @@
           "bytes": 12682489,
           "path": "release/rtp_93/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_93/manifest.json",
+          "sha256": "cd190ec928f0ef3f77af7aa35f10966e9600c88c5919b61750477555b6d95ea8"
         }
       ],
+      "manifestSha256": "cd190ec928f0ef3f77af7aa35f10966e9600c88c5919b61750477555b6d95ea8",
       "path": "release/rtp_93",
-      "profile": "rtp_93"
+      "profile": "rtp_93",
+      "rtp": 93
     },
     {
       "files": [
@@ -120,10 +135,17 @@
           "bytes": 12682489,
           "path": "release/rtp_94/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_94/manifest.json",
+          "sha256": "5e3681bf81fab228a780f866974f67ba27e8a8339db15a3d8fdbb3f41255e138"
         }
       ],
+      "manifestSha256": "5e3681bf81fab228a780f866974f67ba27e8a8339db15a3d8fdbb3f41255e138",
       "path": "release/rtp_94",
-      "profile": "rtp_94"
+      "profile": "rtp_94",
+      "rtp": 94
     },
     {
       "files": [
@@ -161,10 +183,17 @@
           "bytes": 12682489,
           "path": "release/rtp_95/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_95/manifest.json",
+          "sha256": "77dc9eb020f618133abcd48b9f591f8a4623815756a3fda218cd1e7c8f1921b3"
         }
       ],
+      "manifestSha256": "77dc9eb020f618133abcd48b9f591f8a4623815756a3fda218cd1e7c8f1921b3",
       "path": "release/rtp_95",
-      "profile": "rtp_95"
+      "profile": "rtp_95",
+      "rtp": 95
     },
     {
       "files": [
@@ -202,10 +231,17 @@
           "bytes": 12682489,
           "path": "release/rtp_96/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_96/manifest.json",
+          "sha256": "d3dabdb544ea50e71c894f4337c711c5f0e5beeae993ca7b69b5bf50303bf78b"
         }
       ],
+      "manifestSha256": "d3dabdb544ea50e71c894f4337c711c5f0e5beeae993ca7b69b5bf50303bf78b",
       "path": "release/rtp_96",
-      "profile": "rtp_96"
+      "profile": "rtp_96",
+      "rtp": 96
     },
     {
       "files": [
@@ -243,10 +279,17 @@
           "bytes": 12682489,
           "path": "release/rtp_97/books_bonus.jsonl.zst",
           "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        },
+        {
+          "bytes": 1570,
+          "path": "release/rtp_97/manifest.json",
+          "sha256": "4ae83ae4ee1e49c452981ab98ee0638cfe207b57e4e9474eb4818474a11d0652"
         }
       ],
+      "manifestSha256": "4ae83ae4ee1e49c452981ab98ee0638cfe207b57e4e9474eb4818474a11d0652",
       "path": "release/rtp_97",
-      "profile": "rtp_97"
+      "profile": "rtp_97",
+      "rtp": 97
     }
   ],
   "profiles": [

@@ -20,7 +20,10 @@ for import_path in (str(GAME_DIR), str(REPO_ROOT)):
 from rtp_profiles import SUPPORTED_RTP_PERCENTAGES  # noqa: E402
 
 
+GAME_ID = "2_0_The_Inheritance"
+GAME_NAME = "The Inheritance"
 MODES = ("base", "scatter_boost", "bonus")
+MODE_COSTS = {"base": 1, "scatter_boost": 3, "bonus": 100}
 LIBRARY_DIR = GAME_DIR / "library"
 PUBLISH_DIR = LIBRARY_DIR / "publish_files"
 PROFILE_ROOT = LIBRARY_DIR / "rtp_profiles"
@@ -53,10 +56,13 @@ def relative(path: Path) -> str:
 def file_entry(path: Path) -> dict[str, Any]:
     required_file(path)
     return {
-        "path": relative(path),
         "bytes": path.stat().st_size,
         "sha256": sha256(path),
     }
+
+
+def root_file_entry(path: Path) -> dict[str, Any]:
+    return {"path": relative(path), **file_entry(path)}
 
 
 def assert_inside_release(path: Path) -> None:
@@ -85,7 +91,47 @@ def copy_required(source: Path, destination: Path) -> dict[str, Any]:
     required_file(source)
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(source, destination)
-    return file_entry(destination)
+    if destination.is_symlink():
+        raise ValueError(f"Release package file must be a real copy, not a symlink: {destination}")
+    return root_file_entry(destination)
+
+
+def validate_index_references(package_dir: Path, modes: dict[str, dict[str, Any]]) -> None:
+    for mode_name, mode_entry in modes.items():
+        for key in ("events", "weights"):
+            referenced_name = mode_entry[key]
+            if Path(referenced_name).name != referenced_name:
+                raise ValueError(f"{package_dir.name} {mode_name} references a non-local file: {referenced_name}")
+            path = package_dir / referenced_name
+            if not path.is_file():
+                raise FileNotFoundError(f"{package_dir.name} {mode_name} missing referenced file: {path}")
+            if path.is_symlink():
+                raise ValueError(f"{package_dir.name} {mode_name} referenced file is a symlink: {path}")
+
+
+def build_profile_manifest(
+    percentage: int,
+    package_dir: Path,
+    modes: dict[str, dict[str, Any]],
+    core_file_names: set[str],
+) -> dict[str, Any]:
+    files = {file_name: file_entry(package_dir / file_name) for file_name in sorted(core_file_names)}
+    return {
+        "schemaVersion": 1,
+        "gameId": GAME_ID,
+        "gameName": GAME_NAME,
+        "profile": f"rtp_{percentage}",
+        "rtp": percentage,
+        "modes": {
+            mode: {
+                "cost": MODE_COSTS[mode],
+                "books": modes[mode]["events"],
+                "weights": modes[mode]["weights"],
+            }
+            for mode in MODES
+        },
+        "files": files,
+    }
 
 
 def assemble_profile(percentage: int, *, clean: bool) -> dict[str, Any]:
@@ -103,6 +149,10 @@ def assemble_profile(percentage: int, *, clean: bool) -> dict[str, Any]:
     files = [copy_required(profile_dir / "index.json", package_dir / "index.json")]
     for mode in MODES:
         mode_entry = modes[mode]
+        if float(mode_entry.get("cost")) != float(MODE_COSTS[mode]):
+            raise ValueError(
+                f"{profile_name} {mode} cost must be {MODE_COSTS[mode]}, got {mode_entry.get('cost')}"
+            )
         books_name = mode_entry["events"]
         lookup_name = mode_entry["weights"]
         files.append(copy_required(profile_dir / lookup_name, package_dir / lookup_name))
@@ -112,16 +162,28 @@ def assemble_profile(percentage: int, *, clean: bool) -> dict[str, Any]:
     for mode in MODES:
         expected_names.add(modes[mode]["events"])
         expected_names.add(modes[mode]["weights"])
+    validate_index_references(package_dir, modes)
+    profile_manifest = build_profile_manifest(percentage, package_dir, modes, expected_names)
+    manifest_path = package_dir / "manifest.json"
+    with manifest_path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(profile_manifest, indent=2, sort_keys=True) + "\n")
+    files.append(root_file_entry(manifest_path))
+
+    expected_names.add("manifest.json")
     actual_names = {path.name for path in package_dir.iterdir() if path.is_file()}
     if actual_names != expected_names:
         raise ValueError(
             f"{relative(package_dir)} must contain exactly {sorted(expected_names)}, "
             f"found {sorted(actual_names)}"
         )
+    if any((package_dir / file_name).is_symlink() for file_name in expected_names):
+        raise ValueError(f"{relative(package_dir)} contains symlinks; release packages must use real files.")
 
     return {
         "profile": profile_name,
         "path": relative(package_dir),
+        "rtp": percentage,
+        "manifestSha256": sha256(manifest_path),
         "files": files,
     }
 
@@ -131,7 +193,8 @@ def assemble_release_packages(profiles: tuple[int, ...], *, clean: bool) -> dict
     packages = [assemble_profile(profile, clean=clean) for profile in profiles]
     manifest = {
         "manifestVersion": 1,
-        "gameId": "2_0_The_Inheritance",
+        "gameId": GAME_ID,
+        "gameName": GAME_NAME,
         "profiles": [package["profile"] for package in packages],
         "sourceBooks": relative(PUBLISH_DIR),
         "sourceProfiles": relative(PROFILE_ROOT),
