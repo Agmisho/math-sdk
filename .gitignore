@@ -38,6 +38,7 @@ __pycache__/
 
 backups/
 tmp/
+tools/the-inheritance-local-rgs/data/
 
 # The Inheritance release-critical static math package.
 # Keep the rest of library/ ignored, but retain the exact publish package,

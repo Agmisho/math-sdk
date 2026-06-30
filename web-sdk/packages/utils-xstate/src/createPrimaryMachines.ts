@@ -8,6 +8,13 @@ import type { BaseBet } from './types';
 
 const handleRequestBet = async ({ onError }: { onError: () => void }) => {
 	try {
+		if (stateUrlDerived.isReplayMode()) {
+			throw {
+				error: 'REPLAY_NO_BET',
+				message: 'Replay mode cannot create a new bet.',
+			};
+		}
+
 		const data = await requestBet({
 			rgsUrl: stateUrlDerived.rgsUrl(),
 			sessionID: stateUrlDerived.sessionID(),
@@ -40,7 +47,7 @@ const handleRequestBet = async ({ onError }: { onError: () => void }) => {
 };
 
 const handleRequestEndRound = async () => {
-	if(stateUrlDerived.replay()) return;
+	if(stateUrlDerived.isReplayMode()) return;
 
 	try {
 		const data = await requestEndRound({

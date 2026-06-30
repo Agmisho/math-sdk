@@ -9,7 +9,7 @@ export function recordBookEvent<TBookEvent extends BaseBookEvent>({
 }: {
 	bookEvent: TBookEvent;
 }) {
-	if (PUBLIC_CHROMATIC || stateUrlDerived.replay()) {
+	if (PUBLIC_CHROMATIC || stateUrlDerived.isReplayMode()) {
 		console.log('mock request end-event:', { index: bookEvent.index, type: bookEvent.type });
 		return;
 	}

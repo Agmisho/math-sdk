@@ -19,6 +19,7 @@ export type Key =
 	| 'mode'
 	| 'version'
 	| 'event'
+	| 'replayRound'
 	;
 
 const getUrlSearchParam = (key: Key) => page.url.searchParams.get(key) as string;
@@ -37,6 +38,8 @@ const game = () => getUrlSearchParam('game') || '';
 const version = () => getUrlSearchParam('version') || '';
 const mode = () => getUrlSearchParam('mode') || '';
 const event = () => getUrlSearchParam('event') || '';
+const replayRound = () => getUrlSearchParam('replayRound') || '';
+const isReplayMode = () => replay() || replayRound().length > 0;
 
 export const stateUrlDerived = {
 	// states for play
@@ -51,4 +54,6 @@ export const stateUrlDerived = {
 	mode,
 	version,
 	event,
+	replayRound,
+	isReplayMode,
 };

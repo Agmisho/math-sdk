@@ -31,9 +31,19 @@ export const localRgsClient = {
 		requestLocalRgs<any>({ path: '/bet/event', body: options }),
 	play: (options: { sessionID: string; currency: string; amount: number; mode: string }) =>
 		requestLocalRgs<any>({ path: '/wallet/play', body: options }),
+	sessionConfig: () =>
+		requestLocalRgs<any>({
+			method: 'GET',
+			path: '/game/session-config',
+		}),
 	replay: (options: { game: string; version: string; mode: string; event: string }) =>
 		requestLocalRgs<any>({
 			method: 'GET',
 			path: `/bet/replay/${encodeURIComponent(options.game)}/${encodeURIComponent(options.version)}/${encodeURIComponent(options.mode)}/${encodeURIComponent(options.event)}`,
+		}),
+	replayRound: (options: { roundID: string }) =>
+		requestLocalRgs<any>({
+			method: 'GET',
+			path: `/bet/replay?roundID=${encodeURIComponent(options.roundID)}`,
 		}),
 };

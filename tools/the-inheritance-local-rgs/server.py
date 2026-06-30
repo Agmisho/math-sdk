@@ -8,13 +8,16 @@ settled books and never imports reel strips, probabilities, or payout logic.
 from __future__ import annotations
 
 from bisect import bisect_right
+from contextlib import closing
 import csv
 from copy import deepcopy
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import io
 import json
 import os
 from pathlib import Path
+import sqlite3
 import sys
 import threading
 import time
@@ -37,9 +40,142 @@ from game_config import GameConfig  # noqa: E402
 API_AMOUNT_MULTIPLIER = 1_000_000
 HOST = "127.0.0.1"
 PORT = 3008
-PUBLISH_DIR = GAME_DIR / "library" / "publish_files"
-RTP_PROFILE_ROOT = GAME_DIR / "library" / "rtp_profiles"
-ALLOW_PUBLISH_FALLBACK_ENV = "THE_INHERITANCE_ALLOW_PUBLISH_FALLBACK"
+GAME_ID = "2_0_The_Inheritance"
+GAME_NAME = "The Inheritance"
+RELEASE_ROOT = GAME_DIR / "release"
+REPLAY_DB_ENV = "THE_INHERITANCE_REPLAY_DB"
+DEFAULT_REPLAY_DB = Path(__file__).resolve().parent / "data" / "inheritance_replays.sqlite3"
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def resolve_replay_db_path() -> Path:
+    configured = os.getenv(REPLAY_DB_ENV)
+    return Path(configured) if configured else DEFAULT_REPLAY_DB
+
+
+class ReplayStore:
+    """Development-only persistent replay storage for settled local rounds."""
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.lock = threading.Lock()
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.initialise()
+
+    def connect(self) -> sqlite3.Connection:
+        connection = sqlite3.connect(self.path)
+        connection.row_factory = sqlite3.Row
+        return connection
+
+    def initialise(self) -> None:
+        with closing(self.connect()) as connection:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS replays (
+                    round_id TEXT PRIMARY KEY,
+                    created_timestamp REAL NOT NULL,
+                    profile TEXT NOT NULL,
+                    manifest_sha256 TEXT NOT NULL,
+                    bet_amount REAL NOT NULL,
+                    mode TEXT NOT NULL,
+                    cost_amount INTEGER NOT NULL,
+                    payout_amount REAL NOT NULL,
+                    payout_multiplier REAL NOT NULL,
+                    event_state_json TEXT NOT NULL,
+                    balance_after INTEGER NOT NULL,
+                    response_json TEXT NOT NULL
+                )
+                """
+            )
+            connection.commit()
+
+    def store_round(
+        self,
+        *,
+        response: dict,
+        profile: str,
+        manifest_sha256: str,
+        bet_amount: float,
+        mode: str,
+        cost_amount: int,
+        payout_amount: float,
+        payout_multiplier: float,
+        balance_after: int,
+    ) -> None:
+        round_data = response["round"]
+        with self.lock:
+            with closing(self.connect()) as connection:
+                connection.execute(
+                    """
+                    INSERT OR REPLACE INTO replays (
+                        round_id,
+                        created_timestamp,
+                        profile,
+                        manifest_sha256,
+                        bet_amount,
+                        mode,
+                        cost_amount,
+                        payout_amount,
+                        payout_multiplier,
+                        event_state_json,
+                        balance_after,
+                        response_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        str(round_data["roundID"]),
+                        time.time(),
+                        profile,
+                        manifest_sha256,
+                        float(bet_amount),
+                        mode,
+                        int(cost_amount),
+                        float(payout_amount),
+                        float(payout_multiplier),
+                        json.dumps(round_data["state"], separators=(",", ":"), sort_keys=True),
+                        int(balance_after),
+                        json.dumps(response, separators=(",", ":"), sort_keys=True),
+                    ),
+                )
+                connection.commit()
+
+    def get_round(self, round_id: str) -> dict | None:
+        with self.lock:
+            with closing(self.connect()) as connection:
+                row = connection.execute(
+                    "SELECT * FROM replays WHERE round_id = ?",
+                    (str(round_id),),
+                ).fetchone()
+        if row is None:
+            return None
+
+        response = json.loads(row["response_json"])
+        round_data = deepcopy(response["round"])
+        round_data["balance"] = response.get("balance")
+        round_data["betAmount"] = row["bet_amount"]
+        round_data["costAmount"] = row["cost_amount"]
+        round_data["rtpProfile"] = row["profile"]
+        round_data["manifestSha256"] = row["manifest_sha256"]
+        round_data["developmentOnly"] = True
+        round_data["replay"] = {
+            "noBet": True,
+            "profile": row["profile"],
+            "manifestSha256": row["manifest_sha256"],
+            "balanceAfter": row["balance_after"],
+            "storedAt": row["created_timestamp"],
+        }
+        return round_data
+
+    def count(self) -> int:
+        with closing(self.connect()) as connection:
+            return int(connection.execute("SELECT COUNT(*) FROM replays").fetchone()[0])
 
 
 class PublishedMathLibrary:
@@ -132,63 +268,59 @@ class LocalInheritanceRgs:
     def __init__(self) -> None:
         self.config = GameConfig()
         self.bet_modes = {mode.get_name(): mode for mode in self.config.bet_modes}
-        self.profile_dir = self.resolve_profile_dir()
-        self.books_dir = self.resolve_books_dir(self.profile_dir)
-        self.weights_dir = self.resolve_weights_dir(self.profile_dir)
+        self.profile_dir = self.resolve_release_package_dir()
+        self.manifest_path = self.profile_dir / "manifest.json"
+        self.manifest = self.read_manifest(self.manifest_path)
+        self.manifest_sha256 = sha256(self.manifest_path)
+        self.books_dir = self.profile_dir
+        self.weights_dir = self.profile_dir
         self.math_library = PublishedMathLibrary(tuple(self.bet_modes), self.books_dir, self.weights_dir)
+        self.replay_store = ReplayStore(resolve_replay_db_path())
         self.currency = DEMO_CURRENCY
         self.starting_balance_usd = DEMO_STARTING_BALANCE_USD
         self.balance = self.to_api_amount(self.starting_balance_usd)
         self.spin_index = 0
         self.key_count = 0
         self.key_target = int(self.config.legacy_key_collection_target)
-        self.rounds: dict[str, dict] = {}
         self.lock = threading.Lock()
 
-    def resolve_profile_dir(self) -> Path:
-        profile_dir = RTP_PROFILE_ROOT / self.config.rtp_profile.slug
-        if profile_dir.exists():
-            return profile_dir
-        if os.getenv(ALLOW_PUBLISH_FALLBACK_ENV) != "1":
+    def resolve_release_package_dir(self) -> Path:
+        profile_dir = RELEASE_ROOT / self.config.rtp_profile.slug
+        if not profile_dir.is_dir():
             raise FileNotFoundError(
-                f"Missing RTP profile artifacts for {self.config.rtp_profile.slug}: {profile_dir}. "
-                f"Generate profiles or set {ALLOW_PUBLISH_FALLBACK_ENV}=1 for legacy fallback."
+                f"Missing RTP release package for {self.config.rtp_profile.slug}: {profile_dir}. "
+                "Run games/2_0_The_Inheritance/assemble_rtp_release_packages.py."
             )
-        print(
-            f"[local-rgs] RTP profile {profile_dir} not found; falling back to {PUBLISH_DIR}",
-            flush=True,
-        )
-        return PUBLISH_DIR
-
-    @staticmethod
-    def resolve_books_dir(profile_dir: Path) -> Path:
-        missing_books = [
-            f"books_{mode}.jsonl.zst"
-            for mode in ("base", "scatter_boost", "bonus")
-            if not (profile_dir / f"books_{mode}.jsonl.zst").is_file()
+        missing_files = [
+            file_name
+            for file_name in (
+                "index.json",
+                "manifest.json",
+                "books_base.jsonl.zst",
+                "books_scatter_boost.jsonl.zst",
+                "books_bonus.jsonl.zst",
+                "lookUpTable_base_0.csv",
+                "lookUpTable_scatter_boost_0.csv",
+                "lookUpTable_bonus_0.csv",
+            )
+            if not (profile_dir / file_name).is_file()
         ]
-        if not missing_books:
-            return profile_dir
-        if profile_dir == PUBLISH_DIR or os.getenv(ALLOW_PUBLISH_FALLBACK_ENV) == "1":
-            if not PUBLISH_DIR.exists():
-                raise FileNotFoundError(f"Missing shared published book artifacts: {PUBLISH_DIR}")
-            return PUBLISH_DIR
-        raise FileNotFoundError(
-            f"RTP profile {profile_dir} is not self-contained; missing books: {', '.join(missing_books)}."
-        )
-
-    @staticmethod
-    def resolve_weights_dir(profile_dir: Path) -> Path:
-        missing_lookups = [
-            f"lookUpTable_{mode}_0.csv"
-            for mode in ("base", "scatter_boost", "bonus")
-            if not (profile_dir / f"lookUpTable_{mode}_0.csv").is_file()
-        ]
-        if missing_lookups:
+        if missing_files:
             raise FileNotFoundError(
-                f"RTP profile {profile_dir} is missing lookup tables: {', '.join(missing_lookups)}."
+                f"RTP release package {profile_dir} is incomplete; missing: {', '.join(missing_files)}"
             )
+        if any(path.is_symlink() for path in profile_dir.iterdir() if path.is_file()):
+            raise RuntimeError(f"RTP release package {profile_dir} must contain real files, not symlinks.")
         return profile_dir
+
+    def read_manifest(self, path: Path) -> dict:
+        with path.open(encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        if manifest.get("gameId") != GAME_ID or manifest.get("profile") != self.config.rtp_profile.slug:
+            raise RuntimeError(f"RTP release manifest does not match selected profile: {path}")
+        if int(manifest.get("rtp", -1)) != self.config.rtp_profile.percentage:
+            raise RuntimeError(f"RTP release manifest has wrong RTP value: {path}")
+        return manifest
 
     @staticmethod
     def to_api_amount(amount: float) -> int:
@@ -386,13 +518,23 @@ class LocalInheritanceRgs:
                 "event": "0",
                 "state": book["events"],
             }
-            self.rounds[str(round_id)] = deepcopy(round_data)
-
-            return {
+            response = {
                 "status": {"statusCode": "SUCCESS", "statusMessage": "Math SDK result"},
                 "balance": {"amount": self.balance, "currency": currency},
                 "round": round_data,
             }
+            self.replay_store.store_round(
+                response=response,
+                profile=self.config.rtp_profile.slug,
+                manifest_sha256=self.manifest_sha256,
+                bet_amount=amount,
+                mode=mode,
+                cost_amount=cost_api_amount,
+                payout_amount=payout_amount,
+                payout_multiplier=payout_multiplier,
+                balance_after=self.balance,
+            )
+            return response
 
     def end_round(self) -> dict:
         return {
@@ -401,10 +543,21 @@ class LocalInheritanceRgs:
         }
 
     def replay(self, round_id: str) -> dict:
-        round_data = self.rounds.get(str(round_id))
+        round_data = self.replay_store.get_round(str(round_id))
         if round_data is None:
             return {"error": "REPLAY_NOT_FOUND", "message": f"No local round found for {round_id}."}
-        return deepcopy(round_data)
+        return round_data
+
+    def session_config(self) -> dict:
+        return {
+            "gameId": GAME_ID,
+            "gameName": GAME_NAME,
+            "profile": self.config.rtp_profile.slug,
+            "rtp": self.config.rtp_profile.percentage,
+            "manifestSha256": self.manifest_sha256,
+            "releasePackagePath": str(self.profile_dir),
+            "developmentOnly": True,
+        }
 
 
 RGS = LocalInheritanceRgs()
@@ -454,13 +607,19 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(
                 {
                     "status": "ok",
-                    "game": "2_0_The_Inheritance",
+                    "game": GAME_ID,
                     "rtp": RGS.config.rtp,
+                    "rtpPercentage": RGS.config.rtp_profile.percentage,
                     "profile": RGS.config.rtp_profile.slug,
+                    "manifestSha256": RGS.manifest_sha256,
+                    "releasePackagePath": str(RGS.profile_dir),
                     "booksPath": str(RGS.books_dir),
                     "weightsPath": str(RGS.weights_dir),
                     "profileSelection": "server-side THE_INHERITANCE_RTP",
                     "sessionStateModel": "development-only process-local state",
+                    "replayStateModel": "development-only SQLite replay store",
+                    "replayDatabasePath": str(RGS.replay_store.path),
+                    "storedReplayCount": RGS.replay_store.count(),
                     "demo": True,
                     "startingBalance": RGS.starting_balance_usd,
                     "currency": RGS.currency,
@@ -468,6 +627,8 @@ class Handler(BaseHTTPRequestHandler):
                     "legacyTarget": RGS.key_target,
                 }
             )
+        elif path == "/game/session-config":
+            self.send_json(RGS.session_config())
         elif path.startswith("/bet/replay/") or path == "/bet/replay":
             round_id = (
                 query.get("roundID", [])

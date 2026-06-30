@@ -106,3 +106,18 @@ export const requestReplay = async (options: {
 		url: `/bet/replay/${options.game}/${options.version}/${options.mode}/${options.event}`,
 	});
 };
+
+export const requestSessionConfig = async (options: { rgsUrl: string }) => {
+	if (!options.rgsUrl) return localRgsClient.sessionConfig();
+	return null;
+};
+
+export const requestReplayRound = async (options: { rgsUrl: string; roundID: string }) => {
+	if (!options.rgsUrl) return localRgsClient.replayRound({ roundID: options.roundID });
+
+	return rgsFetcher.get({
+		rgsUrl: options.rgsUrl,
+		// @ts-ignore TODO: update the schema.ts
+		url: `/bet/replay?roundID=${encodeURIComponent(options.roundID)}`,
+	});
+};
