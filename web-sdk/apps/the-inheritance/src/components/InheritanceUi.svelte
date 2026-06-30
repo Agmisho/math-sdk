@@ -4,7 +4,7 @@
 	import { Button } from 'components-pixi';
 	import { OnHotkey } from 'components-shared';
 	import { Rectangle, Sprite, Text } from 'pixi-svelte';
-	import { stateBet, stateBetDerived, stateConfig, stateMeta, stateModal, stateSound, type BetModeData } from 'state-shared';
+	import { stateBet, stateBetDerived, stateConfig, stateMeta, stateModal, stateSound, stateUi, type BetModeData } from 'state-shared';
 
 	import { getContext } from '../game/context';
 	import { stateInheritanceUi } from '../game/stateInheritanceUi.svelte';
@@ -122,6 +122,7 @@
 		return null;
 	};
 	const currentBetCost = () => activeBetModeType() === 'activate' ? stateBet.betAmount * SCATTER_BOOST_MULTIPLIER : stateBet.betAmount;
+	const isReplayMode = () => stateUi.config.mode === 'replay';
 	const canPayForBet = () =>
 		stateBet.balanceAmount > 0 &&
 		currentBetCost() <= stateBet.balanceAmount;
@@ -134,21 +135,23 @@
 	});
 
 	const spinDisabled = $derived.by(() => {
+		if (isReplayMode()) return true;
 		if (context.stateXstateDerived.isIdle()) return !canPayForBet();
 		if (stopDisabled) return true;
 		if (stateBet.isTurbo && !stateBetDerived.hasAutoBetCounter()) return true;
 		return false;
 	});
 	const autoDisabled = $derived.by(() => {
+		if (isReplayMode()) return true;
 		if (stateBet.isSpaceHold) return true;
 		if (!context.stateXstateDerived.isIdle() && !stateBetDerived.hasAutoBetCounter()) return true;
 		if (!canPayForBet()) return true;
 		return false;
 	});
-	const buyDisabled = $derived(!context.stateXstateDerived.isIdle());
+	const buyDisabled = $derived(isReplayMode() || !context.stateXstateDerived.isIdle());
 	const speedDisabled = $derived(stateBet.isSpaceHold);
-	const decreaseDisabled = $derived(stateBet.betAmount <= MIN_BET);
-	const increaseDisabled = $derived(stateBet.betAmount >= MAX_BET);
+	const decreaseDisabled = $derived(isReplayMode() || stateBet.betAmount <= MIN_BET);
+	const increaseDisabled = $derived(isReplayMode() || stateBet.betAmount >= MAX_BET);
 
 	const pressGeneral = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
 	const pressBetSound = () => context.eventEmitter.broadcast({ type: 'soundPressBet' });
@@ -170,6 +173,7 @@
 
 	const pressAuto = () => {
 		pressGeneral();
+		if (isReplayMode()) return;
 		if (stateBetDerived.hasAutoBetCounter()) {
 			stateBet.autoSpinsCounter = 0;
 		} else {
@@ -180,6 +184,7 @@
 
 	const pressBuy = () => {
 		pressGeneral();
+		if (isReplayMode()) return;
 		if (activeBetModeType() === 'activate') {
 			stateBet.activeBetModeKey = 'BASE';
 		} else {
@@ -188,6 +193,7 @@
 	};
 
 	const pressSpin = () => {
+		if (isReplayMode()) return;
 		if (context.stateXstateDerived.isIdle()) {
 			if (!canPayForBet()) return;
 			pressBetSound();
@@ -204,12 +210,14 @@
 
 	const pressDecrease = () => {
 		pressGeneral();
+		if (isReplayMode()) return;
 		const nextSmaller = [...BET_AMOUNT_OPTIONS].sort((a, b) => b - a).find((option) => option < stateBet.betAmount);
 		stateBet.betAmount = nextSmaller || MIN_BET;
 	};
 
 	const pressIncrease = () => {
 		pressGeneral();
+		if (isReplayMode()) return;
 		const nextBigger = [...BET_AMOUNT_OPTIONS].sort((a, b) => a - b).find((option) => option > stateBet.betAmount);
 		stateBet.betAmount = nextBigger || MAX_BET;
 	};

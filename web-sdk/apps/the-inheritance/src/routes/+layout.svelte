@@ -19,7 +19,9 @@
 <GlobalStyle>
 	
 		<LoadI18n {messagesMap}>
-			<Game />
+			<div data-testid="the-inheritance-app" data-game-id="2_0_The_Inheritance">
+				<Game />
+			</div>
 		</LoadI18n>
 	
 </GlobalStyle>
