@@ -17,52 +17,52 @@
       "sha256": "ccb2c768d0ce8338b26ea163f3e0d73c90a202e3e289850ce378f9840b565e2d"
     }
   },
-  "artifactPolicy": "Compressed books are shared by all RTP editions; each RTP edition has distinct lookup weights and config files. The active publish lookups must match the active RTP profile.",
+  "artifactPolicy": "Compressed books are shared as canonical generation outputs, then intentionally duplicated into every release/rtp_* upload folder. Each RTP edition has distinct lookup weights and config files. The active publish lookups must match the active RTP profile, and every Stake upload folder must be self-contained.",
   "configAndEventFiles": [
     {
-      "bytes": 3283,
+      "bytes": 3191,
       "path": "library/configs/config.json",
-      "sha256": "7b79c84617e2d7970f6180af79ab2c3db88478bbf7f0a08759701abddfc03293"
+      "sha256": "7ad95254257427863384822742c1391372cd8e33817848d4b0aeb4ca6cd1f679"
     },
     {
-      "bytes": 739439,
+      "bytes": 708983,
       "path": "library/configs/config_fe_2_0_The_Inheritance.json",
-      "sha256": "7591f437996000ecaee6e28831ceac167ddfb4266c5a7cb901c94483a197e2d1"
+      "sha256": "df4a93b29ed97c5ac88396ec6211107eb50bad7d8bfa8e8ff438772c61d8ea13"
     },
     {
-      "bytes": 10313,
+      "bytes": 9979,
       "path": "library/configs/math_config.json",
-      "sha256": "f3d00d7dcf6ccc27fb492a01cb8376faa98e4ce6edcae82167507466acf35e4e"
+      "sha256": "dc800c471dc9d5eb581a835ae589b0489a073dc86ef9883892d11719217e6578"
     },
     {
-      "bytes": 6312,
+      "bytes": 6044,
       "path": "library/configs/event_config_base.json",
-      "sha256": "2325f07f89ae88c93fdaf1a1cbfefb63bfae75e838592bec7ebe6a5a373fa119"
+      "sha256": "e1e9f51f454289bfd2a7318d71af4bd9b3fa699f0dc6ff909c4ed813f58b9b13"
     },
     {
-      "bytes": 6312,
+      "bytes": 6044,
       "path": "library/configs/event_config_scatter_boost.json",
-      "sha256": "522e30661f78cdcce1f2097626ba68b4081ab0f6fdc86da95ff10454a996fbb6"
+      "sha256": "e210472b874b763625a8f5743be7127731113b9d9da6f5ab070aad82a9f96c7c"
     },
     {
-      "bytes": 6039,
+      "bytes": 5781,
       "path": "library/configs/event_config_bonus.json",
-      "sha256": "4aef09e6a24abca6f987372e8e5f82f66e78af6f52082f1a1d28d945cabcc24e"
+      "sha256": "37d19adde41e065de06784916cc6db4c33a85706d892c689b949b92a1ded8616"
     },
     {
-      "bytes": 166,
+      "bytes": 162,
       "path": "library/configs/books_base.verification.json",
-      "sha256": "3f34e5dcf5ca9ff42d59a319a76b16ce3ee24564371ddcf99a89d4b719dc3ca9"
+      "sha256": "471c0fadf3f5589411cf76421fab56ef8ca0657c3e0b52533da6dc7b9855d6e5"
     },
     {
-      "bytes": 166,
+      "bytes": 162,
       "path": "library/configs/books_scatter_boost.verification.json",
-      "sha256": "ea5c51337ef635638acf4c8fca8773d623918907024815e9d4dd628b9fd6711f"
+      "sha256": "fe4181a729957db95d483e36645f98f26ae3818c74fa5fcb6f116229feb18859"
     },
     {
-      "bytes": 166,
+      "bytes": 162,
       "path": "library/configs/books_bonus.verification.json",
-      "sha256": "98fe90efa7cbd898993a17b5d267568e070cdfebdf81b00266852b191fd3c924"
+      "sha256": "4d348ff641282e0b05e6514db3ce5288e86452ef09f26f4fc9c1fab1503a774f"
     }
   ],
   "gameId": "2_0_The_Inheritance",
@@ -72,29 +72,29 @@
     {
       "files": [
         {
-          "bytes": 3283,
+          "bytes": 3191,
           "path": "library/rtp_profiles/rtp_92/config.json",
-          "sha256": "13f1c9e2180c8248b30cea3f579b7e4714856ccd44130fe1913c6ae5746013b4"
+          "sha256": "49008fb0838b3e51d7ef6c5525c3be0aa5b13a30dca741567bc2c17e5c8276ce"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_92/config_fe_2_0_The_Inheritance.json",
-          "sha256": "c3dae1250c8e1debac2a709a9fbfc5a60307f6dfa227bdb31eb21412f9097d54"
+          "sha256": "59ab227afcad572c0ea58e174b8caee0a47ac0fcdc90a0cc04802af7d1e6e3ca"
         },
         {
-          "bytes": 10339,
+          "bytes": 10005,
           "path": "library/rtp_profiles/rtp_92/math_config.json",
-          "sha256": "8c4cf5d327fff3f9570f05f973be2837b8b543cf53f94a5c6f436f9731970760"
+          "sha256": "dfdbb3f219bed57562e771aa8c36de1ff5879207a13b3bd268d2306eb0108e2a"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_92/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1277,
+          "bytes": 1237,
           "path": "library/rtp_profiles/rtp_92/profile.json",
-          "sha256": "46d1dc2a46affb5d8a3a6f20508d65a1b37e91108ff26fcf4532006c1bd4e81d"
+          "sha256": "35deb4f4efc070d98ffb15b71908a750380c0c4066e935eb050b003888bc5e2c"
         },
         {
           "bytes": 190772,
@@ -150,29 +150,29 @@
     {
       "files": [
         {
-          "bytes": 3282,
+          "bytes": 3190,
           "path": "library/rtp_profiles/rtp_93/config.json",
-          "sha256": "413e84a93cb326d8c5714ddf64ffa8badcf266624343fff367fee52b721d945f"
+          "sha256": "4376927305c9a68cd5788fce02c7dd95f547e103711153d74d6f681acae21e63"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_93/config_fe_2_0_The_Inheritance.json",
-          "sha256": "0fcffe61f648223a0532e67d5a18b2193bb2d9759e98e455f240fd4d1f3dc953"
+          "sha256": "89dca3c16cd951330a7577a25d457b6a0aee0cb8759e4d22cce728209ff5f98b"
         },
         {
-          "bytes": 10335,
+          "bytes": 10001,
           "path": "library/rtp_profiles/rtp_93/math_config.json",
-          "sha256": "0d4f1e9158be63bdf5ee846c5a0ef9abf03a176f19a8e54a4abca1114d6a88ff"
+          "sha256": "01d9158d5f092c202c574b271fc08f5b0b411f6397f7857528576dd95fe54640"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_93/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1277,
+          "bytes": 1237,
           "path": "library/rtp_profiles/rtp_93/profile.json",
-          "sha256": "4cca674f278eb2d79af09998db8cc19250360473f8279fdfa4acfcc3dee1e714"
+          "sha256": "1a87304d255f94bcec216a7eb8f6a17e2d381671608d8d97bda30da719048dce"
         },
         {
           "bytes": 190751,
@@ -228,29 +228,29 @@
     {
       "files": [
         {
-          "bytes": 3283,
+          "bytes": 3191,
           "path": "library/rtp_profiles/rtp_94/config.json",
-          "sha256": "35b20e215062d462dd9f846e264adfb1c5edc29922a3dfc54e5e09c2aaef50dc"
+          "sha256": "046d6dd232538ea84b2366e29b5a9ba2296d4ba1f5a502eb1490df4ea26860a3"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_94/config_fe_2_0_The_Inheritance.json",
-          "sha256": "ef9c43e4e8e070e9d5731beadd1dbcc5ff5d74a41b60ea205da1fbd1fd6d4ae6"
+          "sha256": "86c02a45304aab75fe7e7c63077726897c556f2ac7f496746e8be11bcef20c15"
         },
         {
-          "bytes": 10333,
+          "bytes": 9999,
           "path": "library/rtp_profiles/rtp_94/math_config.json",
-          "sha256": "a8b72fee0c4a57bde19968f2d27dc862211047d2bdde107f2b4a5e019a4b31f6"
+          "sha256": "b30b37390087b392a5f0f35324a75f536430082bf504495609b05d7c214ac31f"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_94/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1275,
+          "bytes": 1235,
           "path": "library/rtp_profiles/rtp_94/profile.json",
-          "sha256": "3ff8ee76b88a58353576976f53e44de1989e8313556e6d83fc3c7a992f057538"
+          "sha256": "2ca03255bcd81430f2d37bd95de88f6f2daa848827ddbacf95fc0752f322c426"
         },
         {
           "bytes": 190847,
@@ -306,29 +306,29 @@
     {
       "files": [
         {
-          "bytes": 3282,
+          "bytes": 3190,
           "path": "library/rtp_profiles/rtp_95/config.json",
-          "sha256": "d2ad72a90ac72f86c3aca3f0263ff8899d80ba888be2f5d35c05f56113dae3cb"
+          "sha256": "8f5afbe1f871e0d199cddd11d919b02553fb253da95ccf00ce88736405c217b3"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_95/config_fe_2_0_The_Inheritance.json",
-          "sha256": "b39116aa12d0e526407e4d0bfbc64e907e18ab50410b0cd31c88e5497a3b93c8"
+          "sha256": "81e9accc3aff05ab1b2676319d61186cf917250a2cc5dc71fcb0b87c145b4eb0"
         },
         {
-          "bytes": 10337,
+          "bytes": 10003,
           "path": "library/rtp_profiles/rtp_95/math_config.json",
-          "sha256": "8b200eb4a51c3db9eeb250e8cd1a2963813e177436bd7ce1e1f4360d014d67e7"
+          "sha256": "6a0be8e37f9aeae77e01d063396ee43dfd723272d328804292f87b650dc7814d"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_95/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1277,
+          "bytes": 1237,
           "path": "library/rtp_profiles/rtp_95/profile.json",
-          "sha256": "cb0a4d139a5c5fac485aae79343755077a69f3e495ab280d2d8ee7e44eef56ac"
+          "sha256": "99d356dad35cbd00f0b3194ed1ff5276df3713f527c1f958076bd10af0aa0523"
         },
         {
           "bytes": 190858,
@@ -384,29 +384,29 @@
     {
       "files": [
         {
-          "bytes": 3283,
+          "bytes": 3191,
           "path": "library/rtp_profiles/rtp_96/config.json",
-          "sha256": "df598b73237e97278e83a107b723a83f442223c8f6dfa4bdfe111d109ba7d8f4"
+          "sha256": "9c0ee1fefe4d49e880fcad445f312b679e4ffec4b4841923ce31b5e43dff736a"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_96/config_fe_2_0_The_Inheritance.json",
-          "sha256": "b69cee8094c1c3f4b1c2eec615151e1510335fa72c90fad026f7cf63c4f9440d"
+          "sha256": "a37ecb73a19f05d2470cbe28cd9515ebcba5ac387a386eb1de79290454350e32"
         },
         {
-          "bytes": 10339,
+          "bytes": 10005,
           "path": "library/rtp_profiles/rtp_96/math_config.json",
-          "sha256": "fbc9159a4af671d47cb4f73f145c65a9f64388477ca47c0e2536faa527b927b2"
+          "sha256": "a994ae923a8c34a224e1dc41e2119a1078675838af4d5088f3fa69099041dbad"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_96/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1275,
+          "bytes": 1235,
           "path": "library/rtp_profiles/rtp_96/profile.json",
-          "sha256": "d4969f9d947b8105d5faaa1e08b7f977a8cde8ebbb8a3699bc8d06c7bc409c3e"
+          "sha256": "f08e4033fcacd6b73fc48931e050b22fd84761c103a76c8697fd0cb6156e340f"
         },
         {
           "bytes": 190741,
@@ -462,29 +462,29 @@
     {
       "files": [
         {
-          "bytes": 3283,
+          "bytes": 3191,
           "path": "library/rtp_profiles/rtp_97/config.json",
-          "sha256": "7b79c84617e2d7970f6180af79ab2c3db88478bbf7f0a08759701abddfc03293"
+          "sha256": "7ad95254257427863384822742c1391372cd8e33817848d4b0aeb4ca6cd1f679"
         },
         {
-          "bytes": 739439,
+          "bytes": 708983,
           "path": "library/rtp_profiles/rtp_97/config_fe_2_0_The_Inheritance.json",
-          "sha256": "7591f437996000ecaee6e28831ceac167ddfb4266c5a7cb901c94483a197e2d1"
+          "sha256": "df4a93b29ed97c5ac88396ec6211107eb50bad7d8bfa8e8ff438772c61d8ea13"
         },
         {
-          "bytes": 10313,
+          "bytes": 9979,
           "path": "library/rtp_profiles/rtp_97/math_config.json",
-          "sha256": "f3d00d7dcf6ccc27fb492a01cb8376faa98e4ce6edcae82167507466acf35e4e"
+          "sha256": "dc800c471dc9d5eb581a835ae589b0489a073dc86ef9883892d11719217e6578"
         },
         {
-          "bytes": 580,
+          "bytes": 559,
           "path": "library/rtp_profiles/rtp_97/index.json",
-          "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
         },
         {
-          "bytes": 1276,
+          "bytes": 1236,
           "path": "library/rtp_profiles/rtp_97/profile.json",
-          "sha256": "2543b712f4da5490cdaff1e9a191a53bc13c7d9ea0f49ef86efbf8bc94767869"
+          "sha256": "da62392232eb16faabd4c98f92d91a44c7d0db9890ad203a3b2209e1d1824967"
         },
         {
           "bytes": 190976,
@@ -539,10 +539,263 @@
     }
   ],
   "publishManifest": {
-    "bytes": 580,
+    "bytes": 559,
     "path": "library/publish_files/index.json",
-    "sha256": "55cc88a6d7aec57e68a6bca929d918ee0d125b75496524b1fc5c0fb8ce30b2a3"
+    "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
   },
+  "releaseManifest": {
+    "bytes": 9014,
+    "path": "release/manifest.json",
+    "sha256": "f273970ec48d673b4348b5c71e82851bb8fb2ea54c66dad930783c2068bdd58e"
+  },
+  "releasePackages": [
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_92/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190772,
+          "path": "release/rtp_92/lookUpTable_base_0.csv",
+          "sha256": "853f36f7c567a19872e8b2ffc6314764884a067bb1d78c7e3d529d8875026d23"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_92/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 190648,
+          "path": "release/rtp_92/lookUpTable_scatter_boost_0.csv",
+          "sha256": "feaf276f30b30d22905728f26a658550d28c86d2c4d0473224c2f0e0b7f5285e"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_92/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 199500,
+          "path": "release/rtp_92/lookUpTable_bonus_0.csv",
+          "sha256": "93ad7f0969176fc4a14e003c1034d693f50322cc4bffdee6f05c1f977ce72c0e"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_92/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_92",
+      "profile": "rtp_92"
+    },
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_93/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190751,
+          "path": "release/rtp_93/lookUpTable_base_0.csv",
+          "sha256": "841f94b14412bff14c63ad1a8d56e0c2e276067baf39ea60ecc3b22369207086"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_93/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 190237,
+          "path": "release/rtp_93/lookUpTable_scatter_boost_0.csv",
+          "sha256": "291700653b1bfc77f71feaab8fcefb54a5318210193570402f2884e1fdc8346f"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_93/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 200784,
+          "path": "release/rtp_93/lookUpTable_bonus_0.csv",
+          "sha256": "e3e5f9abad87bf736aaad3f32774247766c319c52b2837c885b8ebef914b1e33"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_93/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_93",
+      "profile": "rtp_93"
+    },
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_94/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190847,
+          "path": "release/rtp_94/lookUpTable_base_0.csv",
+          "sha256": "f0a76976f512dd6d81da3f8d4d0d0d0502115ff05fd0a7bdde9810f82cf54f9a"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_94/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 189539,
+          "path": "release/rtp_94/lookUpTable_scatter_boost_0.csv",
+          "sha256": "ba51e9efe11e6ff0cc67680a8a46b752f8ed86119944e6a77488a7f50bee10af"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_94/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 200606,
+          "path": "release/rtp_94/lookUpTable_bonus_0.csv",
+          "sha256": "bfa8a49c12da0333f7603e8753d7143be628ec0cd66a433fc10649819d7beade"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_94/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_94",
+      "profile": "rtp_94"
+    },
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_95/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190858,
+          "path": "release/rtp_95/lookUpTable_base_0.csv",
+          "sha256": "46170de35b7fc952cd0ab52557d258681f4f9e62566280f76ce5a343bdb7b2b7"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_95/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 190641,
+          "path": "release/rtp_95/lookUpTable_scatter_boost_0.csv",
+          "sha256": "322ecc1f4c43810b4b943bd1ad6d506bc733caf41ca98b88f2644fa223d19dae"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_95/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 200775,
+          "path": "release/rtp_95/lookUpTable_bonus_0.csv",
+          "sha256": "8b487dbadb69e78e417eb5669a417d586f24becd4b6c9563224b7a075a8b39f9"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_95/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_95",
+      "profile": "rtp_95"
+    },
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_96/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190741,
+          "path": "release/rtp_96/lookUpTable_base_0.csv",
+          "sha256": "32fb35599e1147cdc74aca59fc74692dc06ef3a7e74381a4b045bf6303637f21"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_96/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 190076,
+          "path": "release/rtp_96/lookUpTable_scatter_boost_0.csv",
+          "sha256": "e1e9e2093211911fbeabe0796764c6c6c621486e491c6780840cf615b651b2ef"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_96/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 198078,
+          "path": "release/rtp_96/lookUpTable_bonus_0.csv",
+          "sha256": "f503c07cddd8d8b9541f1d27f392903c007ac7a0b9705833745425059bca737e"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_96/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_96",
+      "profile": "rtp_96"
+    },
+    {
+      "files": [
+        {
+          "bytes": 559,
+          "path": "release/rtp_97/index.json",
+          "sha256": "3594ada3215ee613e450eac1525e8892eac2d220c3f93f69dc403fdbbf548e92"
+        },
+        {
+          "bytes": 190976,
+          "path": "release/rtp_97/lookUpTable_base_0.csv",
+          "sha256": "5dcf8ffed7c8b37030109247efd6edc3d29d3fe6d23cd77ab92b11700b9a464f"
+        },
+        {
+          "bytes": 2149958,
+          "path": "release/rtp_97/books_base.jsonl.zst",
+          "sha256": "449a74cbab74a6db9a9b6890ccb136faaa2daeb9a21b4f397f34f3b0845f33aa"
+        },
+        {
+          "bytes": 190617,
+          "path": "release/rtp_97/lookUpTable_scatter_boost_0.csv",
+          "sha256": "ccb2c768d0ce8338b26ea163f3e0d73c90a202e3e289850ce378f9840b565e2d"
+        },
+        {
+          "bytes": 2242050,
+          "path": "release/rtp_97/books_scatter_boost.jsonl.zst",
+          "sha256": "47e63db9061acd264252add51785e4fa7a9d7c966f53cb78b93a705213161ffc"
+        },
+        {
+          "bytes": 200415,
+          "path": "release/rtp_97/lookUpTable_bonus_0.csv",
+          "sha256": "88c1615d53f5d22fbffeb70789fa9d50a8dfc7fc7f1dc51ccace8ba9de6c3d3d"
+        },
+        {
+          "bytes": 12682489,
+          "path": "release/rtp_97/books_bonus.jsonl.zst",
+          "sha256": "8a2c83cc1db0431e5acc5a1bea895a970c8dd408c311a3e7e7a049c24f5be0c7"
+        }
+      ],
+      "path": "release/rtp_97",
+      "profile": "rtp_97"
+    }
+  ],
   "rtpProfiles": [
     "rtp_92",
     "rtp_93",
@@ -552,9 +805,9 @@
     "rtp_97"
   ],
   "rtpValidation": {
-    "bytes": 8878,
+    "bytes": 8626,
     "path": "docs/RTP_PROFILE_VALIDATION.json",
-    "sha256": "3f400e3618641a6db94668e36b3fc1b6102332ed4144599849681112dcb9468a"
+    "sha256": "1b8a222156d91d43b0af39e167bf14e0c4ca690279c0fbf394cb2855b9332ce0"
   },
   "sharedBooks": [
     {

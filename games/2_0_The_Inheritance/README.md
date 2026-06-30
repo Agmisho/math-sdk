@@ -277,6 +277,20 @@ table/config bundle under `library/rtp_profiles`. This keeps certified math
 editions separate without changing symbol rules, feature rules, or frontend
 result calculation.
 
+Stake upload folders are assembled separately so each RTP edition is a
+self-contained package with its own `index.json`, lookup CSVs, and compressed
+book files:
+
+```powershell
+python games/2_0_The_Inheritance/assemble_rtp_release_packages.py --clean
+python games/2_0_The_Inheritance/dev_static_release_artifact_test.py
+```
+
+This writes `games/2_0_The_Inheritance/release/rtp_92` through
+`games/2_0_The_Inheritance/release/rtp_97`. The compressed books may be
+byte-identical between editions, but each submitted folder contains the book
+files referenced by that edition's `index.json`.
+
 RTP editions are deployment/submission variants. They must not be switched
 during a player session or presented as a player-selectable gameplay control.
 

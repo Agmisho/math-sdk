@@ -52,3 +52,5 @@ backups/
 !games/2_0_The_Inheritance/library/configs/math_config.json
 !games/2_0_The_Inheritance/library/configs/event_config_*.json
 !games/2_0_The_Inheritance/library/configs/books_*.verification.json
+!games/2_0_The_Inheritance/release/
+!games/2_0_The_Inheritance/release/**

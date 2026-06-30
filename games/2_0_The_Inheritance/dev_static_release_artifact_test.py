@@ -20,6 +20,7 @@ LIBRARY_DIR = GAME_DIR / "library"
 PUBLISH_DIR = LIBRARY_DIR / "publish_files"
 PROFILE_ROOT = LIBRARY_DIR / "rtp_profiles"
 CONFIG_DIR = LIBRARY_DIR / "configs"
+RELEASE_DIR = GAME_DIR / "release"
 DOCS_DIR = GAME_DIR / "docs"
 RTP_VALIDATION_PATH = DOCS_DIR / "RTP_PROFILE_VALIDATION.json"
 MANIFEST_PATH = DOCS_DIR / "STATIC_RELEASE_ARTIFACT_MANIFEST.json"
@@ -27,6 +28,7 @@ MANIFEST_PATH = DOCS_DIR / "STATIC_RELEASE_ARTIFACT_MANIFEST.json"
 GAME_ID = "2_0_The_Inheritance"
 MODES = ("base", "scatter_boost", "bonus")
 PROFILES = tuple(range(92, 98))
+MODE_COSTS = {"base": 1.0, "scatter_boost": 3.0, "bonus": 100.0}
 MAX_PAYOUT_MULTIPLIER = 5000.0
 RTP_TOLERANCE = 1e-8
 
@@ -58,6 +60,15 @@ def read_json(path: Path) -> Any:
     required_file(path)
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def index_modes(index_data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    modes = index_data.get("modes", [])
+    result = {mode.get("name"): mode for mode in modes}
+    missing = [mode for mode in MODES if mode not in result]
+    if missing:
+        raise AssertionError(f"Release index missing modes: {missing}")
+    return result
 
 
 def lookup_metrics(path: Path, cost: float) -> dict[str, float | int]:
@@ -94,7 +105,7 @@ def lookup_metrics(path: Path, cost: float) -> dict[str, float | int]:
 def assert_lookup_matches_report(profile: dict[str, Any], profile_dir: Path) -> None:
     for mode in MODES:
         mode_report = profile["modes"][mode]
-        cost = {"base": 1.0, "scatter_boost": 3.0, "bonus": 100.0}[mode]
+        cost = MODE_COSTS[mode]
         metrics = lookup_metrics(profile_dir / f"lookUpTable_{mode}_0.csv", cost)
 
         if abs(float(metrics["rtp"]) - float(mode_report["rtp"])) > RTP_TOLERANCE:
@@ -103,6 +114,62 @@ def assert_lookup_matches_report(profile: dict[str, Any], profile_dir: Path) -> 
             raise AssertionError(f"{profile['profile']} {mode} does not match target RTP.")
         if float(metrics["maxPayoutMultiplier"]) > MAX_PAYOUT_MULTIPLIER:
             raise AssertionError(f"{profile['profile']} {mode} exceeds {MAX_PAYOUT_MULTIPLIER}x cap.")
+
+
+def assert_release_manifest() -> dict[str, Any]:
+    manifest = read_json(RELEASE_DIR / "manifest.json")
+    expected_profiles = [f"rtp_{percentage}" for percentage in PROFILES]
+    if manifest.get("profiles") != expected_profiles:
+        raise AssertionError("Release manifest does not list every RTP package in order.")
+    return file_entry(RELEASE_DIR / "manifest.json")
+
+
+def assert_release_package(profile_name: str, profile_dir: Path) -> dict[str, Any]:
+    package_dir = RELEASE_DIR / profile_name
+    package_index = read_json(package_dir / "index.json")
+    profile_index = read_json(profile_dir / "index.json")
+    if package_index != profile_index:
+        raise AssertionError(f"{profile_name} release index does not match RTP profile index.")
+
+    files = [file_entry(package_dir / "index.json")]
+    expected_names = {"index.json"}
+    modes = index_modes(package_index)
+    for mode in MODES:
+        mode_entry = modes[mode]
+        books_name = mode_entry["events"]
+        lookup_name = mode_entry["weights"]
+        for referenced_name in (books_name, lookup_name):
+            if Path(referenced_name).name != referenced_name:
+                raise AssertionError(
+                    f"{profile_name} {mode} references a non-local artifact: {referenced_name}"
+                )
+
+        package_lookup = package_dir / lookup_name
+        profile_lookup = profile_dir / lookup_name
+        if sha256(package_lookup) != sha256(profile_lookup):
+            raise AssertionError(f"{profile_name} {mode} release lookup differs from RTP profile.")
+
+        package_books = package_dir / books_name
+        source_books = PUBLISH_DIR / books_name
+        if sha256(package_books) != sha256(source_books):
+            raise AssertionError(f"{profile_name} {mode} release books differ from shared source books.")
+
+        expected_names.update((lookup_name, books_name))
+        files.append(file_entry(package_lookup))
+        files.append(file_entry(package_books))
+
+    actual_names = {path.name for path in package_dir.iterdir() if path.is_file()}
+    if actual_names != expected_names:
+        raise AssertionError(
+            f"{profile_name} release folder must contain exactly {sorted(expected_names)}, "
+            f"found {sorted(actual_names)}"
+        )
+
+    return {
+        "profile": profile_name,
+        "path": package_dir.relative_to(GAME_DIR).as_posix(),
+        "files": files,
+    }
 
 
 def build_manifest() -> dict[str, Any]:
@@ -162,6 +229,11 @@ def build_manifest() -> dict[str, Any]:
         *[file_entry(CONFIG_DIR / f"event_config_{mode}.json") for mode in MODES],
         *[file_entry(CONFIG_DIR / f"books_{mode}.verification.json") for mode in MODES],
     ]
+    release_manifest = assert_release_manifest()
+    release_packages = [
+        assert_release_package(f"rtp_{percentage}", PROFILE_ROOT / f"rtp_{percentage}")
+        for percentage in PROFILES
+    ]
 
     return {
         "manifestVersion": 1,
@@ -169,9 +241,11 @@ def build_manifest() -> dict[str, Any]:
         "activeProfile": active_profile,
         "rtpProfiles": [f"rtp_{percentage}" for percentage in PROFILES],
         "artifactPolicy": (
-            "Compressed books are shared by all RTP editions; each RTP edition "
-            "has distinct lookup weights and config files. The active publish "
-            "lookups must match the active RTP profile."
+            "Compressed books are shared as canonical generation outputs, then "
+            "intentionally duplicated into every release/rtp_* upload folder. "
+            "Each RTP edition has distinct lookup weights and config files. The "
+            "active publish lookups must match the active RTP profile, and every "
+            "Stake upload folder must be self-contained."
         ),
         "maxPayoutMultiplier": MAX_PAYOUT_MULTIPLIER,
         "rtpValidation": file_entry(RTP_VALIDATION_PATH),
@@ -180,6 +254,8 @@ def build_manifest() -> dict[str, Any]:
         "activePublishLookups": active_publish_lookups,
         "configAndEventFiles": config_files,
         "profiles": profiles,
+        "releaseManifest": release_manifest,
+        "releasePackages": release_packages,
     }
 
 
@@ -196,7 +272,8 @@ def main() -> None:
     rendered = normalized_json(manifest)
 
     if args.write:
-        MANIFEST_PATH.write_text(rendered, encoding="utf-8")
+        with MANIFEST_PATH.open("w", encoding="utf-8", newline="\n") as handle:
+            handle.write(rendered)
         print(f"Wrote {MANIFEST_PATH}")
         return
 
