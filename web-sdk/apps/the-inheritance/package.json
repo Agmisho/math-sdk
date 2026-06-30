@@ -9,7 +9,10 @@
     "storybook": "PUBLIC_CHROMATIC=true storybook dev -p 6007 public",
     "dev": "vite dev --host --port 3007",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "e2e": "playwright test",
+    "e2e-smoke": "playwright test --project=chromium-desktop",
+    "e2e-mobile": "playwright test --project=chromium-mobile"
   },
   "type": "module",
   "devDependencies": {
@@ -21,6 +24,7 @@
     "config-lingui": "workspace:*",
     "config-storybook": "workspace:*",
     "chromatic": "11.26.1",
+    "@playwright/test": "1.53.2",
     "@storybook/addon-svelte-csf": "5.0.5",
     "@sveltejs/adapter-static": "3.0.8",
     "@sveltejs/vite-plugin-svelte": "5.0.3"

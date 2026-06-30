@@ -22,6 +22,7 @@ WEB_DIR = REPO_ROOT / "web-sdk"
 WEB_APP_DIR = WEB_DIR / "apps" / "the-inheritance"
 
 PYTHON_CHECKS = (
+    "games/2_0_The_Inheritance/tools/validate_release_packages.py",
     "games/2_0_The_Inheritance/dev_design_contract_test.py",
     "games/2_0_The_Inheritance/dev_legacy_key_credit_test.py",
     "games/2_0_The_Inheritance/dev_multiplier_test.py",
@@ -89,8 +90,8 @@ def run_web_builds() -> None:
         )
 
     base_env = os.environ.copy()
-    base_env.setdefault("PUBLIC_SITE_MODE", "")
-    base_env.setdefault("PUBLIC_SENTRY_DSN", "")
+    base_env.setdefault("PUBLIC_SITE_MODE", "release-proof")
+    base_env.setdefault("PUBLIC_SENTRY_DSN", "none")
     base_env.setdefault("PUBLIC_CHROMATIC", "false")
     base_env.setdefault("NPM_CONFIG_NODE_LINKER", "hoisted")
     base_env.setdefault("npm_config_node_linker", "hoisted")

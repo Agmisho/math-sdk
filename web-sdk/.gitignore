@@ -46,6 +46,7 @@ apps/**/src/game/sounds/
 test-results
 apps/**/test-videos/
 apps/**/test-report
+apps/**/playwright-report
 apps/**/test-results
 apps/**/test-result
 

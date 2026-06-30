@@ -1,6 +1,9 @@
 name: The Inheritance release proof
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 3 * * *"
   push:
     paths:
       - ".github/workflows/the-inheritance-release.yml"
@@ -29,6 +32,7 @@ on:
 jobs:
   release-proof:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -53,3 +57,32 @@ jobs:
 
       - name: Run The Inheritance release proof
         run: python tools/the-inheritance-release-check.py
+
+      - name: Install Playwright Chromium
+        working-directory: web-sdk
+        run: pnpm --filter the-inheritance exec playwright install --with-deps chromium
+
+      - name: Run The Inheritance browser smoke QA
+        working-directory: web-sdk
+        env:
+          NPM_CONFIG_NODE_LINKER: hoisted
+          npm_config_node_linker: hoisted
+        run: |
+          pnpm --filter the-inheritance e2e-smoke
+          pnpm --filter the-inheritance e2e-mobile
+
+      - name: Write machine-readable release summary
+        if: success()
+        run: python games/2_0_The_Inheritance/tools/write_ci_summary.py
+
+      - name: Upload release proof summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-inheritance-release-proof
+          path: |
+            artifacts/the-inheritance-ci-summary.json
+            web-sdk/apps/the-inheritance/build-release/**
+            web-sdk/apps/the-inheritance/playwright-report/**
+            web-sdk/apps/the-inheritance/test-results/**
+          if-no-files-found: warn
