@@ -13,6 +13,7 @@ GAME_DIR = REPO_ROOT / "games" / "2_0_The_Inheritance"
 RELEASE_DIR = GAME_DIR / "release"
 ARTIFACTS_DIR = REPO_ROOT / "artifacts"
 SUMMARY_PATH = ARTIFACTS_DIR / "the-inheritance-ci-summary.json"
+SUBMISSION_PROFILE = "rtp_97"
 
 
 def read_json(path: Path) -> dict:
@@ -39,6 +40,14 @@ def main() -> None:
             }
         )
 
+    frontend_value = os.getenv("THE_INHERITANCE_RELEASE_BUILD_DIR")
+    if not frontend_value:
+        raise RuntimeError("THE_INHERITANCE_RELEASE_BUILD_DIR is required for CI summary")
+    frontend_dir = Path(frontend_value).resolve()
+    frontend_proof = read_json(frontend_dir / "release-proof.json")
+    if frontend_proof["profile"] != SUBMISSION_PROFILE or not frontend_proof["validated"]:
+        raise RuntimeError("Generated frontend proof is not the selected validated RTP profile")
+
     summary = {
         "gameId": root_manifest["gameId"],
         "gameName": root_manifest["gameName"],
@@ -47,12 +56,19 @@ def main() -> None:
         "commit": os.getenv("GITHUB_SHA", "local"),
         "runId": os.getenv("GITHUB_RUN_ID", "local"),
         "profiles": profiles,
+        "submission": {
+            "profile": SUBMISSION_PROFILE,
+            "frontend": str(frontend_dir),
+            "math": str(RELEASE_DIR / SUBMISSION_PROFILE),
+        },
         "proofCommands": [
             "python games/2_0_The_Inheritance/tools/validate_release_packages.py",
             "python games/2_0_The_Inheritance/dev_static_release_artifact_test.py",
             "python tools/the-inheritance-local-rgs/dev_local_rgs_bridge_test.py",
             "python web-sdk/apps/the-inheritance/dev_frontend_audit_test.py",
             "python tools/the-inheritance-release-check.py",
+            "pnpm --filter the-inheritance e2e-smoke",
+            "pnpm --filter the-inheritance e2e-mobile",
         ],
     }
 
