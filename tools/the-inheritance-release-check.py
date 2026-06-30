@@ -109,7 +109,9 @@ def run_web_builds() -> None:
         env = base_env.copy()
         env["PUBLIC_THE_INHERITANCE_RTP"] = rtp
         env["THE_INHERITANCE_RELEASE_BUILD_DIR"] = str(output_dir)
-        run([*pnpm, "--filter", "the-inheritance", "build"], cwd=WEB_DIR, env=env)
+        # Turbo honors the workspace dependency graph, so packages such as
+        # pixi-svelte are built before the game consumes their dist output.
+        run([*pnpm, "exec", "turbo", "run", "build", "--filter=the-inheritance"], cwd=WEB_DIR, env=env)
 
 
 def parse_args() -> argparse.Namespace:
