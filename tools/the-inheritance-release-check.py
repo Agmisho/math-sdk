@@ -27,7 +27,9 @@ CHECKS = (
     "web-sdk/apps/the-inheritance/dev_frontend_audit_test.py",
     "web-sdk/apps/the-inheritance/dev_release_asset_qa_test.py",
 )
-RTP_VALUES = ("0.92", "0.93", "0.94", "0.95", "0.96", "0.97")
+# Stake submission proof uses the selected 97% frontend. The math-package
+# validation above continues to validate every available RTP edition.
+SUBMISSION_RTP = "0.97"
 
 
 def run(command: list[str], cwd: Path, env: dict[str, str] | None = None) -> None:
@@ -35,23 +37,20 @@ def run(command: list[str], cwd: Path, env: dict[str, str] | None = None) -> Non
     subprocess.run(command, cwd=cwd, env=env, check=True)
 
 
-def build_frontends() -> None:
+def build_frontend() -> None:
     pnpm = shutil.which("pnpm")
     if not pnpm:
         raise RuntimeError("pnpm was not found")
-    base_env = os.environ.copy()
-    base_env.setdefault("PUBLIC_SITE_MODE", "release-proof")
-    base_env.setdefault("PUBLIC_SENTRY_DSN", "none")
-    base_env.setdefault("PUBLIC_CHROMATIC", "false")
-    base_env.setdefault("NPM_CONFIG_NODE_LINKER", "hoisted")
+    env = os.environ.copy()
+    env.setdefault("PUBLIC_SITE_MODE", "release-proof")
+    env.setdefault("PUBLIC_SENTRY_DSN", "none")
+    env.setdefault("PUBLIC_CHROMATIC", "false")
+    env.setdefault("NPM_CONFIG_NODE_LINKER", "hoisted")
     run_id = os.getenv("THE_INHERITANCE_RELEASE_RUN_ID") or time.strftime("%Y%m%d-%H%M%S")
-    release_root = APP_DIR / "build-release" / f"proof-{run_id}"
-    for rtp in RTP_VALUES:
-        output_dir = release_root / f"rtp_{round(float(rtp) * 100)}"
-        env = base_env.copy()
-        env["PUBLIC_THE_INHERITANCE_RTP"] = rtp
-        env["THE_INHERITANCE_RELEASE_BUILD_DIR"] = str(output_dir)
-        run([pnpm, "--filter", "the-inheritance", "build"], WEB_DIR, env)
+    output_dir = APP_DIR / "build-release" / f"proof-{run_id}" / "rtp_97"
+    env["PUBLIC_THE_INHERITANCE_RTP"] = SUBMISSION_RTP
+    env["THE_INHERITANCE_RELEASE_BUILD_DIR"] = str(output_dir)
+    run([pnpm, "--filter", "the-inheritance", "build"], WEB_DIR, env)
 
 
 def main() -> None:
@@ -63,7 +62,7 @@ def main() -> None:
         for check in CHECKS:
             run([sys.executable, check], ROOT)
     if not args.skip_web_builds:
-        build_frontends()
+        build_frontend()
     print("The Inheritance release proof: OK", flush=True)
 
 
