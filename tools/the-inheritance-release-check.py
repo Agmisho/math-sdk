@@ -111,7 +111,20 @@ def run_web_builds() -> None:
         env["THE_INHERITANCE_RELEASE_BUILD_DIR"] = str(output_dir)
         # Turbo honors the workspace dependency graph, so packages such as
         # pixi-svelte are built before the game consumes their dist output.
-        run([*pnpm, "exec", "turbo", "run", "build", "--filter=the-inheritance"], cwd=WEB_DIR, env=env)
+        # Loose mode preserves the profile-specific frontend output path.
+        run(
+            [
+                *pnpm,
+                "exec",
+                "turbo",
+                "run",
+                "build",
+                "--filter=the-inheritance",
+                "--env-mode=loose",
+            ],
+            cwd=WEB_DIR,
+            env=env,
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -138,5 +151,4 @@ def main() -> None:
     print("\nThe Inheritance release-readiness proof: OK", flush=True)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__":n    main()
