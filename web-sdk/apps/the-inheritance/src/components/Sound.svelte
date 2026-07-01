@@ -21,10 +21,11 @@
 	import { getContext } from '../game/context';
 
 	const context = getContext();
+	// Keep these files relative to the uploaded Stake Engine front-end folder.
 	const CUSTOM_AUDIO = {
-		main: '/assets/the-inheritance/audio/main-theme.mp3',
-		spin: '/assets/the-inheritance/audio/spin.mp3',
-		scatter: '/assets/the-inheritance/audio/scatter-landing.mp3',
+		main: './assets/the-inheritance/audio/main-theme.mp3',
+		spin: './assets/the-inheritance/audio/spin.mp3',
+		scatter: './assets/the-inheritance/audio/scatter-landing.mp3',
 	};
 	const CUSTOM_MUSIC_VOLUME = 0.46;
 	const CUSTOM_SPIN_VOLUME = 0.22;
@@ -137,7 +138,7 @@
 			// sound.players.music.fade({ name: 'bgm_main', from: 0, to: 1, duration: 2000 });
 
 			//How to control rate per soundfile
-			// sound.players.music.rate({ rate: 2, name: 'bgm_main'}); // change play back rate(1: default, 0: slow, 1+ fasterm and higher pitch )
+			// sound.players.music.rate({ rate: 2, name: 'bgm_main'}); // change play back rate(1: default, 0: slow, 1+ fasterm and higher pitch)
 		}
 
 		return () => {
