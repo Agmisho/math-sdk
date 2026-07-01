@@ -1,4 +1,4 @@
-"""Create the complete RTP 97 Stake submission bundle for The Inheritance."""
+"""Create the complete RTP 96 Stake submission bundle for The Inheritance."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME_DIR = ROOT / "games" / "2_0_The_Inheritance"
-MATH_SOURCE = GAME_DIR / "release" / "rtp_97"
-ARTIFACT_ROOT = ROOT / "artifacts" / "the-inheritance-submission-rtp97"
+MATH_SOURCE = GAME_DIR / "release" / "rtp_96"
+ARTIFACT_ROOT = ROOT / "artifacts" / "the-inheritance-submission-rtp96"
 
 
 def sha256_file(path: Path) -> str:
@@ -44,8 +44,8 @@ def verify_math_source(manifest: dict) -> None:
         raise RuntimeError("Unexpected math game ID")
     if manifest.get("gameName") != "The Inheritance":
         raise RuntimeError("Unexpected math game name")
-    if manifest.get("profile") != "rtp_97" or manifest.get("rtp") != 97:
-        raise RuntimeError("Submission math package is not rtp_97")
+    if manifest.get("profile") != "rtp_96" or manifest.get("rtp") != 96:
+        raise RuntimeError("Submission math package is not rtp_96")
     for relative_path, details in manifest["files"].items():
         source = MATH_SOURCE / relative_path
         if not source.is_file() or sha256_file(source) != details["sha256"]:
@@ -58,7 +58,7 @@ def main() -> None:
         raise RuntimeError("THE_INHERITANCE_RELEASE_BUILD_DIR is required")
     frontend_source = Path(frontend_value).resolve()
     if not (frontend_source / "index.html").is_file() or not (frontend_source / "_app").is_dir():
-        raise RuntimeError("Generated rtp_97 frontend is incomplete")
+        raise RuntimeError("Generated rtp_96 frontend is incomplete")
 
     with (MATH_SOURCE / "manifest.json").open(encoding="utf-8") as source:
         math_manifest = json.load(source)
@@ -75,8 +75,8 @@ def main() -> None:
         "schemaVersion": 1,
         "gameId": "2_0_The_Inheritance",
         "gameName": "The Inheritance",
-        "profile": "rtp_97",
-        "rtp": 97,
+        "profile": "rtp_96",
+        "rtp": 96,
         "commit": os.getenv("GITHUB_SHA", "local"),
         "math": directory_index(math_target),
         "frontend": directory_index(frontend_target),
@@ -87,7 +87,7 @@ def main() -> None:
 
     (ARTIFACT_ROOT / "README.txt").write_text(
         "The Inheritance — Stake submission bundle\n\n"
-        "math/ contains the rtp_97 Math SDK release package.\n"
+        "math/ contains the rtp_96 Math SDK release package.\n"
         "frontend/ contains the matching generated static frontend.\n"
         "submission-manifest.json records hashes for both deliverables.\n",
         encoding="utf-8",
