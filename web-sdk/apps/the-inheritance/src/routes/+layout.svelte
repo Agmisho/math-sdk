@@ -10,8 +10,10 @@
 	type Props = { children: Snippet };
 
 	const props: Props = $props();
-
-	const loaderUrlStakeEngine = '/stake-engine-loader.gif';
+	// Stake Engine serves a game beneath its front-end file namespace. A relative
+	// URL keeps this loader inside the uploaded game folder instead of requesting
+	// the Stake Engine website root.
+	const loaderUrlStakeEngine = './stake-engine-loader.gif';
 
 	setContext();
 </script>
