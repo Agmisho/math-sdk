@@ -10,22 +10,19 @@
 	type Props = { children: Snippet };
 
 	const props: Props = $props();
-	// Stake Engine serves a game beneath its front-end file namespace. A relative
-	// URL keeps this loader inside the uploaded game folder instead of requesting
-	// the Stake Engine website root.
-	const loaderUrlStakeEngine = './stake-engine-loader.gif';
+	// Use the same Vite-resolved loader pattern as Stake Engine's sample games.
+	// This emits a deployable URL inside the generated static frontend.
+	const loaderUrlStakeEngine = new URL('../../stake-engine-loader.gif', import.meta.url).href;
 
 	setContext();
 </script>
 
 <GlobalStyle>
-	
-		<LoadI18n {messagesMap}>
-			<div data-testid="the-inheritance-app" data-game-id="2_0_The_Inheritance">
-				<Game />
-			</div>
-		</LoadI18n>
-	
+	<LoadI18n {messagesMap}>
+		<div data-testid="the-inheritance-app" data-game-id="2_0_The_Inheritance">
+			<Game />
+		</div>
+	</LoadI18n>
 </GlobalStyle>
 
 <LoaderStakeEngine src={loaderUrlStakeEngine} />
