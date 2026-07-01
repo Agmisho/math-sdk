@@ -13,7 +13,7 @@ GAME_DIR = REPO_ROOT / "games" / "2_0_The_Inheritance"
 RELEASE_DIR = GAME_DIR / "release"
 ARTIFACTS_DIR = REPO_ROOT / "artifacts"
 SUMMARY_PATH = ARTIFACTS_DIR / "the-inheritance-ci-summary.json"
-SUBMISSION_PROFILE = "rtp_97"
+SUBMISSION_PROFILE = "rtp_96"
 
 
 def read_json(path: Path) -> dict:
@@ -66,7 +66,7 @@ def main() -> None:
             "python games/2_0_The_Inheritance/dev_static_release_artifact_test.py",
             "python tools/the-inheritance-local-rgs/dev_local_rgs_bridge_test.py",
             "python web-sdk/apps/the-inheritance/dev_frontend_audit_test.py",
-            "python tools/the-inheritance-release-check.py",
+            "python tools/the-inheritance-release-proof-v2.py",
             "pnpm --filter the-inheritance e2e-smoke",
             "pnpm --filter the-inheritance e2e-mobile",
         ],
