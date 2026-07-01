@@ -47,6 +47,7 @@ jobs:
     env:
       THE_INHERITANCE_RELEASE_BUILD_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_96
       PUBLIC_THE_INHERITANCE_RTP: "0.96"
+      THE_INHERITANCE_RTP: "96"
       CI: "true"
     steps:
       - uses: actions/checkout@v4
@@ -114,6 +115,7 @@ jobs:
         working-directory: web-sdk
         env:
           NPM_CONFIG_NODE_LINKER: hoisted
+          THE_INHERITANCE_RTP: "96"
           THE_INHERITANCE_E2E_STATIC_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_96
         run: |
           set +e
