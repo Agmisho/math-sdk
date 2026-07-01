@@ -86,7 +86,7 @@ def main() -> None:
         target.write("\n")
 
     (ARTIFACT_ROOT / "README.txt").write_text(
-        "The Inheritance — Stake submission bundle\n\n"
+        "The Inheritance - Stake submission bundle\n\n"
         "math/ contains the rtp_96 Math SDK release package.\n"
         "frontend/ contains the matching generated static frontend.\n"
         "submission-manifest.json records hashes for both deliverables.\n",

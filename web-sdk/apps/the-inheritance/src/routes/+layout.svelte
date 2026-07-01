@@ -10,9 +10,7 @@
 	type Props = { children: Snippet };
 
 	const props: Props = $props();
-	// Use the same Vite-resolved loader pattern as Stake Engine's sample games.
-	// This emits a deployable URL inside the generated static frontend.
-	const loaderUrlStakeEngine = new URL('../../stake-engine-loader.gif', import.meta.url).href;
+	const loaderUrlStakeEngine = './stake-engine-loader.gif';
 
 	setContext();
 </script>

@@ -21,7 +21,7 @@
 
 	const close = () => (stateInheritanceUi.modal = null);
 	const symbolAsset = (name: SymbolName) =>
-		`/assets/the-inheritance/symbols-cleaned/${SYMBOL_ASSET_FILES[name].split('/').map(encodeURIComponent).join('/')}`;
+		`./assets/the-inheritance/symbols-cleaned/${SYMBOL_ASSET_FILES[name].split('/').map(encodeURIComponent).join('/')}`;
 	const payFor = (data: SymbolConfig, kind: '3' | '4' | '5') =>
 		data.paytable?.find((entry) => entry[kind] !== undefined)?.[kind];
 	const formatPayout = (value?: number) => (value === undefined ? '-' : `$${value.toFixed(2)}`);
