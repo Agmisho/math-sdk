@@ -89,11 +89,11 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('web-sdk/pnpm-lock.yaml') }}
 
       - name: Run The Inheritance release proof
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
           mkdir -p artifacts
           set +e
-          python tools/the-inheritance-release-check.py > artifacts/release-proof.log 2>&1
+          python tools/the-inheritance-release-proof-v2.py > artifacts/release-proof.log 2>&1
           status=$?
           cat artifacts/release-proof.log
           exit $status
