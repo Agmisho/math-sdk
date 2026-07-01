@@ -1,4 +1,4 @@
-"""Release proof that produces the RTP 97 static frontend for Stake upload."""
+"""Release proof that produces the RTP 96 static frontend for Stake upload."""
 
 from __future__ import annotations
 
@@ -64,8 +64,8 @@ def validate_output(output: Path) -> None:
         json.dumps(
             {
                 "gameName": "The Inheritance",
-                "profile": "rtp_97",
-                "rtp": 0.97,
+                "profile": "rtp_96",
+                "rtp": 0.96,
                 "validated": True,
             },
             indent=2,
