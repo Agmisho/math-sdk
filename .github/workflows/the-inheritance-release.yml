@@ -45,7 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
-      THE_INHERITANCE_RELEASE_BUILD_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_97
+      THE_INHERITANCE_RELEASE_BUILD_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_96
+      PUBLIC_THE_INHERITANCE_RTP: "0.96"
       CI: "true"
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +114,7 @@ jobs:
         working-directory: web-sdk
         env:
           NPM_CONFIG_NODE_LINKER: hoisted
-          THE_INHERITANCE_E2E_STATIC_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_97
+          THE_INHERITANCE_E2E_STATIC_DIR: ${{ github.workspace }}/web-sdk/apps/the-inheritance/build-release/ci-rtp_96
         run: |
           set +e
           pnpm --filter the-inheritance e2e-smoke > ../artifacts/browser-smoke.log 2>&1
@@ -137,9 +138,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: the-inheritance-stake-submission-rtp97
+          name: the-inheritance-stake-submission-rtp96
           path: |
-            artifacts/the-inheritance-submission-rtp97/**
+            artifacts/the-inheritance-submission-rtp96/**
             artifacts/the-inheritance-ci-summary.json
             artifacts/pip-bootstrap.log
             artifacts/math-dependency-install.log
